@@ -2,7 +2,9 @@ import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import User from "../models/userModel.js"
 import ApiResponse from "../utils/ApiResponse.js";
+import generateAccessAndRefreshTokens from "../utils/generateTokens.js";
 
+// Register
 const userRegister = asyncHandler(async (req, res) => {
     const { username, email, password, profileImage, address } = req.body;
 
@@ -25,7 +27,7 @@ const userRegister = asyncHandler(async (req, res) => {
 
 
     // Creating a user
-    const user = User.create(
+    const user = await User.create(
         {
             username,
             email,
@@ -42,7 +44,7 @@ const userRegister = asyncHandler(async (req, res) => {
     }
 
     // Removing the password from the Response
-    const createdUser = await User.findById(user._id);
+    const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
     // Sending the response to client
     return res.status(201).json(
@@ -55,4 +57,50 @@ const userRegister = asyncHandler(async (req, res) => {
 
 });
 
-export default userRegister
+
+// Login
+const userLogin = asyncHandler(async (req, res) => {
+    // Getting user data
+    const {email, password} = req.body;
+
+    // Checking for 1   
+    if(!email)
+        return new ApiError(400, "Email is required");
+    if(!password)
+        return new ApiError(400, "Password is required");
+
+
+    const user = await User.findOne({email});
+
+    // Checking if user exists or not
+    if(!user)
+        return new ApiError(401, "Invalid email or password")
+
+    // checking password from the User model method
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+
+    if(!isPasswordCorrect)
+        return new ApiError(401, "Invalid email or password");
+
+    // Generating access and refresh tokens from the utils/generateTokens.js file
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+
+    const loggedUser = await User.findById(user._id).select("-password -refreshToken");
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                user: loggedUser,
+                accessToken,
+                refreshToken
+            },
+            "User logged in successfully",
+        )
+    )
+});
+
+export {
+    userRegister,
+    userLogin
+};
