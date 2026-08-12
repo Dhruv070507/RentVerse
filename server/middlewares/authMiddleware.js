@@ -23,7 +23,7 @@ const authMiddleware = asyncHandler(async(req, res, next) => {
     // verify is a jwt method that verifies the token using the secret key and returns the decoded payload if the token is valid
     const decodedToken = jwt.verify(
         token,
-        process.env.JWT_ACCESS_TOKEN_SECRET
+        process.env.ACCESS_TOKEN_SECRET
     );
 
     const user = await User.findById(decodedToken._id).select(

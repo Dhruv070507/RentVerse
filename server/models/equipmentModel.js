@@ -2,11 +2,6 @@ import mongoose from "mongoose";
 
 const equipmentSchema = new mongoose.Schema(
   {
-    equipmentId: {
-        type: String,
-        required: true,
-        unique: true,
-    },
     name: {
         type: String,
         required: true,

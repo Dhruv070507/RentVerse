@@ -100,7 +100,19 @@ const userLogin = asyncHandler(async (req, res) => {
     )
 });
 
+
+const getProfile = asyncHandler(async (req, res) => {
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            req.user,
+            "Authenticated user profile fetched successfully"
+        )
+    );
+});
+
 export {
     userRegister,
-    userLogin
+    userLogin,
+    getProfile
 };
