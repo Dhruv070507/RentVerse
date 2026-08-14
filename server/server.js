@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import userRouter from "./routes/userRoutes.js";
 import equipmentRouter from "./routes/equipmentRoutes.js";
+import rentalRouter from "./routes/rentalRoutes.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/equipments", equipmentRouter);
+app.use("/api/v1/rental", rentalRouter);
 
 const PORT = process.env.PORT || 5000;
 
