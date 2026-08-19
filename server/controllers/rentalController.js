@@ -97,6 +97,13 @@ const getRenatalById = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Rental doesn't exist");
     }
 
+    if (!rental.renter.equals(req.user._id) && !rental.owner.equals(req.user._id)) {
+        throw new ApiError(
+            403,
+            "You are not authorized to view this rental"
+        );
+    }
+    
     return res.status(200).json(
         new ApiResponse(
             200,

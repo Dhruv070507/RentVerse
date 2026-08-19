@@ -94,7 +94,68 @@ const getMyPayments = asyncHandler(async (req, res) =>{
 })
 
 
+const getPaymentById = asyncHandler(async (req, res) =>{
+    const { id } = req.params;
+
+    const payment = await Payment.findById(id)
+                    .populate("rental");
+
+    if(!payment)
+        throw new ApiError(404, "payments doesn't exist");
+
+    if(!payment.rental.renter.equals(req.user._id))
+        throw new ApiError(403, "You are not authorized to access this payment");
+
+    return res.status(200).json(
+        new ApiResponse(
+            200, 
+            payment,
+            "Payment fetched successfully"
+        )
+    )
+})
+
+
+const updatePaymentStatus = asyncHandler(async (req, res) =>{
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const payment = await Payment.findById(id)
+                    .populate("rental");
+
+    if(!payment)
+        throw new ApiError(404, "payment doesn't exist");
+
+    // check if the logged in user is the renter
+    if(!payment.rental.renter.equals(req.user._id))
+        throw new ApiError(403, "You are not authorized to update the payment");
+
+    // Payment must be pending
+    if(payment.paymentStatus !== "pending")
+        throw new ApiError(400, "payment is not pending");
+
+    // Only the completed and failed are valid next status
+    if(status !== "completed" && status !== "failed")
+        throw new ApiError(400, "Invalid payment status");
+
+    payment.paymentStatus = status;
+
+    await payment.save();
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            payment,
+            "Payment status updated successfully"
+        )
+    )
+
+})
+
+
 export {
     createPayment,
     getMyPayments,
+    getPaymentById,
+    updatePaymentStatus,
 }
