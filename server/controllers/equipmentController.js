@@ -1,7 +1,13 @@
-import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import Equipment from "../models/equipmentModel.js";
+
+import {
+    addEquipmentService,
+    getEquimentByIdService,
+    getAllEqipmentsService,
+    updateEquipmentService,
+    deleteEquipmentService
+} from "../services/equipmentServices.js";
 
 
 // add a new equipment
@@ -18,32 +24,16 @@ const addEquipment = asyncHandler(async (req, res) => {
         location
     } = req.body;
 
-    // checking if all the required fields are provided
-    if([name, description].some(field => !field || field.trim() === "")){
-        throw new ApiError(400, "All fields are required");
-    }
-
-
-    // trim does nor work no number fields so we need to check number fields separately
-    if (typeof quantity !== "number" || quantity < 0) {
-    throw new ApiError(400, "Invalid quantity");
-    }
-
-    if (typeof rentalPrice !== "number" || rentalPrice < 0) {
-        throw new ApiError(400, "Invalid rental price");
-    }
-
-    // adding a new equipment
-    const equipment = await Equipment.create({
+    const equipment = await addEquipmentService(
         name,
         description,
         category,
+        rentalPrice,
         quantity,
         images,
         location,
-        rentalPrice,
-        owner: req.user._id
-    });
+        req.user._id
+    );
 
     return res.status(201).json(
         new ApiResponse(
@@ -51,21 +41,15 @@ const addEquipment = asyncHandler(async (req, res) => {
             equipment,
             "Equipment created successfully"
         )
-    )
-})
+    );
+});
 
 
-const getEquimentById = asyncHandler(async (req, res) =>{
+const getEquimentById = asyncHandler(async (req, res) => {
     // getting the equipment id from the request params
     const {id} = req.params;
 
-    // checking if the id is a valid mongoose object id
-    // population is used to get the owner details along with the equipment details for mybe to show in the frontend
-    const equipment = await Equipment.findById(id).populate("owner", "username email profileImage");
-
-    if(!equipment){
-        throw new ApiError(404, "Equipment not found");
-    }
+    const equipment = await getEquimentByIdService(id);
 
     return res.status(200).json(
         new ApiResponse(
@@ -73,13 +57,13 @@ const getEquimentById = asyncHandler(async (req, res) =>{
             equipment,
             "Equipment fetched successfully"
         )
-    )
-})
+    );
+});
 
 
-const getAllEqipments = asyncHandler(async(req, res) =>{
-    // getting all the equipments and populating the owner detials for each eq and selecting only the req fields to be sent in the response
-    const equipments = await Equipment.find().populate("owner", "username email profileImage").select("-refreshToken -accessToken -createdAt -updatedAt -__v");
+const getAllEqipments = asyncHandler(async(req, res) => {
+
+    const equipments = await getAllEqipmentsService();
 
     return res.status(200).json(
         new ApiResponse(
@@ -87,26 +71,12 @@ const getAllEqipments = asyncHandler(async(req, res) =>{
             equipments,
             "All equipments fetched successfully"
         )
-    )
-})
+    );
+});
 
 
 const updateEquipment = asyncHandler(async (req, res) => {
     const { id } = req.params;
-
-    const equipment = await Equipment.findById(id);
-
-    if (!equipment) {
-        throw new ApiError(404, "Equipment doesn't exist");
-    }
-
-    // Check if the logged-in user is the owner of the equipment
-    if (!equipment.owner.equals(req.user._id)) {
-        throw new ApiError(
-            403,
-            "You are not authorized to update this equipment"
-        );
-    }
 
     // Define the fields that can be updated
     const allowedFields = [
@@ -130,18 +100,10 @@ const updateEquipment = asyncHandler(async (req, res) => {
         }
     }
 
-    // Update the equipment in the database
-    const updatedEquipment = await Equipment.findOneAndUpdate(
-        { _id: id },
-        { $set: updateData },
-
-        // Options to return the updated document and run validators
-        // new: true returns the updated document instead of the original
-        // runValidators: true ensures that the updated data obeys the schema validation rules
-        {
-            new: true,
-            runValidators: true
-        }
+    const updatedEquipment = await updateEquipmentService(
+        id,
+        updateData,
+        req.user._id
     );
 
     return res.status(200).json(
@@ -157,17 +119,10 @@ const updateEquipment = asyncHandler(async (req, res) => {
 const deleteEquipment = asyncHandler(async(req, res) => {
     const { id } = req.params;
 
-    const equipment = await Equipment.findById(id);
-
-    if(!equipment){
-        throw new ApiError(404, "Equipment doesnt exist");
-    }
-
-    if(!equipment.owner.equals(req.user._id)){
-        throw new ApiError(403, "You are not authorized to delete this equipment");
-    }
-
-    await Equipment.findByIdAndDelete(id);
+    const deleted = await deleteEquipmentService(
+        id,
+        req.user._id
+    );
 
     return res.status(200).json(
         new ApiResponse(
@@ -175,8 +130,8 @@ const deleteEquipment = asyncHandler(async(req, res) => {
             null,
             "Equipment deleted successfully",
         )
-    )
-})
+    );
+});
 
 
 export {
@@ -185,4 +140,4 @@ export {
     getAllEqipments,
     updateEquipment,
     deleteEquipment,
-}
+};
