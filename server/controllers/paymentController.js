@@ -6,7 +6,7 @@ import {
     getMyPaymentsService,
     getPaymentByIdService,
     updatePaymentStatusService
-} from "../services/paymentServices.js";
+} from "../services/paymentService.js";
 
 
 const createPayment = asyncHandler(async (req, res) => {

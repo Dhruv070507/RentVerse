@@ -7,7 +7,7 @@ import {
     getAllEqipmentsService,
     updateEquipmentService,
     deleteEquipmentService
-} from "../services/equipmentServices.js";
+} from "../services/equipmentService.js";
 
 
 // add a new equipment

@@ -4,7 +4,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import {
     registerUserService,
     loginUserService
-} from "../services/userServices.js";
+} from "../services/userService.js";
 
 // Register
 const userRegister = asyncHandler(async (req, res) => {

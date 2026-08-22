@@ -6,8 +6,8 @@ import {
     getMyRentalsService,
     getRentalByIdService,
     updateRentalByIdService,
-    cancleRentalService
-} from "../services/rentalServices.js";
+    cancelRentalService
+} from "../services/rentalService.js";
 
 
 const createRental = asyncHandler(async (req, res) => {
@@ -53,7 +53,7 @@ const getMyRentals = asyncHandler(async (req, res) => {
 });
 
 
-const getRenatalById = asyncHandler(async (req, res) => {
+const getRentalById = asyncHandler(async (req, res) => {
 
     const { id } = req.params;
 
@@ -93,11 +93,11 @@ const updateRentalById = asyncHandler(async (req, res) => {
 });
 
 
-const cancleRental = asyncHandler(async (req, res) => {
+const cancelRental = asyncHandler(async (req, res) => {
 
     const { id } = req.params;
 
-    const rental = await cancleRentalService(
+    const rental = await cancelRentalService(
         id,
         req.user._id
     );
@@ -115,7 +115,7 @@ const cancleRental = asyncHandler(async (req, res) => {
 export {
     createRental,
     getMyRentals,
-    getRenatalById,
+    getRentalById,
     updateRentalById,
-    cancleRental,
+    cancelRental,
 };
