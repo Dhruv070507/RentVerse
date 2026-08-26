@@ -1,10 +1,10 @@
-import ApiResponse from "../utils/ApiResponse";
-import asyncHandler from "../utils/asyncHandler";
+import ApiResponse from "../utils/ApiResponse.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 import {
     getMyNotificationsService,
     markNotificationAsReadServices,
-} from "../services/notificationService"
+} from "../services/notificationService.js"
 
 
 const getMyNotification = asyncHandler(async (req, res) =>{
@@ -38,3 +38,9 @@ const markNotificationAsRead = asyncHandler(async (req, res) =>{
         )
     )
 })
+
+
+export {
+    markNotificationAsRead,
+    getMyNotification,
+}

@@ -1,43 +1,52 @@
-import mongoose from 'mongoose';
-import equipment from './equipment';
+import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema(
     {
         rental: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Rental',
+            ref: "Rental",
             required: true,
         },
+
         reviewer: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: "User",
             required: true,
         },
+
         rating: {
             type: Number,
             min: 0,
             max: 5,
             required: true,
         },
+
         comment: {
             type: String,
             required: true,
-            default: '',
+            trim: true,
         },
+
         equipment: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Equipment',
+            ref: "Equipment",
             required: true,
         },
+
         receiver: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: "User",
             required: true,
-        },   
+        },
     },
     {
         timestamps: true,
     }
-)
+);
 
-export default mongoose.model('Review', reviewSchema);
+reviewSchema.index(
+    { rental: 1, reviewer: 1 },
+    { unique: true }
+);
+
+export default mongoose.model("Review", reviewSchema);

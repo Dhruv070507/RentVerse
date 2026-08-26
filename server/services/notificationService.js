@@ -1,5 +1,5 @@
-import ApiError from "../utils/ApiError";
-import Notification from "../models/notificationModel"
+import ApiError from "../utils/ApiError.js";
+import Notification from "../models/notificationModel.js"
 
 
 const getMyNotificationsService = async (userId) => {

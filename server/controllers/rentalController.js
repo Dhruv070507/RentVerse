@@ -6,7 +6,7 @@ import {
     getMyRentalsService,
     getRentalByIdService,
     updateRentalByIdService,
-    cancelRentalService
+    cancleRentalService
 } from "../services/rentalService.js";
 
 

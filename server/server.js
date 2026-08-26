@@ -7,6 +7,7 @@ import equipmentRouter from "./routes/equipmentRoutes.js";
 import rentalRouter from "./routes/rentalRoutes.js";
 import paymentRouter from "./routes/paymentRoutes.js"
 import notificationRouter from "./routes/notificationRoutes.js"
+import reviewRouter from "./routes/reviewRoutes.js"
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ app.use("/api/v1/equipments", equipmentRouter);
 app.use("/api/v1/rental", rentalRouter);
 app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1/notifications", notificationRouter);
+app.use("/api/v1/reviews", reviewRouter);
+
 
 const PORT = process.env.PORT || 5000;
 
