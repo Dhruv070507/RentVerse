@@ -36,6 +36,12 @@ const rentalSchema = new mongoose.Schema(
             required: true,
         },
 
+        address: {
+            type: String,
+            trim: true,
+            required: true
+        },
+
         totalPrice: {
             type: Number,
             required: true,

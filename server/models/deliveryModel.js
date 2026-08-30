@@ -14,12 +14,6 @@ const deliverySchema = new mongoose.Schema(
             required: true,
         },
 
-        deliveryMode: {
-            type: String,
-            enum: ["home_delivery", "self_pickup"],
-            required: true,
-        },
-
         deliveryAddress: {
             type: String,
             trim: true,
@@ -58,7 +52,11 @@ const deliverySchema = new mongoose.Schema(
             type: Date,
         },
 
-        returnDate: {
+        returnStartDate: {
+            type: Date,
+        },
+
+        returnDeadline: {
             type: Date,
         },
 

@@ -9,11 +9,12 @@ const createRentalService = async (
     quantity,
     rentalStartDate,
     rentalEndDate,
+    address,
     userId
 ) => {
 
     // checking if all the fields are provided
-    if(!equipmentId || !quantity || !rentalStartDate || !rentalEndDate){
+    if(!equipmentId || !quantity || !rentalStartDate || !rentalEndDate || !address){
         throw new ApiError(400, "All fields are required");
     }
 
@@ -53,6 +54,7 @@ const createRentalService = async (
         quantity,
         rentalStartDate: startDate,
         rentalEndDate: endDate,
+        address: address,
         totalPrice,
         status: "pending",
     });

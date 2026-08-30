@@ -3,12 +3,12 @@ import {
     getMyNotification,
     markNotificationAsRead
 } from "../controllers/notificationController.js"
-import authMiddleware from "../middlewares/authMiddleware.js";
+import authenticationMiddleware from "../middlewares/authenticationMiddleware.js";
 
 
 const router = Router();
 
-router.route("/").get(authMiddleware, getMyNotification);
-router.route("/:id/read").patch(authMiddleware, markNotificationAsRead);
+router.route("/").get(authenticationMiddleware, getMyNotification);
+router.route("/:id/read").patch(authenticationMiddleware, markNotificationAsRead);
 
 export default router;

@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-const authMiddleware = asyncHandler(async(req, res, next) => {
+const authenticationMiddleware = asyncHandler(async(req, res, next) => {
     // Checking if the authorization header is present and starts with "Bearer "
     const authHeader = req.headers.authorization;
 
@@ -45,4 +45,4 @@ const authMiddleware = asyncHandler(async(req, res, next) => {
 });
 
 
-export default authMiddleware;
+export default authenticationMiddleware;

@@ -5,15 +5,15 @@ import { addEquipment,
         updateEquipment,
         deleteEquipment } from "../controllers/equipmentController.js";
 
-import authMiddleware from "../middlewares/authMiddleware.js";
+import authenticationMiddleware from "../middlewares/authenticationMiddleware.js";
 
 const router = Router();
 
-router.route("/add").post(authMiddleware, addEquipment);
+router.route("/add").post(authenticationMiddleware, addEquipment);
 router.route("/:id").get(getEquimentById);
 router.route("/").get(getAllEqipments);
-router.route("/:id").put(authMiddleware, updateEquipment);
-router.route("/:id").delete(authMiddleware, deleteEquipment);
+router.route("/:id").put(authenticationMiddleware, updateEquipment);
+router.route("/:id").delete(authenticationMiddleware, deleteEquipment);
 
 
 

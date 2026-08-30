@@ -16,7 +16,9 @@ const notificationSchema = new mongoose.Schema(
                 "rental_cancelled",
                 "payment_completed",
                 "payment_failed",
-                "rental_completed"
+                "rental_completed",
+                "delivery_otp",
+                "return_otp",
             ],
             required : true
         },
