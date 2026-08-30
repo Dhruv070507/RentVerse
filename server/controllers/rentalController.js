@@ -6,7 +6,7 @@ import {
     getMyRentalsService,
     getRentalByIdService,
     updateRentalByIdService,
-    cancleRentalService
+    cancleRentalService,
 } from "../services/rentalService.js";
 
 
@@ -16,7 +16,8 @@ const createRental = asyncHandler(async (req, res) => {
         equipmentId,
         quantity,
         rentalStartDate,
-        rentalEndDate
+        rentalEndDate,
+        address
     } = req.body;
 
     const rental = await createRentalService(
@@ -24,6 +25,7 @@ const createRental = asyncHandler(async (req, res) => {
         quantity,
         rentalStartDate,
         rentalEndDate,
+        address,
         req.user._id
     );
 
@@ -97,7 +99,7 @@ const cancelRental = asyncHandler(async (req, res) => {
 
     const { id } = req.params;
 
-    const rental = await cancelRentalService(
+    const rental = await cancleRentalService(
         id,
         req.user._id
     );

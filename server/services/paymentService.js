@@ -137,6 +137,21 @@ const updatePaymentStatusService = async (
 
     await payment.save();
 
+    // Create notification based on payment status
+    await createNotificationService({
+        receiver: payment.rental.renter,
+        type: status === "completed"
+            ? "payment_completed"
+            : "payment_failed",
+
+        message: status === "completed"
+            ? "Your payment has been completed successfully."
+            : "Your payment has failed. Please try again.",
+
+        rental: payment.rental._id,
+        payment: payment._id
+    });
+
     return payment;
 };
 

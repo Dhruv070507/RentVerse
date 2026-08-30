@@ -8,6 +8,7 @@ import {
     startDeliveryService,
     completeDeliveryService,
     startReturnService,
+    generateReturnOtpService,
     completeReturnService,
     } from "../services/deliveryService.js"
 
@@ -161,6 +162,22 @@ const startReturn = asyncHandler(async (req, res) => {
 });
 
 
+const generateReturnOtp = asyncHandler(async (req, res) => {
+
+    const {deliveryId} = req.body;
+
+    const otp = await generateReturnOtpService(deliveryId, req.user._id);
+
+    return res.status(201).json(
+        new ApiResponse(
+            201,
+            {otp},
+            "Return otp created successfully"
+        )
+    )
+});
+
+
 const completeReturn = asyncHandler(async (req, res) => {
 
     const { deliveryId } = req.params;
@@ -180,3 +197,17 @@ const completeReturn = asyncHandler(async (req, res) => {
         )
     );
 });
+
+
+export {
+    createDelivery,
+    getDeliveryById,
+    getMyDeliveries,
+    assignDeliveryAgent,
+    startDelivery,
+    generateDeliveryOtp,
+    completeDelivery,
+    startReturn,
+    generateReturnOtp,
+    completeReturn
+};

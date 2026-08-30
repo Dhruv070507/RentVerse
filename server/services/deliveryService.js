@@ -218,6 +218,14 @@ const generateDeliveryOtpService = async (deliveryId, userId) => {
 
     await delivery.save();
 
+    // Notify the renter about the delivery OTP
+    await createNotificationService({
+        receiver: delivery.rental.renter,
+        type: "delivery_otp",
+        message: `Your delivery OTP is ${otp}. Share it with the delivery agent.`,
+        rental: delivery.rental._id
+    });
+
     return otp;
 };
 
@@ -249,6 +257,8 @@ const completeDeliveryService = async(deliveryId, userId, otp) => {
 
     delivery.deliveryStatus = "delivered";
     delivery.deliveredAt = new Date();
+
+    delivery.deliveryOtp = "";
     await delivery.save();
 
     const verifiedDelivery = await Delivery.findById(deliveryId)
@@ -309,11 +319,54 @@ const startReturnService = async (deliveryId, userId) => {
 };
 
 
-const completeReturnService = async (
-    deliveryId,
-    userId,
-    otp
-) => {
+const generateReturnOtpService = async (deliveryId, userId) => {
+
+    const delivery = await Delivery.findById(deliveryId)
+        .populate("rental", "renter");
+
+    if (!delivery)
+        throw new ApiError(
+            404,
+            "Delivery doesn't exist"
+        );
+
+    if (!delivery.deliveryAgent)
+        throw new ApiError(
+            400,
+            "No delivery agent has been assigned"
+        );
+
+    if (!delivery.deliveryAgent.equals(userId))
+        throw new ApiError(
+            403,
+            "You are not assigned to this delivery"
+        );
+
+    if (delivery.deliveryStatus !== "out_for_return")
+        throw new ApiError(
+            400,
+            "Return OTP cannot be generated in this state"
+        );
+
+    const otp = generateOtp();
+
+    delivery.returnOtp = otp;
+
+    await delivery.save();
+
+    // Notify the renter about the return OTP
+    await createNotificationService({
+        receiver: delivery.rental.renter,
+        type: "return_otp",
+        message: `Your return OTP is ${otp}. Share it with the delivery agent.`,
+        rental: delivery.rental._id
+    });
+
+    return otp;
+};
+
+
+const completeReturnService = async (deliveryId, userId, otp) => {
 
     const delivery = await Delivery.findById(deliveryId);
 
@@ -356,6 +409,8 @@ const completeReturnService = async (
     delivery.deliveryStatus = "returned";
     delivery.returnedAt = new Date();
 
+    delivery.returnOtp = "";
+
     await delivery.save();
 
     const completedReturn = await Delivery.findById(
@@ -375,5 +430,6 @@ export {
     generateDeliveryOtpService,
     completeDeliveryService,
     startReturnService,
+    generateReturnOtpService,
     completeReturnService,
 }

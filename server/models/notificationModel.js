@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema(
     {
-        recipient : {
+        receiver : {
             type : mongoose.Schema.Types.ObjectId,
             ref : "User",
             required : true
@@ -29,13 +29,8 @@ const notificationSchema = new mongoose.Schema(
         },
         rental : {
             type : mongoose.Schema.Types.ObjectId,
-            ref : "User",
+            ref : "Rental",
             default : null
-        },
-        owner : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: null
         },
         payment : {
             type: mongoose.Schema.Types.ObjectId,

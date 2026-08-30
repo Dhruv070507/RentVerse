@@ -2,6 +2,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 import {
+    createNotificationService,
     getMyNotificationsService,
     markNotificationAsReadServices,
 } from "../services/notificationService.js"
@@ -12,7 +13,7 @@ const getMyNotification = asyncHandler(async (req, res) =>{
         req.user._id    
     );
 
-    return res.this.status(200).json(
+    return res.status(200).json(
         new ApiResponse (
             200,
             notification,

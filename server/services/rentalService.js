@@ -1,6 +1,7 @@
 import ApiError from "../utils/ApiError.js";
 import Rental from "../models/rentalModel.js";
 import Equipment from "../models/equipmentModel.js";
+import { createNotificationService } from "./notificationService.js";
 
 
 // Create Rental
@@ -57,6 +58,14 @@ const createRentalService = async (
         address: address,
         totalPrice,
         status: "pending",
+    });
+
+    // sending the notification to the owner
+    await createNotificationService({
+        receiver: rental.owner,
+        type: "rental_request",
+        message: "You received a new rental request.",
+        rental: rental._id
     });
 
     return rental;
@@ -122,9 +131,64 @@ const updateRentalByIdService = async (id, status, userId) => {
         throw new ApiError(400, "Invalid rental status");
     }
 
+
+    /* Rental must still be pending so that 
+        approved → approved ❌
+        approved → rejected ❌
+
+        rejected → approved ❌
+        rejected → rejected ❌ */
+    if (rental.status !== "pending") {
+        throw new ApiError(
+            400,
+            `Rental cannot be updated because it is already ${rental.status}`
+        );
+    }
+
+
+    if(status === "approved"){
+        const equipment = await Equipment.findById(rental.equipment);
+
+        if(!equipment)
+            throw new ApiError(404, "Equipment doesn't exist");
+
+        // Check available quantity
+        if (equipment.quantity < rental.quantity) {
+            throw new ApiError(
+                400,
+                "Not enough equipment available"
+            );
+        }
+
+        equipment.quantity -= rental.quantity;
+
+        await equipment.save();
+
+    }
+
     rental.status = status;
 
     await rental.save();
+
+     // Create notification for renter
+    if (status === "approved") {
+
+        await createNotificationService({
+            receiver: rental.renter,
+            type: "rental_approved",
+            message: "Your rental request has been approved.",
+            rental: rental._id
+        });
+
+    } else {
+
+        await createNotificationService({
+            receiver: rental.renter,
+            type: "rental_rejected",
+            message: "Your rental request has been rejected.",
+            rental: rental._id
+        });
+    }
 
     return rental;
 };
@@ -154,7 +218,56 @@ const cancleRentalService = async (id, userId) => {
 
     await rental.save();
 
+    // Notify equipment owner
+    await createNotificationService({
+        receiver: rental.owner,
+        type: "rental_cancelled",
+        message: "The rental request has been cancelled by the renter.",
+        rental: rental._id
+    });
+
     return rental;
+};
+
+
+const completeExpiredRentalsService = async () => {
+
+    const expiredRentals = await Rental.find({
+        status: "approved",
+        rentalEndDate: { $lte: new Date() }
+    });
+
+    for (const rental of expiredRentals) {
+
+        const equipment = await Equipment.findById(
+            rental.equipment
+        );
+
+        if (equipment) {
+            equipment.quantity += rental.quantity;
+
+            await equipment.save();
+        }
+
+        await Rental.findByIdAndUpdate(
+            rental._id,
+            {
+                $set: {
+                    status: "completed"
+                }
+            }
+        );
+
+        // Notify the renter that the rental is completed
+        await createNotificationService({
+            receiver: rental.renter,
+            type: "rental_completed",
+            message: "Your rental has been completed.",
+            rental: rental._id
+        });
+    }
+
+    return expiredRentals.length;
 };
 
 
@@ -163,5 +276,6 @@ export {
     getMyRentalsService,
     getRentalByIdService,
     updateRentalByIdService,
-    cancleRentalService
+    cancleRentalService,
+    completeExpiredRentalsService,
 };

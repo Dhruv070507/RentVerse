@@ -40,7 +40,7 @@ const authenticationMiddleware = asyncHandler(async(req, res, next) => {
     // Attaching the user object to the request object for use in subsequent middleware or route handlers
     req.user = user;
 
-    // Calling the next middleware or route handler in the stack
+    // Continue to the next middleware or route handler
     next();
 });
 
