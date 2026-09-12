@@ -14,6 +14,11 @@ const deliverySchema = new mongoose.Schema(
             required: true,
         },
 
+        returnAgent: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+
         deliveryAddress: {
             type: String,
             trim: true,

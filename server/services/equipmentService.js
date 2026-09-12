@@ -1,5 +1,6 @@
 import ApiError from "../utils/ApiError.js";
 import Equipment from "../models/equipmentModel.js";
+import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 
 
 // add a new equipment
@@ -10,7 +11,7 @@ const addEquipmentService = async (
     category,
     rentalPrice,
     quantity,
-    images,
+    files,
     location,
     userId
 ) => {
@@ -28,6 +29,28 @@ const addEquipmentService = async (
 
     if (typeof rentalPrice !== "number" || rentalPrice < 0) {
         throw new ApiError(400, "Invalid rental price");
+    }
+
+     // checking if images are provided
+    if (!files || files.length === 0) {
+        throw new ApiError(
+            400,
+            "At least one image is required"
+        );
+    }
+
+
+    // upload images to Cloudinary
+    const images = [];
+
+    for (const file of files) {
+
+        const result = await uploadToCloudinary(
+            file.path,
+            "rentVerse/equipments"
+        );
+
+        images.push(result.secure_url);
     }
 
     // adding a new equipment

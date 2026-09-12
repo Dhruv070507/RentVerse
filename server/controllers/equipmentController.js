@@ -13,14 +13,13 @@ import {
 // add a new equipment
 
 const addEquipment = asyncHandler(async (req, res) => {
-    // getting all equipment info from the request body
+
     const {
         name,
         description,
         category,
         rentalPrice,
         quantity,
-        images,
         location
     } = req.body;
 
@@ -28,9 +27,9 @@ const addEquipment = asyncHandler(async (req, res) => {
         name,
         description,
         category,
-        rentalPrice,
-        quantity,
-        images,
+        Number(rentalPrice),
+        Number(quantity),
+        req.files,
         location,
         req.user._id
     );

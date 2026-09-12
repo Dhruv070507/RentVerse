@@ -7,6 +7,7 @@ import {
     assignDeliveryAgentService,
     startDeliveryService,
     completeDeliveryService,
+    assignReturnAgentService,
     startReturnService,
     generateReturnOtpService,
     completeReturnService,
@@ -143,6 +144,26 @@ const completeDelivery = asyncHandler(async (req, res) => {
 });
 
 
+const assignReturnAgent = asyncHandler(async (req, res) => {
+
+    const { id } = req.params;
+    const { agentId } = req.body;
+
+    const assignedReturnAgent = await assignReturnAgentService(
+        id,
+        agentId
+    );
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            assignedReturnAgent,
+            "Return agent assigned successfully"
+        )
+    );
+});
+
+
 const startReturn = asyncHandler(async (req, res) => {
 
     const { deliveryId } = req.params;
@@ -207,6 +228,7 @@ export {
     startDelivery,
     generateDeliveryOtp,
     completeDelivery,
+    assignReturnAgent,
     startReturn,
     generateReturnOtp,
     completeReturn

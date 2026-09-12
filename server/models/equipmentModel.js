@@ -22,12 +22,10 @@ const equipmentSchema = new mongoose.Schema(
         required: true,
         min: 0,
     },
-    images: [
-        {
-        type: String,
-        default: '',    
-        required: true,
-    }],
+    images: {
+        type: [String],
+        default: [],
+    },
     location: {
         type: String,
         default: '',

@@ -7,6 +7,7 @@ import {
     startDelivery,
     generateDeliveryOtp,
     completeDelivery,
+    assignReturnAgent,
     startReturn,
     generateReturnOtp,
     completeReturn
@@ -25,7 +26,7 @@ router.get("/:id", authenticationMiddleware, getDeliveryById);
 
 router.post("/", authenticationMiddleware, createDelivery);
 
-router.patch("/:id/assign", authenticationMiddleware, authorizationMiddleware("owner"), assignDeliveryAgent);
+router.patch("/:id/assign-delivery", authenticationMiddleware, authorizationMiddleware("admin"), assignDeliveryAgent);
 
 
 router.patch("/:deliveryId/start", authenticationMiddleware, authorizationMiddleware("delivery_agent"), startDelivery);
@@ -35,6 +36,10 @@ router.post("/:deliveryId/delivery-otp", authenticationMiddleware, authorization
 
 
 router.patch("/:deliveryId/complete", authenticationMiddleware, authorizationMiddleware("delivery_agent"), completeDelivery);
+
+
+router.patch("/:id/assign-return", authenticationMiddleware,
+    authorizationMiddleware("admin"), assignReturnAgent);
 
 
 router.patch("/:deliveryId/return/start", authenticationMiddleware, authorizationMiddleware("delivery_agent"), startReturn);

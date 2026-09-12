@@ -268,6 +268,57 @@ const completeDeliveryService = async(deliveryId, userId, otp) => {
 }
 
 
+const assignReturnAgentService = async (deliveryId, agentId) => {
+
+    const delivery = await Delivery.findById(deliveryId);
+
+    if (!delivery)
+        throw new ApiError(
+            404,
+            "Delivery doesn't exist"
+        );
+
+    if (delivery.deliveryStatus !== "delivered")
+        throw new ApiError(
+            400,
+            "Return agent cannot be assigned in current state"
+        );
+
+    if (delivery.returnAgent)
+        throw new ApiError(
+            400,
+            "Return agent is already assigned"
+        );
+
+    const returnAgent = await User.findById(agentId);
+
+    if (!returnAgent)
+        throw new ApiError(
+            404,
+            "Return agent doesn't exist"
+        );
+
+    if (returnAgent.role !== "delivery_agent")
+        throw new ApiError(
+            400,
+            "User is not a delivery agent"
+        );
+
+    delivery.returnAgent = agentId;
+
+    await delivery.save();
+
+    const updatedDelivery = await Delivery.findById(
+        delivery._id
+    ).populate(
+        "returnAgent",
+        "username profileImage"
+    );
+
+    return updatedDelivery;
+};
+
+
 const startReturnService = async (deliveryId, userId) => {
 
     const delivery = await Delivery.findById(deliveryId);
@@ -278,16 +329,16 @@ const startReturnService = async (deliveryId, userId) => {
             "Delivery doesn't exist"
         );
 
-    if (!delivery.deliveryAgent)
+    if (!delivery.returnAgent)
         throw new ApiError(
             400,
-            "No delivery agent has been assigned"
+            "No return agent has been assigned"
         );
 
-    if (!delivery.deliveryAgent.equals(userId))
+    if (!delivery.returnAgent.equals(userId))
         throw new ApiError(
             403,
-            "You are not assigned to this delivery"
+            "You are not assigned to this return"
         );
 
     if (delivery.deliveryStatus !== "delivered")
@@ -330,16 +381,16 @@ const generateReturnOtpService = async (deliveryId, userId) => {
             "Delivery doesn't exist"
         );
 
-    if (!delivery.deliveryAgent)
+    if (!delivery.returnAgent)
         throw new ApiError(
             400,
-            "No delivery agent has been assigned"
+            "No return agent has been assigned"
         );
 
-    if (!delivery.deliveryAgent.equals(userId))
+    if (!delivery.returnAgent.equals(userId))
         throw new ApiError(
             403,
-            "You are not assigned to this delivery"
+            "You are not assigned to this return"
         );
 
     if (delivery.deliveryStatus !== "out_for_return")
@@ -358,7 +409,7 @@ const generateReturnOtpService = async (deliveryId, userId) => {
     await createNotificationService({
         receiver: delivery.rental.renter,
         type: "return_otp",
-        message: `Your return OTP is ${otp}. Share it with the delivery agent.`,
+        message: `Your return OTP is ${otp}. Share it with the return agent.`,
         rental: delivery.rental._id
     });
 
@@ -376,16 +427,16 @@ const completeReturnService = async (deliveryId, userId, otp) => {
             "Delivery doesn't exist"
         );
 
-    if (!delivery.deliveryAgent)
+    if (!delivery.returnAgent)
         throw new ApiError(
             400,
-            "No delivery agent has been assigned"
+            "No return agent has been assigned"
         );
 
-    if (!delivery.deliveryAgent.equals(userId))
+    if (!delivery.returnAgent.equals(userId))
         throw new ApiError(
             403,
-            "You are not assigned to this delivery"
+            "You are not assigned to this return"
         );
 
     if (delivery.deliveryStatus !== "out_for_return")
@@ -429,6 +480,7 @@ export {
     startDeliveryService,
     generateDeliveryOtpService,
     completeDeliveryService,
+    assignReturnAgentService,
     startReturnService,
     generateReturnOtpService,
     completeReturnService,

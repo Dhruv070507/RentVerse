@@ -6,10 +6,17 @@ import {
     loginUserService
 } from "../services/userService.js";
 
+
 // Register
 const userRegister = asyncHandler(async (req, res) => {
 
-    const user = await registerUserService(req.body);
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+
+    const user = await registerUserService({
+        ...req.body,
+        profileImage: req.file
+    });
 
     // Sending the response to client
     return res.status(201).json(
@@ -20,7 +27,6 @@ const userRegister = asyncHandler(async (req, res) => {
         )
     );
 });
-
 
 // Login
 const userLogin = asyncHandler(async (req, res) => {
