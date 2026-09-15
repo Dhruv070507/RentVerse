@@ -11,7 +11,7 @@ const deliverySchema = new mongoose.Schema(
         deliveryAgent: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true,
+            default: null,
         },
 
         returnAgent: {

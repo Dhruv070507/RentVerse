@@ -3,6 +3,7 @@ import Delivery from "../models/deliveryModel.js"
 import Rental from "../models/rentalModel.js"
 import User from "../models/userModel.js"
 import generateOtp from "../utils/generateOtp.js";
+import { createNotificationService } from "./notificationService.js";
 
 
 const createDeliveryService = async (rentalId) => {
@@ -58,17 +59,22 @@ const getDeliveryByIdService = async(deliveryId, userId) =>{
                     .populate(
                         "deliveryAgent",
                         "username profileImage"
-                    );
+                        )
+                    .populate(
+                        "returnAgent",
+                        "username profileImage"
+                    )
 
     if(!delivery)
         throw new ApiError(404, "Delivery doesn't exist");
 
-    isRenter = delivery.rental.renter.equals(userId);
-    isOwner = delivery.rental.owner.equals(userId);
+    const isRenter = delivery.rental.renter.equals(userId);
+    const isOwner = delivery.rental.owner.equals(userId);
 
-    isDeliveryAgent = delivery.deliveryAgent && delivery.deliveryAgent.equals(userId);
+    const isDeliveryAgent = delivery.deliveryAgent && delivery.deliveryAgent._id.equals(userId);
+    const isReturnAgent = delivery.returnAgent && delivery.returnAgent._id.equals(userId);
 
-    if(!isRenter && !isOwner && !isDeliveryAgent)
+    if(!isRenter && !isOwner && !isDeliveryAgent && !isReturnAgent)
         throw new ApiError(403, "You are not authorized to view this delivery");
 
     return delivery;
@@ -129,7 +135,6 @@ const assignDeliveryAgentService = async(deliveryId, agentId) => {
 
     if(delivery.deliveryAgent)
         throw new ApiError(400, "Delivery agent is already assigned");
-
     
 
     const deliveryAgent = await User.findById(agentId);
@@ -159,10 +164,10 @@ const assignDeliveryAgentService = async(deliveryId, agentId) => {
 
 const startDeliveryService = async(deliveryId, deliveryAgentId) => {
 
-    const delivery = await Delivery.findById(deliveryAgentId);
+    const delivery = await Delivery.findById(deliveryId);
 
     if(!delivery)
-        throw new ApiError(404, "DeliveryAgent doesn't exist");
+        throw new ApiError(404, "Delivery doesn't exist");
 
 
     if(!delivery.deliveryAgent)
@@ -212,6 +217,14 @@ const generateDeliveryOtpService = async (deliveryId, userId) => {
             "Delivery OTP cannot be generated in this state"
         );
 
+    const rental = await Rental.findById(delivery.rental);
+
+    if (!rental)
+        throw new ApiError(
+            404,
+            "Rental doesn't exist"
+        );
+
     const otp = generateOtp();
 
     delivery.deliveryOtp = otp;
@@ -220,17 +233,17 @@ const generateDeliveryOtpService = async (deliveryId, userId) => {
 
     // Notify the renter about the delivery OTP
     await createNotificationService({
-        receiver: delivery.rental.renter,
+        receiver: rental.renter,
         type: "delivery_otp",
         message: `Your delivery OTP is ${otp}. Share it with the delivery agent.`,
-        rental: delivery.rental._id
+        rental: rental._id
     });
 
     return otp;
 };
 
 
-const completeDeliveryService = async(deliveryId, userId, otp) => {
+const completeDeliveryService = async(userId, deliveryId, otp) => {
     
     const delivery = await Delivery.findById(deliveryId);
 

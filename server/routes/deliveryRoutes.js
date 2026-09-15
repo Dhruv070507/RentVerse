@@ -29,26 +29,26 @@ router.post("/", authenticationMiddleware, createDelivery);
 router.patch("/:id/assign-delivery", authenticationMiddleware, authorizationMiddleware("admin"), assignDeliveryAgent);
 
 
-router.patch("/:deliveryId/start", authenticationMiddleware, authorizationMiddleware("delivery_agent"), startDelivery);
+router.patch("/:id/start", authenticationMiddleware, authorizationMiddleware("delivery_agent"), startDelivery);
 
 
-router.post("/:deliveryId/delivery-otp", authenticationMiddleware, authorizationMiddleware("delivery_agent"), generateDeliveryOtp);
+router.post("/:id/delivery-otp", authenticationMiddleware, authorizationMiddleware("delivery_agent"), generateDeliveryOtp);
 
 
-router.patch("/:deliveryId/complete", authenticationMiddleware, authorizationMiddleware("delivery_agent"), completeDelivery);
+router.patch("/:id/complete", authenticationMiddleware, authorizationMiddleware("delivery_agent"), completeDelivery);
 
 
 router.patch("/:id/assign-return", authenticationMiddleware,
     authorizationMiddleware("admin"), assignReturnAgent);
 
 
-router.patch("/:deliveryId/return/start", authenticationMiddleware, authorizationMiddleware("delivery_agent"), startReturn);
+router.patch("/:id/return/start", authenticationMiddleware, authorizationMiddleware("delivery_agent"), startReturn);
 
 
-router.post("/:deliveryId/return-otp", authenticationMiddleware, authorizationMiddleware("delivery_agent"), generateReturnOtp);
+router.post("/:id/return-otp", authenticationMiddleware, authorizationMiddleware("delivery_agent"), generateReturnOtp);
 
 
-router.patch("/:deliveryId/return/complete", authenticationMiddleware, authorizationMiddleware("delivery_agent"), completeReturn);
+router.patch("/:id/return/complete", authenticationMiddleware, authorizationMiddleware("delivery_agent"), completeReturn);
 
 
 export default router;

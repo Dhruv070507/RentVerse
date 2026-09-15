@@ -6,6 +6,7 @@ import {
     getMyDeliveriesService,
     assignDeliveryAgentService,
     startDeliveryService,
+    generateDeliveryOtpService,
     completeDeliveryService,
     assignReturnAgentService,
     startReturnService,
@@ -31,10 +32,10 @@ const createDelivery = asyncHandler(async (req, res) =>{
 
 
 const getDeliveryById = asyncHandler(async (req, res) => {
-    const {id} = req.params;
+    const deliveryId = req.params.id;
 
     const delivery = await getDeliveryByIdService(
-        id,
+        deliveryId,
         req.user._id
     );
 
@@ -66,7 +67,7 @@ const getMyDeliveries = asyncHandler(async (req, res) => {
 
 
 const assignDeliveryAgent = asyncHandler(async (req, res) =>{
-    const id = req.params;
+    const id = req.params.id;
     const {agentId} = req.body;
 
     const assignedDelivery = await assignDeliveryAgentService(
@@ -86,7 +87,9 @@ const assignDeliveryAgent = asyncHandler(async (req, res) =>{
 
 const startDelivery = asyncHandler(async (req, res) =>{
 
-    const {deliveryId} = req.params;
+    const deliveryId = req.params.id;
+
+    console.log(deliveryId);
     
     const startedDelivery = await startDeliveryService(
         deliveryId,
@@ -105,7 +108,7 @@ const startDelivery = asyncHandler(async (req, res) =>{
 
 const generateDeliveryOtp = asyncHandler(async (req, res) => {
 
-    const { deliveryId } = req.params;
+    const deliveryId = req.params.id;
 
     const otp = await generateDeliveryOtpService(
         deliveryId,
@@ -124,8 +127,9 @@ const generateDeliveryOtp = asyncHandler(async (req, res) => {
 
 const completeDelivery = asyncHandler(async (req, res) => {
 
-    const {userId} = req.params;
-    const {deliveryId, otp} = req.body;
+    const deliveryId = req.params.id;
+    const userId = req.user._id;
+    const {otp} = req.body;
 
     const verifiedDelivery = await completeDeliveryService(
         userId,
@@ -166,7 +170,7 @@ const assignReturnAgent = asyncHandler(async (req, res) => {
 
 const startReturn = asyncHandler(async (req, res) => {
 
-    const { deliveryId } = req.params;
+    const deliveryId = req.params.id;
 
     const startedReturn = await startReturnService(
         deliveryId,
@@ -185,7 +189,7 @@ const startReturn = asyncHandler(async (req, res) => {
 
 const generateReturnOtp = asyncHandler(async (req, res) => {
 
-    const {deliveryId} = req.body;
+    const deliveryId = req.params.id;
 
     const otp = await generateReturnOtpService(deliveryId, req.user._id);
 
@@ -201,7 +205,7 @@ const generateReturnOtp = asyncHandler(async (req, res) => {
 
 const completeReturn = asyncHandler(async (req, res) => {
 
-    const { deliveryId } = req.params;
+    const deliveryId = req.params.id;
     const { otp } = req.body;
 
     const completedReturn = await completeReturnService(
