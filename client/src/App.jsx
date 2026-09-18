@@ -4,6 +4,7 @@ import Login from "./pages/auth/login.jsx";
 import Home from "./pages/Home.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import UserDashboard from "./pages/user/Dashboard.jsx";
+import Equipment from "./pages/user/Equipment.jsx";
 
 function App() {
     return (
@@ -18,6 +19,8 @@ function App() {
                 <Route element={<ProtectedRoute />}>
 
                     <Route path="/dashboard" element={<UserDashboard />} />
+
+                    <Route path="/equipment" element={<Equipment />} />
 
                 </Route>
 

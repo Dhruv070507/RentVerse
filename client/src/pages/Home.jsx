@@ -1,4 +1,4 @@
-import Navbar from "../components/navbar.jsx";
+import Navbar from "../components/Navbar.jsx";
 
 const Home = () => {
   return (
@@ -33,8 +33,8 @@ const Home = () => {
                Browse Equipments
             </button>
 
-            <button className="font-sans px-6 py-3 rounded-full bg-gray-100 text-[#0b1b34] text-sm hover:bg-gray-200 transition">
-              List Equipment
+            <button className="font-sans px-6 py-3 rounded-full bg-gray-200 text-[#0b1b34] text-sm hover:bg-gray-300 transition">
+              View Your Equipment
             </button>
 
           </div>
