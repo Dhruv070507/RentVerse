@@ -17,7 +17,7 @@ const createRental = asyncHandler(async (req, res) => {
         quantity,
         rentalStartDate,
         rentalEndDate,
-        address
+        address,
     } = req.body;
 
     const rental = await createRentalService(

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { fetchEquipments } from "../../features/equipment/equipmentSlice";
 import EquipmentCard from "../../components/EquipmentCard";
-import Navbar from "../../components/navbar.jsx";
+import Navbar from "../../components/navbar";
 
 
 const Equipment = () => {
@@ -49,7 +49,6 @@ const Equipment = () => {
 
     return (
         <div className="min-h-screen bg-white">
-
             <Navbar />
 
             <main className="max-w-6xl mx-auto px-6 pt-32 pb-20">
@@ -57,15 +56,15 @@ const Equipment = () => {
                 {/* Page heading */}
                 <div className="mb-12">
 
-                    <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-5">
+                    <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-5 text-center">
                         EXPLORE EQUIPMENT
                     </p>
 
-                    <h1 className="font-display text-5xl md:text-6xl text-[#0b1b34]">
+                    <h1 className="font-display text-5xl md:text-6xl text-[#0b1b34] text-center">
                         Find what you need.
                     </h1>
 
-                    <p className="font-sans max-w-xl mt-5 text-base text-gray-500 leading-relaxed">
+                    <p className="font-sans max-w-xl mt-5 text-base text-gray-500 leading-relaxed text-center mx-auto">
                         Discover equipment available for rent from people around you.
                     </p>
 

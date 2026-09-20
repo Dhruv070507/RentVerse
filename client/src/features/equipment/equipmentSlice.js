@@ -28,9 +28,33 @@ export const fetchEquipments = createAsyncThunk(
     }
 );
 
+// fetching a single equipment from the backend using its id
+
+export const fetchEquipmentById = createAsyncThunk(
+    'equipment/fetchEquipmentById',
+    async (id, { rejectWithValue }) => {
+
+        try {
+
+            const response = await api.get(`/equipments/${id}`);
+
+            return response.data.data;
+
+        } catch (error) {
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to fetch equipment"
+            );
+
+        }
+    }
+);
+
 
 const initialState = {
     equipments: [],
+    selectedEquipment: null,
     loading: false,
     error: null
 };
@@ -63,7 +87,25 @@ const equipmentSlice = createSlice({
             .addCase(fetchEquipments.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+
+            // when the request for a single equipment is being sent
+            .addCase(fetchEquipmentById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+
+            // when the equipment is successfully fetched
+            .addCase(fetchEquipmentById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedEquipment = action.payload;
+            })
+
+            // when there is an error while fetching the equipment
+            .addCase(fetchEquipmentById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
     }
 });
 

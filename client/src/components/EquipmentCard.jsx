@@ -1,3 +1,5 @@
+import {Link} from "react-router-dom";
+
 const EquipmentCard = ({ equipment }) => {
 
     return (
@@ -35,9 +37,12 @@ const EquipmentCard = ({ equipment }) => {
                         ₹{equipment.rentalPrice} / day
                     </p>
 
-                    <button className="font-sans text-sm px-4 py-2 rounded-full bg-[#0b1b34] text-white hover:bg-[#142944] transition">
+                    <Link
+                        to={`/equipment/${equipment._id}`}
+                        className="font-sans text-sm px-4 py-2 rounded-full bg-[#0b1b34] text-white hover:bg-[#142944] transition"
+                    >
                         View Details
-                    </button>
+                    </Link>
 
                 </div>
 

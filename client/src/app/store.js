@@ -4,11 +4,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
 import equipmentReducer from "../features/equipment/equipmentSlice"
+import rentalReducer from "../features/rental/rentalSlice"
 
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
-        equipment: equipmentReducer
+        equipment: equipmentReducer,
+        rental: rentalReducer
     }
 });
