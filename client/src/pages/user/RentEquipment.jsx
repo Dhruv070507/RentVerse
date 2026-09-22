@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { createRental } from "../../features/rental/rentalSlice";
+import Navbar from "../../components/navbar";
 
 
 const RentEquipment = () => {
@@ -55,6 +56,7 @@ const RentEquipment = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <Navbar />
 
             <main className="max-w-3xl mx-auto px-6 pt-32 pb-20">
 

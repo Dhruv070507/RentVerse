@@ -7,6 +7,7 @@ import {
     getRentalByIdService,
     updateRentalByIdService,
     cancleRentalService,
+    getRentalRequestsService
 } from "../services/rentalService.js";
 
 
@@ -113,6 +114,22 @@ const cancelRental = asyncHandler(async (req, res) => {
     );
 });
 
+// Get rental requests for equipment owned by the logged-in user
+const getRentalRequests = asyncHandler(async (req, res) => {
+
+    const rentals = await getRentalRequestsService(
+        req.user._id
+    );
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            rentals,
+            "Rental requests fetched successfully"
+        )
+    );
+});
+
 
 export {
     createRental,
@@ -120,4 +137,5 @@ export {
     getRentalById,
     updateRentalById,
     cancelRental,
+    getRentalRequests,
 };

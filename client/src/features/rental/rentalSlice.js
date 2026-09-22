@@ -32,8 +32,97 @@ export const createRental = createAsyncThunk(
 );
 
 
+// getting all rentals created by the logged-in user
+
+export const getMyRentals = createAsyncThunk(
+    "rental/getMyRentals",
+    async (_, { rejectWithValue }) => {
+
+        try {
+
+            const response = await api.get(
+                "/rental/myRentals"
+            );
+
+            return response.data.data;
+
+        } catch (error) {
+            console.log(
+                "Get rentals error:",
+                error.response?.data
+            );
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to fetch rentals"
+            );
+        }
+    }
+);
+
+// cancelling a rental request
+
+export const cancelRental = createAsyncThunk(
+    "rental/cancelRental",
+    async (rentalId, { rejectWithValue }) => {
+
+        try {
+
+            const response = await api.put(
+                `/rental/${rentalId}/cancel`
+            );
+
+            return response.data.data;
+
+        } catch (error) {
+
+            console.log(
+                "Cancel rental error:",
+                error.response?.data
+            );
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to cancel rental"
+            );
+        }
+    }
+);
+
+// getting rental requests for the logged-in user's equipment
+
+export const getRentalRequests = createAsyncThunk(
+    "rental/getRentalRequests",
+    async (_, { rejectWithValue }) => {
+
+        try {
+
+            const response = await api.get(
+                "/rental/requests"
+            );
+
+            return response.data.data;
+
+        } catch (error) {
+
+            console.log(
+                "Get rental requests error:",
+                error.response?.data
+            );
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to fetch rental requests"
+            );
+        }
+    }
+);
+
+
 const initialState = {
     rental: null,
+    rentals: [],
+    rentalRequests: [],
     loading: false,
     error: null
 };
@@ -48,27 +137,92 @@ const rentalSlice = createSlice({
 
     extraReducers: (builder) => {
 
-        builder
+    builder
 
-            // when the rental request is being sent
-            .addCase(createRental.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
+        // when the rental request is being sent
+        .addCase(createRental.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
 
-            // when the rental is successfully created
-            .addCase(createRental.fulfilled, (state, action) => {
-                state.loading = false;
-                state.rental = action.payload;
-            })
+        // when the rental is successfully created
+        .addCase(createRental.fulfilled, (state, action) => {
+            state.loading = false;
+            state.rental = action.payload;
+        })
 
-            // when there is an error while creating the rental
-            .addCase(createRental.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            });
+        // when there is an error while creating the rental
+        .addCase(createRental.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // when the user's rentals are being fetched
+        .addCase(getMyRentals.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        // when the user's rentals are successfully fetched
+        .addCase(getMyRentals.fulfilled, (state, action) => {
+            state.loading = false;
+            state.rentals = action.payload;
+        })
+
+        // when there is an error while fetching rentals
+        .addCase(getMyRentals.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // when a rental is being cancelled
+        .addCase(cancelRental.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        // when the rental is successfully cancelled
+        // updating only the cancelled rental while keeping the other rentals unchanged
+
+        .addCase(cancelRental.fulfilled, (state, action) => {
+            state.loading = false;
+
+            state.rentals = state.rentals.map((rental) =>
+                rental._id === action.payload._id
+                    ? action.payload
+                    : rental
+            );
+        })
+
+        // when there is an error while cancelling the rental
+        .addCase(cancelRental.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // when rental requests are being fetched
+        .addCase(getRentalRequests.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        // when rental requests are successfully fetched
+        .addCase(getRentalRequests.fulfilled, (state, action) => {
+            state.loading = false;
+            state.rentalRequests = action.payload;
+        })
+
+        // when there is an error while fetching rental requests
+        .addCase(getRentalRequests.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        });
+    } 
     }
-});
+);
 
 
 export default rentalSlice.reducer;

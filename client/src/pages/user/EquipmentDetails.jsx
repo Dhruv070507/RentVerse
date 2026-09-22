@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import Navbar from "../../components/Navbar";
+import Navbar from "../../components/navbar";
 
 
 const EquipmentDetails = () => {

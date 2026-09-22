@@ -1,0 +1,246 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getRentalRequests } from "../../features/rental/rentalSlice";
+import Navbar from "../../components/navbar";
+
+
+const RentalRequests = () => {
+
+    const dispatch = useDispatch();
+
+    const {
+        rentalRequests,
+        loading,
+        error
+    } = useSelector((state) => state.rental);
+
+
+    useEffect(() => {
+        dispatch(getRentalRequests());
+    }, [dispatch]);
+
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-white">
+
+                <Navbar />
+
+                <main className="pt-32 px-6">
+
+                    <div className="max-w-6xl mx-auto">
+
+                        <p className="font-sans text-sm text-gray-500">
+                            Loading rental requests...
+                        </p>
+
+                    </div>
+
+                </main>
+
+            </div>
+        );
+    }
+
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-white">
+
+                <Navbar />
+
+                <main className="pt-32 px-6">
+
+                    <div className="max-w-6xl mx-auto">
+
+                        <p className="font-sans text-sm text-red-500">
+                            {error}
+                        </p>
+
+                    </div>
+
+                </main>
+
+            </div>
+        );
+    }
+
+
+    return (
+        <div className="min-h-screen bg-white">
+
+            <Navbar />
+
+            <main className="pt-32 px-6 pb-16">
+
+                <section className="max-w-6xl mx-auto">
+
+                    {/* Page heading */}
+
+                    <div className="mb-10">
+
+                        <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
+                            EQUIPMENT ACTIVITY
+                        </p>
+
+                        <h1 className="font-display text-4xl md:text-5xl text-[#0b1b34]">
+                            Rental Requests
+                        </h1>
+
+                        <p className="font-sans text-gray-500 mt-3">
+                            Manage requests from people who want to rent your equipment.
+                        </p>
+
+                    </div>
+
+
+                    {/* No requests */}
+
+                    {rentalRequests.length === 0 ? (
+
+                        <div className="border border-gray-200 rounded-2xl p-10 text-center">
+
+                            <h2 className="font-display text-2xl text-[#0b1b34]">
+                                No rental requests
+                            </h2>
+
+                            <p className="font-sans text-gray-500 mt-2">
+                                You don't have any rental requests yet.
+                            </p>
+
+                        </div>
+
+                    ) : (
+
+                        <div className="space-y-4">
+
+                            {/* Display every rental request */}
+
+                            {rentalRequests.map((request) => (
+
+                                <div
+                                    key={request._id}
+                                    className="border border-gray-200 rounded-2xl p-6 hover:border-gray-300 transition"
+                                >
+
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+
+                                        {/* Equipment + renter */}
+
+                                        <div>
+
+                                            <h2 className="font-display text-2xl text-[#0b1b34]">
+                                                {request.equipment?.name}
+                                            </h2>
+
+                                            <p className="font-sans text-sm text-gray-500 mt-1">
+                                                Requested by: {request.renter?.username}
+                                            </p>
+
+                                        </div>
+
+
+                                        {/* Status */}
+
+                                        <span
+                                            className={`font-sans text-xs px-3 py-1.5 rounded-full w-fit ${
+                                                request.status === "pending"
+                                                    ? "bg-yellow-50 text-yellow-700"
+                                                    : request.status === "approved"
+                                                    ? "bg-green-50 text-green-700"
+                                                    : request.status === "rejected"
+                                                    ? "bg-red-50 text-red-700"
+                                                    : request.status === "cancelled"
+                                                    ? "bg-gray-100 text-gray-600"
+                                                    : "bg-blue-50 text-blue-700"
+                                            }`}
+                                        >
+                                            {request.status}
+                                        </span>
+
+                                    </div>
+
+
+                                    {/* Request details */}
+
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6 pt-6 border-t border-gray-100">
+
+                                        <div>
+
+                                            <p className="font-sans text-xs text-gray-400">
+                                                RENTAL PERIOD
+                                            </p>
+
+                                            <p className="font-sans text-sm text-[#0b1b34] mt-1">
+                                                {new Date(
+                                                    request.rentalStartDate
+                                                ).toLocaleDateString()}
+                                                {" → "}
+                                                {new Date(
+                                                    request.rentalEndDate
+                                                ).toLocaleDateString()}
+                                            </p>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <p className="font-sans text-xs text-gray-400">
+                                                QUANTITY
+                                            </p>
+
+                                            <p className="font-sans text-sm text-[#0b1b34] mt-1">
+                                                {request.quantity}
+                                            </p>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <p className="font-sans text-xs text-gray-400">
+                                                TOTAL PRICE
+                                            </p>
+
+                                            <p className="font-sans text-sm text-[#0b1b34] mt-1">
+                                                ₹{request.totalPrice}
+                                            </p>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <p className="font-sans text-xs text-gray-400">
+                                                REQUESTED
+                                            </p>
+
+                                            <p className="font-sans text-sm text-[#0b1b34] mt-1">
+                                                {new Date(
+                                                    request.createdAt
+                                                ).toLocaleDateString()}
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            ))}
+
+                        </div>
+
+                    )}
+
+                </section>
+
+            </main>
+
+        </div>
+    );
+};
+
+
+export default RentalRequests;

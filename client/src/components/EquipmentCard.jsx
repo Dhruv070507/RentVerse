@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 const EquipmentCard = ({ equipment }) => {
 
     return (
-        <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+        <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition">
 
             {/* Equipment image */}
             <div className="h-56 bg-gray-100">

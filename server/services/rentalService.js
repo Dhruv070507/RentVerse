@@ -270,10 +270,27 @@ const completeExpiredRentalsService = async () => {
     return expiredRentals.length;
 };
 
+// Get Rental Requests
+const getRentalRequestsService = async (userId) => {
+
+    const rentals = await Rental.find({
+        owner: userId
+    })
+        .populate("equipment", "name")
+        .populate("renter", "username")
+        .select(
+            "equipment renter quantity rentalStartDate rentalEndDate totalPrice status createdAt"
+        )
+        .sort({ createdAt: -1 });
+
+    return rentals;
+};
+
 
 export {
     createRentalService,
     getMyRentalsService,
+    getRentalRequestsService,
     getRentalByIdService,
     updateRentalByIdService,
     cancleRentalService,
