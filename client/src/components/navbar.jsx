@@ -23,26 +23,26 @@ const Navbar = () => {
         {/* Navigation Links */}
         <div className="hidden md:flex items-center gap-8">
 
-          <a
-            href="#browse"
+          <Link
+            to="/"
             className="text-base text-gray-600 hover:text-black transition"
           >
-            Browse Equipments
-          </a>
+            Home
+          </Link>
 
-          <a
-            href="#how-it-works"
+          <Link
+            to="/my-rentals"
             className="text-base text-gray-600 hover:text-black transition"
           >
             How It Works
-          </a>
+          </Link>
 
-          <a
-            href="#about"
+          <Link
+            to="/payments"
             className="text-base text-gray-600 hover:text-black transition"
           >
-            About
-          </a>
+            Payments
+          </Link>
 
         </div>
 

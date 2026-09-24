@@ -4,6 +4,7 @@ import {
     getMyRentals,
     cancelRental
 } from "../../features/rental/rentalSlice";
+import { createPayment } from "../../features/payment/paymentSlice";
 import Navbar from "../../components/navbar";
 
 
@@ -31,6 +32,15 @@ const MyRentals = () => {
             return;
 
         dispatch(cancelRental(rentalId));
+    };
+
+    const handlePayment = (rentalId) => {
+        dispatch(
+            createPayment({
+                rentalId,
+                paymentMethod: "online"
+            })
+        );
     };
 
 
@@ -252,6 +262,18 @@ const MyRentals = () => {
                                                 Cancel Rental
                                             </button>
 
+                                            {rental.status === "approved" && (
+                                                <div className="mt-6 pt-5 border-t border-gray-100">
+
+                                                    <button
+                                                        onClick={() => handlePayment(rental._id)}
+                                                        className="font-sans text-sm px-5 py-2 rounded-full bg-[#0b1b34] text-white hover:bg-[#142944] transition"
+                                                    >
+                                                        Pay Now
+                                                    </button>
+
+                                                </div>
+                                            )}
                                         </div>
 
                                     )}

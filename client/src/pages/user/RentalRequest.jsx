@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getRentalRequests } from "../../features/rental/rentalSlice";
+import { getRentalRequests, updateRentalStatus } from "../../features/rental/rentalSlice";
 import Navbar from "../../components/navbar";
 
 
@@ -18,6 +18,16 @@ const RentalRequests = () => {
     useEffect(() => {
         dispatch(getRentalRequests());
     }, [dispatch]);
+
+
+    const handleUpdateStatus = (rentalId, status) => {
+        dispatch(
+            updateRentalStatus({
+                rentalId,
+                status
+            })
+        );
+    };
 
 
     if (loading) {
@@ -221,6 +231,41 @@ const RentalRequests = () => {
                                                     request.createdAt
                                                 ).toLocaleDateString()}
                                             </p>
+
+                                            {/* Approve / Reject */}
+
+                                            {request.status === "pending" && (
+
+                                                <div className="flex gap-3 mt-6 pt-5 border-t border-gray-100">
+
+                                                    <button
+                                                        onClick={() =>
+                                                            handleUpdateStatus(
+                                                                request._id,
+                                                                "approved"
+                                                            )
+                                                        }
+                                                        className="font-sans text-sm px-5 py-2 rounded-full bg-[#0b1b34] text-white hover:bg-[#142944] transition"
+                                                    >
+                                                        Approve
+                                                    </button>
+
+
+                                                    <button
+                                                        onClick={() =>
+                                                            handleUpdateStatus(
+                                                                request._id,
+                                                                "rejected"
+                                                            )
+                                                        }
+                                                        className="font-sans text-sm px-5 py-2 rounded-full border border-gray-300 text-[#0b1b34] hover:bg-gray-100 transition"
+                                                    >
+                                                        Reject
+                                                    </button>
+
+                                                </div>
+
+                                            )}
 
                                         </div>
 

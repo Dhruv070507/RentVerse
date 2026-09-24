@@ -119,6 +119,37 @@ export const getRentalRequests = createAsyncThunk(
 );
 
 
+// approving or rejecting a rental request
+
+export const updateRentalStatus = createAsyncThunk(
+    "rental/updateRentalStatus",
+    async ({ rentalId, status }, { rejectWithValue }) => {
+
+        try {
+
+            const response = await api.put(
+                `/rental/${rentalId}`,
+                { status }
+            );
+
+            return response.data.data;
+
+        } catch (error) {
+
+            console.log(
+                "Update rental status error:",
+                error.response?.data
+            );
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to update rental status"
+            );
+        }
+    }
+);
+
+
 const initialState = {
     rental: null,
     rentals: [],
@@ -219,7 +250,30 @@ const rentalSlice = createSlice({
         .addCase(getRentalRequests.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload;
-        });
+        })
+
+        // when rental status is being updated
+        .addCase(updateRentalStatus.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        // when rental status is successfully updated
+        .addCase(updateRentalStatus.fulfilled, (state, action) => {
+            state.loading = false;
+
+            state.rentalRequests = state.rentalRequests.map((request) =>
+                request._id === action.payload._id
+                    ? action.payload
+                    : request
+            );
+        })
+
+        // when there is an error updating rental status
+        .addCase(updateRentalStatus.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        }); 
     } 
     }
 );
