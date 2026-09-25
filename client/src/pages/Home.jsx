@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getMyRentals, getRentalRequests } from "../features/rental/rentalSlice";
 import Navbar from "../components/navbar";
+import { Link } from "react-router-dom";
 
 
 const Home = () => {
@@ -80,13 +81,19 @@ const Home = () => {
 
             <div className="flex justify-center gap-3 mt-9">
 
-              <button className="font-sans px-6 py-3 rounded-full bg-[#0b1b34] text-white text-sm hover:bg-[#142944] transition">
-                Browse Equipments
-              </button>
+                <Link
+                  to="/equipments"
+                  className="font-sans px-6 py-3 rounded-full bg-[#0b1b34] text-white text-sm hover:bg-[#142944] transition inline-block"
+              >
+                  Browse Equipments
+              </Link>
 
-              <button className="font-sans px-6 py-3 rounded-full bg-gray-200 text-[#0b1b34] text-sm hover:bg-gray-300 transition">
-                View Your Equipment
-              </button>
+              <Link
+                  to="/my-equipments"
+                  className="font-sans px-6 py-3 rounded-full bg-gray-200 text-[#0b1b34] text-sm hover:bg-gray-300 transition inline-block"
+              >
+                  View Your Equipment
+              </Link>
 
             </div>
 

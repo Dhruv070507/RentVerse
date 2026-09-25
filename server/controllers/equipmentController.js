@@ -5,6 +5,7 @@ import {
     addEquipmentService,
     getEquimentByIdService,
     getAllEqipmentsService,
+    getMyEquipmentsService,
     updateEquipmentService,
     deleteEquipmentService
 } from "../services/equipmentService.js";
@@ -74,6 +75,22 @@ const getAllEqipments = asyncHandler(async(req, res) => {
 });
 
 
+const getMyEquipments = asyncHandler(async (req, res) => {
+
+    const equipments = await getMyEquipmentsService(
+        req.user._id
+    );
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            equipments,
+            "Your equipments fetched successfully"
+        )
+    );
+});
+
+
 const updateEquipment = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
@@ -137,6 +154,7 @@ export {
     addEquipment,
     getEquimentById,
     getAllEqipments,
+    getMyEquipments,
     updateEquipment,
     deleteEquipment,
 };

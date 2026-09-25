@@ -95,6 +95,15 @@ const getAllEqipmentsService = async () => {
 };
 
 
+const getMyEquipmentsService = async (userId) => {
+    const equipments = await Equipment.find({
+        owner: userId
+    }).sort({ createdAt: -1 });
+
+    return equipments;
+};
+
+
 const updateEquipmentService = async (id, updateData, userId) => {
 
     const equipment = await Equipment.findById(id);
@@ -154,6 +163,7 @@ export {
     addEquipmentService,
     getEquimentByIdService,
     getAllEqipmentsService,
+    getMyEquipmentsService,
     updateEquipmentService,
     deleteEquipmentService
 };

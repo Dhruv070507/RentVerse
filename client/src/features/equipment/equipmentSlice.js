@@ -52,8 +52,94 @@ export const fetchEquipmentById = createAsyncThunk(
 );
 
 
+export const getMyEquipments = createAsyncThunk(
+    "equipment/getMyEquipments",
+    async (_, { rejectWithValue }) => {
+
+        try {
+
+            const response = await api.get(
+                "/equipments/my-equipments"
+            );
+
+            return response.data.data;
+
+        } catch (error) {
+
+            console.log(
+                "Get my equipments error:",
+                error.response?.data
+            );
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to fetch your equipments"
+            );
+        }
+    }
+);
+
+
+export const updateEquipment = createAsyncThunk(
+    "equipment/updateEquipment",
+    async ({ equipmentId, updateData }, { rejectWithValue }) => {
+
+        try {
+
+            const response = await api.put(
+                `/equipments/${equipmentId}`,
+                updateData
+            );
+
+            return response.data.data;
+
+        } catch (error) {
+
+            console.log(
+                "Update equipment error:",
+                error.response?.data
+            );
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to update equipment"
+            );
+        }
+    }
+);
+
+
+export const deleteEquipment = createAsyncThunk(
+    "equipment/deleteEquipment",
+    async (equipmentId, { rejectWithValue }) => {
+
+        try {
+
+            await api.delete(
+                `/equipments/${equipmentId}`
+            );
+
+            return equipmentId;
+
+        } catch (error) {
+
+            console.log(
+                "Delete equipment error:",
+                error.response?.data
+            );
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to delete equipment"
+            );
+        }
+    }
+);
+
+
 const initialState = {
     equipments: [],
+    myEquipments: [],
     selectedEquipment: null,
     loading: false,
     error: null
@@ -103,6 +189,65 @@ const equipmentSlice = createSlice({
 
             // when there is an error while fetching the equipment
             .addCase(fetchEquipmentById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(getMyEquipments.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+
+            .addCase(getMyEquipments.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myEquipments = action.payload;
+            })
+
+            .addCase(getMyEquipments.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(updateEquipment.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+
+            .addCase(updateEquipment.fulfilled, (state, action) => {
+                state.loading = false;
+
+                state.myEquipments = state.myEquipments.map((equipment) =>
+                    equipment._id === action.payload._id
+                        ? action.payload
+                        : equipment
+                );
+
+                state.selectedEquipment = action.payload;
+            })
+
+            .addCase(updateEquipment.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(deleteEquipment.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+
+            .addCase(deleteEquipment.fulfilled, (state, action) => {
+                state.loading = false;
+
+                state.myEquipments = state.myEquipments.filter(
+                    (equipment) => equipment._id !== action.payload
+                );
+
+                if (state.selectedEquipment?._id === action.payload) {
+                    state.selectedEquipment = null;
+                }
+            })
+
+            .addCase(deleteEquipment.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

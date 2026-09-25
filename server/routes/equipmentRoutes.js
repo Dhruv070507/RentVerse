@@ -4,6 +4,7 @@ import {
     addEquipment,
     getAllEqipments,
     getEquimentById,
+    getMyEquipments,
     updateEquipment,
     deleteEquipment
 } from "../controllers/equipmentController.js";
@@ -16,6 +17,8 @@ const router = Router();
 
 
 router.post("/add", authenticationMiddleware, upload.array("images", 5), addEquipment);
+router.get("/my-equipments",authenticationMiddleware, getMyEquipments);
+
 router.get("/:id", getEquimentById);
 router.get("/", getAllEqipments);
 router.put("/:id", authenticationMiddleware, updateEquipment);

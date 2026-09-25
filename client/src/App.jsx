@@ -10,6 +10,7 @@ import RentEquipment from "./pages/user/RentEquipment.jsx";
 import MyRentals from "./pages/user/MyRentals.jsx";
 import RentalRequests from "./pages/user/RentalRequest.jsx";
 import Payments from "./pages/user/payments";
+import MyEquipment from "./pages/user/MyEquipment.jsx";
 
 
 function App() {
@@ -37,6 +38,8 @@ function App() {
                     <Route path="/rental-requests" element={<RentalRequests />} />
 
                     <Route path="/payments" element={<Payments />} />
+
+                    <Route path="/my-equipments" element={<MyEquipment />} />
 
                 </Route>
 
