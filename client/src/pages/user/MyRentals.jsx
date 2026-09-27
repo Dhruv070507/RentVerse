@@ -6,11 +6,13 @@ import {
 } from "../../features/rental/rentalSlice";
 import { createPayment } from "../../features/payment/paymentSlice";
 import Navbar from "../../components/navbar";
+import { useNavigate } from "react-router-dom";
 
 
 const MyRentals = () => {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const { rentals, loading, error } = useSelector(
         (state) => state.rental
@@ -245,45 +247,41 @@ const MyRentals = () => {
                                     </div>
 
 
-                                    {/* Cancel rental */}
+                                    {/* Rental actions */}
 
-                                    {rental.status === "pending" && (
+                                    <div className="mt-6 pt-6 border-t border-gray-100 flex justify-end gap-4">
 
-                                        <div className="mt-6 pt-6 border-t border-gray-100 flex justify-end">
+                                        {rental.status === "pending" && (
 
                                             <button
                                                 onClick={() =>
-                                                    handleCancelRental(
-                                                        rental._id
-                                                    )
+                                                    handleCancelRental(rental._id)
                                                 }
-                                                className="font-sans text-sm text-red-600 hover:text-red-700 transition "
+                                                className="font-sans text-sm text-red-600 hover:text-red-700 transition"
                                             >
                                                 Cancel Rental
                                             </button>
 
-                                            {rental.status === "approved" && (
-                                                <div className="mt-6 pt-5 border-t border-gray-100">
+                                        )}
 
-                                                    <button
-                                                        onClick={() => handlePayment(rental._id)}
-                                                        className="font-sans text-sm px-5 py-2 rounded-full bg-[#0b1b34] text-white hover:bg-[#142944] transition"
-                                                    >
-                                                        Pay Now
-                                                    </button>
+                                        {rental.status === "approved" && (
 
-                                                </div>
-                                            )}
-                                        </div>
+                                            <button
+                                                onClick={() =>
+                                                    navigate(`/payment/${rental._id}`)
+                                                }
+                                                className="px-5 py-2 rounded-full bg-[#0b1b34] text-white text-sm hover:bg-[#142944] transition"
+                                            >
+                                                Pay Now
+                                            </button>
 
-                                    )}
+                                        )}
 
+                                    </div>
                                 </div>
-
                             ))}
-
                         </div>
-
+ 
                     )}
 
                 </section>

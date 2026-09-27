@@ -60,6 +60,33 @@ export const getMyRentals = createAsyncThunk(
     }
 );
 
+
+// getting a rental by its id
+
+export const getRentalById = createAsyncThunk(
+    "rental/getRentalById",
+    async (rentalId, { rejectWithValue }) => {
+
+        try {
+
+            const respose = await api.get(
+                `/rental/${rentalId}`
+            );
+            return respose.data.data;
+        } catch (error) {
+            console.log(
+                "Get rental by id error:",
+                error.response?.data
+            );
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to fetch rental"
+            );
+        }
+    }
+);
+
+
 // cancelling a rental request
 
 export const cancelRental = createAsyncThunk(
@@ -207,6 +234,23 @@ const rentalSlice = createSlice({
             state.error = action.payload;
         })
 
+        // when a rental is being fetched by its id
+        .addCase(getRentalById.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        // when the rental is successfully fetched by its id
+        .addCase(getRentalById.fulfilled, (state, action) => {
+            state.loading = false;
+            state.rental = action.payload;
+        })
+
+        // when there is an error while fetching the rental by its id
+        .addCase(getRentalById.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
 
         // when a rental is being cancelled
         .addCase(cancelRental.pending, (state) => {

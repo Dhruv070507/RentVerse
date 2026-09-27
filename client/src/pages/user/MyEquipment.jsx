@@ -1,11 +1,17 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getMyEquipments } from "../../features/equipment/equipmentSlice";
+import { useNavigate } from "react-router-dom";
+import {
+    getMyEquipments,
+    deleteEquipment
+} from "../../features/equipment/equipmentSlice";
 import Navbar from "../../components/navbar";
+
 
 const MyEquipment = () => {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const {
         myEquipments,
@@ -13,9 +19,24 @@ const MyEquipment = () => {
         error
     } = useSelector((state) => state.equipment);
 
+
     useEffect(() => {
         dispatch(getMyEquipments());
     }, [dispatch]);
+
+
+    const handleDelete = (equipmentId) => {
+
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this equipment?"
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        dispatch(deleteEquipment(equipmentId));
+    };
 
 
     if (loading) {
@@ -120,12 +141,14 @@ const MyEquipment = () => {
                                     <div className="flex gap-3 mt-6">
 
                                         <button
+                                            onClick={() => navigate(`/edit-equipment/${equipment._id}`)}
                                             className="flex-1 px-4 py-2 rounded-full bg-[#0b1b34] text-white text-sm hover:bg-[#142944] transition"
                                         >
                                             Edit
                                         </button>
 
                                         <button
+                                            onClick={() => handleDelete(equipment._id)}
                                             className="flex-1 px-4 py-2 rounded-full bg-gray-200 text-[#0b1b34] text-sm hover:bg-gray-300 transition"
                                         >
                                             Delete

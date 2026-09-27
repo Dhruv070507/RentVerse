@@ -11,6 +11,10 @@ import MyRentals from "./pages/user/MyRentals.jsx";
 import RentalRequests from "./pages/user/RentalRequest.jsx";
 import Payments from "./pages/user/payments";
 import MyEquipment from "./pages/user/MyEquipment.jsx";
+import EditEquipment from "./pages/user/EditEquipment";
+import Payment from "./pages/payment/payment.jsx";
+import PaymentSuccess from "./pages/payment/PaymentSuccess.jsx";
+import PaymentFailed from "./pages/payment/paymentFailed.jsx";
 
 
 function App() {
@@ -40,6 +44,14 @@ function App() {
                     <Route path="/payments" element={<Payments />} />
 
                     <Route path="/my-equipments" element={<MyEquipment />} />
+
+                    <Route path="/edit-equipment/:id" element={<EditEquipment />} />
+
+                    <Route path="/payment/success" element={<PaymentSuccess />} />
+
+                    <Route path="/payment/failure" element={<PaymentFailed />} />
+
+                    <Route path="/payment/:rentalId" element={<Payment />} />
 
                 </Route>
 
