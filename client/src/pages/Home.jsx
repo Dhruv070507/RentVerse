@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getMyRentals, getRentalRequests } from "../features/rental/rentalSlice";
-import Navbar from "../components/navbar";
+import Navbar from "../components/navbar.jsx";
 import { Link } from "react-router-dom";
 
 

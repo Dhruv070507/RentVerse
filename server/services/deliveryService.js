@@ -101,19 +101,25 @@ const getMyDeliveriesService = async(userId) => {
     // or assigned directly to the user as a deliverAgent
     const deliveries = await Delivery.find({
         $or: [
-            {renter: {$in: rentalIds}},
-            {deliveryAgent: userId}
+            { rental: { $in: rentalIds } },
+            { deliveryAgent: userId },
+            { returnAgent: userId }
         ]
-    }).populate({
-    path: "rental",
-    select: "renter owner equipment rentalStartDate rentalEndDate status",
-    populate: {
-        path: "equipment",
-        select: "name images pricePerDay"
-    }
+    })
+    .populate({
+        path: "rental",
+        select: "renter owner equipment rentalStartDate rentalEndDate status",
+        populate: {
+            path: "equipment",
+            select: "name images pricePerDay"
+        }
     })
     .populate(
         "deliveryAgent",
+        "username profileImage"
+    )
+    .populate(
+        "returnAgent",
         "username profileImage"
     )
     .sort({ createdAt: -1 });
@@ -178,7 +184,7 @@ const startDeliveryService = async(deliveryId, deliveryAgentId) => {
         throw new ApiError(403, "You are not assigned to this delivery");
 
 
-    if(delivery.deliveryStatus !== "pending")
+    if(delivery.deliveryStatus !== "Pending")
         throw new ApiError(400, "Delivery cannot be started in this state");
 
     delivery.deliveryStatus = "out_for_delivery";

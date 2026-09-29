@@ -36,7 +36,15 @@ const Login = () => {
         })
       );
 
-      navigate("/");
+      // Redirect the user based on their role
+      if (user.role === "delivery_agent") {
+        navigate("/agent/dashboard");
+      } else if (user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -49,7 +57,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-        <Navbar />
+      <Navbar />
 
       {/* Main */}
       <main className="flex-1 flex items-center justify-center px-6 pb-20">

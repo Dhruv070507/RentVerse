@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { fetchEquipments } from "../../features/equipment/equipmentSlice";
 import EquipmentCard from "../../components/EquipmentCard";
-import Navbar from "../../components/navbar";
+import Navbar from "../../components/navbar.jsx";
 
 
 const Equipment = () => {

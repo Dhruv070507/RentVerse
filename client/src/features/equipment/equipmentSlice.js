@@ -174,7 +174,7 @@ const equipmentSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-
+            
             // when the request for a single equipment is being sent
             .addCase(fetchEquipmentById.pending, (state) => {
                 state.loading = true;

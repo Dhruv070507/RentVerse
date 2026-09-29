@@ -15,6 +15,9 @@ import EditEquipment from "./pages/user/EditEquipment";
 import Payment from "./pages/payment/payment.jsx";
 import PaymentSuccess from "./pages/payment/PaymentSuccess.jsx";
 import PaymentFailed from "./pages/payment/paymentFailed.jsx";
+import AgentDashboard from "./pages/agent/agentDashboard.jsx";
+import DeliveryDetails from "./pages/agent/deliveryDetails.jsx";
+import DeliveryHistory from "./pages/agent/deliveryHistory.jsx"
 
 
 function App() {
@@ -26,8 +29,8 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
 
-                {/* Protected Routes */}
-                <Route element={<ProtectedRoute />}>
+                {/* Normal User Protected Routes */}
+                <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
 
                     <Route path="/dashboard" element={<UserDashboard />} />
 
@@ -52,6 +55,17 @@ function App() {
                     <Route path="/payment/failure" element={<PaymentFailed />} />
 
                     <Route path="/payment/:rentalId" element={<Payment />} />
+
+                </Route>
+
+                {/* Delivery Agent Routes */}
+                <Route element={<ProtectedRoute allowedRoles={["delivery_agent"]} />}>
+
+                    <Route path="/agent/dashboard" element={<AgentDashboard />} />
+
+                    <Route path="/agent/delivery/:id" element={<DeliveryDetails />} />
+
+                    <Route path="/agent/delivery/history" element={<DeliveryHistory />} />
 
                 </Route>
 

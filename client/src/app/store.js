@@ -6,6 +6,7 @@ import authReducer from "../features/auth/authSlice";
 import equipmentReducer from "../features/equipment/equipmentSlice"
 import rentalReducer from "../features/rental/rentalSlice"
 import paymentReducer from "../features/payment/paymentSlice"
+import deliveryReducer from "../features/delivery/deliverySlice"
 
 
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
         auth: authReducer,
         equipment: equipmentReducer,
         rental: rentalReducer,
-        payment: paymentReducer
+        payment: paymentReducer,
+        delivery: deliveryReducer
     }
 });
