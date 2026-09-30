@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     fetchEquipmentById,
     updateEquipment
-} from "../../features/equipment/equipmentSlice";
+} from "../../features/equipmentSlice";
 
 import Navbar from "../../components/navbar";
 

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     getMyPayments,
     updatePaymentStatus
-} from "../../features/payment/paymentSlice";
+} from "../../features/paymentSlice";
 import Navbar from "../../components/navbar";
 
 const Payments = () => {

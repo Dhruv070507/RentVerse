@@ -11,6 +11,7 @@ import paymentRouter from "./routes/paymentRoutes.js";
 import notificationRouter from "./routes/notificationRoutes.js";
 import reviewRouter from "./routes/reviewRoutes.js";
 import deliveryRouter from "./routes/deliveryRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js"
 
 import rentalCompletionJob from "./jobs/rentalCompletionJob.js";
 
@@ -43,6 +44,7 @@ app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1/notifications", notificationRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/deliveries", deliveryRouter);
+app.use("/api/v1/admin", adminRoutes);
 
 
 // ==================== SERVER ====================

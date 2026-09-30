@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { createRental } from "../../features/rental/rentalSlice";
+import { createRental } from "../../features/rentalSlice";
 import Navbar from "../../components/navbar";
 
 

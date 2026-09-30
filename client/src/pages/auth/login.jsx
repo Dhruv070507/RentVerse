@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import { loginSuccess } from "../../features/auth/authSlice";
+import { loginSuccess } from "../../features/authSlice";
 import Navbar from "../../components/Navbar.jsx";
 
 const Login = () => {

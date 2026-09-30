@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../../services/api";
+import api from "../services/api";
 
 // ===============================
 // GET MY DELIVERIES
@@ -14,6 +14,27 @@ export const getMyDeliveries = createAsyncThunk(
         } catch (error) {
             return rejectWithValue(
                 error.response?.data?.message || "Failed to fetch deliveries"
+            );
+        }
+    }
+);
+
+
+// ===============================
+// GET ALL DELIVERIES - ADMIN
+// ===============================
+
+export const getAllDeliveries = createAsyncThunk(
+    "delivery/getAllDeliveries",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get("/deliveries/admin");
+
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to fetch all deliveries"
             );
         }
     }
@@ -302,6 +323,24 @@ const deliverySlice = createSlice({
                 state.error = action.payload;
             })
 
+            // ===============================
+            // GET ALL DELIVERIES - ADMIN
+            // ===============================
+
+            .addCase(getAllDeliveries.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+
+            .addCase(getAllDeliveries.fulfilled, (state, action) => {
+                state.loading = false;
+                state.deliveries = action.payload;
+            })
+
+            .addCase(getAllDeliveries.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
 
             // ===============================
             // GET DELIVERY BY ID

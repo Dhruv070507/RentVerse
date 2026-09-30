@@ -2,11 +2,12 @@
     application is stored */
 
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../features/auth/authSlice";
-import equipmentReducer from "../features/equipment/equipmentSlice"
-import rentalReducer from "../features/rental/rentalSlice"
-import paymentReducer from "../features/payment/paymentSlice"
-import deliveryReducer from "../features/delivery/deliverySlice"
+import authReducer from "../features/authSlice";
+import equipmentReducer from "../features/equipmentSlice"
+import rentalReducer from "../features/rentalSlice"
+import paymentReducer from "../features/paymentSlice"
+import deliveryReducer from "../features/deliverySlice"
+import adminReducer from "../features/adminSlice"
 
 
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
         equipment: equipmentReducer,
         rental: rentalReducer,
         payment: paymentReducer,
-        delivery: deliveryReducer
+        delivery: deliveryReducer,
+        admin: adminReducer,
     }
 });

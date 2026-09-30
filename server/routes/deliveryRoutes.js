@@ -3,6 +3,7 @@ import {
     createDelivery,
     getDeliveryById,
     getMyDeliveries,
+    getAllDeliveries,
     assignDeliveryAgent,
     startDelivery,
     generateDeliveryOtp,
@@ -21,6 +22,8 @@ const router = Router();
 
 
 router.get("/", authenticationMiddleware, getMyDeliveries);
+
+router.get("/admin", authenticationMiddleware, authorizationMiddleware("admin"), getAllDeliveries);
 
 router.get("/:id", authenticationMiddleware, getDeliveryById);
 

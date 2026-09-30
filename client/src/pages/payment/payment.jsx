@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
     getRentalById
-} from "../../features/rental/rentalSlice";
+} from "../../features/rentalSlice";
 
 import {
     createPayment
-} from "../../features/payment/paymentSlice";
+} from "../../features/paymentSlice";
 
 import Navbar from "../../components/navbar";
 

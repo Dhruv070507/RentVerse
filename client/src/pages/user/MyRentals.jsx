@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     getMyRentals,
     cancelRental
-} from "../../features/rental/rentalSlice";
-import { createPayment } from "../../features/payment/paymentSlice";
+} from "../../features/rentalSlice";
+import { createPayment } from "../../features/paymentSlice";
 import Navbar from "../../components/navbar";
 import { useNavigate } from "react-router-dom";
 

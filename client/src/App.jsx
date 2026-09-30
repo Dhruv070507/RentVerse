@@ -17,7 +17,9 @@ import PaymentSuccess from "./pages/payment/PaymentSuccess.jsx";
 import PaymentFailed from "./pages/payment/paymentFailed.jsx";
 import AgentDashboard from "./pages/agent/agentDashboard.jsx";
 import DeliveryDetails from "./pages/agent/deliveryDetails.jsx";
-import DeliveryHistory from "./pages/agent/deliveryHistory.jsx"
+import DeliveryHistory from "./pages/agent/deliveryHistory.jsx";
+import AdminDashboard from "./pages/admin/adminDashboard.jsx";
+import AdminUsers from "./pages/admin/adminUsers.jsx";
 
 
 function App() {
@@ -66,6 +68,16 @@ function App() {
                     <Route path="/agent/delivery/:id" element={<DeliveryDetails />} />
 
                     <Route path="/agent/delivery/history" element={<DeliveryHistory />} />
+
+                </Route>
+
+
+                {/* admin Routes */}
+                <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+
+                    <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+
+                    <Route path="/admin/users" element={<AdminUsers/>} />   
 
                 </Route>
 

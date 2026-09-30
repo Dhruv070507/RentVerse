@@ -4,6 +4,7 @@ import {
     createDeliveryService,
     getDeliveryByIdService,
     getMyDeliveriesService,
+    getAllDeliveriesService,
     assignDeliveryAgentService,
     startDeliveryService,
     generateDeliveryOtpService,
@@ -64,6 +65,19 @@ const getMyDeliveries = asyncHandler(async (req, res) => {
     )
 });
 
+
+const getAllDeliveries = asyncHandler(async (req, res) => {
+
+    const deliveries = await getAllDeliveriesService();
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            deliveries,
+            "All deliveries fetched successfully"
+        )
+    );
+});
 
 
 const assignDeliveryAgent = asyncHandler(async (req, res) =>{
@@ -228,6 +242,7 @@ export {
     createDelivery,
     getDeliveryById,
     getMyDeliveries,
+    getAllDeliveries,
     assignDeliveryAgent,
     startDelivery,
     generateDeliveryOtp,

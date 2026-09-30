@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getMyDeliveries } from "../../features/delivery/deliverySlice";
+import { getMyDeliveries } from "../../features/deliverySlice";
 import AgentNavbar from "../../components/agentNavbar"
 
 const AgentDashboard = () => {

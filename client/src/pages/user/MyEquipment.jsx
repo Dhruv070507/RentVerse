@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
     getMyEquipments,
     deleteEquipment
-} from "../../features/equipment/equipmentSlice";
+} from "../../features/equipmentSlice";
 import Navbar from "../../components/navbar";
 
 

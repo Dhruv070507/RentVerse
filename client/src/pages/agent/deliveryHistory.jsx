@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getMyDeliveries } from "../../features/delivery/deliverySlice";
+import { getMyDeliveries } from "../../features/deliverySlice";
 
 const DeliveryHistory = () => {
     const dispatch = useDispatch();

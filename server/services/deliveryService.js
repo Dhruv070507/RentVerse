@@ -128,6 +128,23 @@ const getMyDeliveriesService = async(userId) => {
 } 
 
 
+const getAllDeliveriesService = async () => {
+    const deliveries = await Delivery.find()
+        .populate({
+            path: "rental",
+            populate: {
+                path: "renter",
+                select: "name email"
+            }
+        })
+        .populate("deliveryAgent", "name email")
+        .populate("returnAgent", "name email")
+        .sort({ createdAt: -1 });
+
+    return deliveries;
+};
+
+
 const assignDeliveryAgentService = async(deliveryId, agentId) => {
 
     const delivery = await Delivery.findById(deliveryId);
@@ -495,6 +512,7 @@ export {
     createDeliveryService,
     getDeliveryByIdService,
     getMyDeliveriesService,
+    getAllDeliveriesService,
     assignDeliveryAgentService,
     startDeliveryService,
     generateDeliveryOtpService,

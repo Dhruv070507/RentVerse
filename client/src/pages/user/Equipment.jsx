@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchEquipments } from "../../features/equipment/equipmentSlice";
+import { fetchEquipments } from "../../features/equipmentSlice";
 import EquipmentCard from "../../components/EquipmentCard";
 import Navbar from "../../components/navbar.jsx";
 

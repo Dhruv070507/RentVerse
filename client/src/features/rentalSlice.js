@@ -1,7 +1,7 @@
 // for storing the rental data which comes from the backend
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../../services/api";
+import api from "../services/api";
 
 
 // creating a new rental request

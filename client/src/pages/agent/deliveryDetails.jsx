@@ -11,7 +11,7 @@ import {
     generateReturnOtp,
     completeReturn,
     clearOtp,
-} from "../../features/delivery/deliverySlice";
+} from "../../features/deliverySlice";
 
 const DeliveryDetails = () => {
     const { id } = useParams();
