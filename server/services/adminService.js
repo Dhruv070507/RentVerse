@@ -100,7 +100,113 @@ const getAllUsersService = async () => {
 };
 
 
+const getUnassignedDeliveriesService = async () => {
+
+    const deliveries = await Delivery.find({
+        deliveryAgent: null,
+        deliveryStatus: "pending"
+    })
+        .populate({
+            path: "rental",
+            populate: [
+                {
+                    path: "renter",
+                    select: "username email"
+                },
+                {
+                    path: "equipment",
+                    select: "name"
+                }
+            ]
+        })
+        .sort({ createdAt: -1 });
+
+    return deliveries;
+};
+
+
+const getDeliveryAgentsService = async () => {
+
+    const agents = await User.find({
+        role: "delivery_agent"
+    })
+        .select("_id username email address")
+        .sort({ username: 1 });
+
+    return agents;
+};
+
+
+const unassignDeliveryAgentService = async (deliveryId) => {
+
+    const delivery = await Delivery.findById(deliveryId);
+
+    if (!delivery) {
+        throw new ApiError(
+            404,
+            "Delivery doesn't exist"
+        );
+    }
+
+    delivery.deliveryAgent = null;
+
+    await delivery.save();
+
+    return delivery;
+};
+
+
+const getAllRentalsService = async () => {
+    const rentals = await Rental.find()
+        .populate("equipment")
+        .populate("renter")
+        .sort({ createdAt: -1 });
+
+    return rentals;
+};
+
+
+const getAllDeliveriesService = async () => {
+
+    const deliveries = await Delivery.find()
+        .populate({
+            path: "rental",
+            populate: {
+                path: "renter",
+                select: "name email"
+            }
+        })
+        .populate({
+            path: "deliveryAgent",
+            select: "name email"
+        })
+        .populate({
+            path: "returnAgent",
+            select: "name email"
+        })
+        .sort({ createdAt: -1 });
+
+    return deliveries;
+};
+
+
+const getAllEquipmentService = async () => {
+
+    const equipment = await Equipment.find()
+        .populate("owner", "name email")
+        .sort({ createdAt: -1 });
+
+    return equipment;
+};
+
+
 export {
     getAdminDashboardService,
-    getAllUsersService
+    getAllUsersService,
+    getUnassignedDeliveriesService,
+    getDeliveryAgentsService,
+    unassignDeliveryAgentService,
+    getAllRentalsService,
+    getAllDeliveriesService,
+    getAllEquipmentService,
 };

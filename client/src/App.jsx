@@ -20,6 +20,9 @@ import DeliveryDetails from "./pages/agent/deliveryDetails.jsx";
 import DeliveryHistory from "./pages/agent/deliveryHistory.jsx";
 import AdminDashboard from "./pages/admin/adminDashboard.jsx";
 import AdminUsers from "./pages/admin/adminUsers.jsx";
+import AdminRentals from "./pages/admin/adminRentals.jsx";
+import AdminDeliveries from "./pages/admin/adminDeliveries.jsx";
+import AdminEquipment from "./pages/admin/adminEquipment.jsx";
 
 
 function App() {
@@ -77,8 +80,13 @@ function App() {
 
                     <Route path="/admin/dashboard" element={<AdminDashboard/>} />
 
-                    <Route path="/admin/users" element={<AdminUsers/>} />   
+                    <Route path="/admin/users" element={<AdminUsers/>} /> 
 
+                    <Route path="/admin/rentals" element={<AdminRentals/>} />  
+
+                    <Route path="/admin/deliveries" element={<AdminDeliveries/>} />
+
+                    <Route path="/admin/equipment" element={<AdminEquipment/>} />
                 </Route>
 
             </Routes>
