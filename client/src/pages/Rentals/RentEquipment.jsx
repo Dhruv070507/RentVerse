@@ -47,7 +47,7 @@ const RentEquipment = () => {
 
         if (createRental.fulfilled.match(result)) {
 
-            navigate("/dashboard");
+            navigate("/");
 
         }
 

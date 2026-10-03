@@ -3,15 +3,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/auth/login.jsx";
 import Home from "./pages/Home.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
-import UserDashboard from "./pages/user/Dashboard.jsx";
-import Equipments from "./pages/user/Equipment.jsx";
-import EquipmentDetails from "./pages/user/EquipmentDetails.jsx";
-import RentEquipment from "./pages/user/RentEquipment.jsx";
-import MyRentals from "./pages/user/MyRentals.jsx";
-import RentalRequests from "./pages/user/RentalRequest.jsx";
-import Payments from "./pages/user/payments";
-import MyEquipment from "./pages/user/MyEquipment.jsx";
-import EditEquipment from "./pages/user/EditEquipment";
+import AddEquipment from "./pages/Equipment/addEquipment.jsx";
+import Equipments from "./pages/Equipment/Equipment.jsx";
+import EquipmentDetails from "./pages/Equipment/EquipmentDetails.jsx";
+import RentEquipment from "./pages/Rentals/RentEquipment.jsx";
+import MyRentals from "./pages/Rentals/MyRentals.jsx";
+import RentalRequests from "./pages/Rentals/RentalRequest.jsx";
+import Payments from "./pages/payment/payments.jsx";
+import MyEquipment from "./pages/Equipment/MyEquipment.jsx";
+import EditEquipment from "./pages/Equipment/EditEquipment.jsx";
 import Payment from "./pages/payment/payment.jsx";
 import PaymentSuccess from "./pages/payment/PaymentSuccess.jsx";
 import PaymentFailed from "./pages/payment/paymentFailed.jsx";
@@ -37,7 +37,7 @@ function App() {
                 {/* Normal User Protected Routes */}
                 <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
 
-                    <Route path="/dashboard" element={<UserDashboard />} />
+                    <Route path="/add-equipment" element={<AddEquipment />} />
 
                     <Route path="/equipments" element={<Equipments />} />
 

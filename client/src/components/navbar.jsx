@@ -64,7 +64,8 @@ const Navbar = () => {
             Login
           </Link>
 
-          <button
+          <Link
+            to="/my-equipments"
             className="
               px-5 py-2.5
               rounded-full
@@ -75,8 +76,8 @@ const Navbar = () => {
               transition
             "
           >
-            List Equipment
-          </button>
+            My Equipment
+          </Link>
 
         </div>
 

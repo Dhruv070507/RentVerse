@@ -1,6 +1,7 @@
 import ApiError from "../utils/ApiError.js";
 import Review from "../models/reviewModel.js";
 import Rental from "../models/rentalModel.js";
+import Equipment from "../models/equipmentModel.js";
 
 const addReviewService = async (reviewData, userId) => {
 
@@ -101,9 +102,9 @@ const updateReviewByIdService = async(reviewId, reviewData, userId) =>{
     const review = await Review.findById(reviewId);
 
     if(!review)
-        throw new ApiErrorI(404, "Review doesn't exist");
+        throw new ApiError(404, "Review doesn't exist");
 
-    if(!review.rental.equals(userId))
+    if(!review.reviewer.equals(userId))
         throw new ApiError(403, "You are not authorized to update this review");
 
     
@@ -138,20 +139,39 @@ const updateReviewByIdService = async(reviewId, reviewData, userId) =>{
 };
 
 
-const deleteReviewByIdService = async(reviewId, userId) =>{
-    
+const deleteReviewByIdService = async (reviewId, userId) => {
+
     const review = await Review.findById(reviewId);
 
-    if(!review)
+    if (!review)
         throw new ApiError(404, "Review doesn't exist");
 
-    if(!review.reviewer.equals(userId))
+    if (!review.reviewer.equals(userId))
         throw new ApiError(403, "You are not authorized to delete this review");
 
     await Review.findByIdAndDelete(reviewId);
 
+    const reviews = await Review.find({
+        equipment: review.equipment
+    });
+
+    const reviewCount = reviews.length;
+
+    const averageRating =
+        reviewCount > 0
+            ? reviews.reduce((sum, item) => sum + item.rating, 0) / reviewCount
+            : 0;
+
+    await Equipment.findByIdAndUpdate(
+        review.equipment,
+        {
+            averageRating,
+            reviewCount
+        }
+    );
+
     return;
-}
+};
 
 
 export {

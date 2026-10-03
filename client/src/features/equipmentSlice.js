@@ -5,6 +5,29 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import api from '../services/api';
 
 
+export const addEquipment = createAsyncThunk(
+    "equipment/addEquipment",
+    async (equipmentData, { rejectWithValue }) => {
+
+        try {
+            
+            const response = await api.post("/equipments/add", equipmentData);
+
+            return response.data.data;
+
+        } catch (error) {
+             console.log("ADD EQUIPMENT ERROR:", error.response?.data);
+            console.log("STATUS:", error.response?.status);
+            console.log("FULL ERROR:", error);
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to add equipment"
+            );
+        }
+    }
+)
+
+
 // fetching all equipments from the backend
 
 export const fetchEquipments = createAsyncThunk(
@@ -156,6 +179,24 @@ const equipmentSlice = createSlice({
     extraReducers: (builder) => {
 
         builder
+
+            // when the request for equipments is being sent
+            .addCase(addEquipment.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+
+            // when the equipment is successfully added
+            .addCase(addEquipment.fulfilled, (state, action) => {
+                state.loading = false;
+                state.equipments.push(action.payload);
+            })
+
+            // when there is an error while adding equipment
+            .addCase(addEquipment.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
 
             // when the request is being sent
             .addCase(fetchEquipments.pending, (state) => {
