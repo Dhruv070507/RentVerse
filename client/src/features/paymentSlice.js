@@ -115,7 +115,14 @@ const paymentSlice = createSlice({
 
     initialState,
 
-    reducers: {},
+    reducers: {
+        clearPaymentState: (state) => {
+            state.payment = null;
+            state.payments = [];
+            state.loading = false;
+            state.error = null;
+        }
+    },
 
     extraReducers: (builder) => {
 
@@ -199,5 +206,9 @@ const paymentSlice = createSlice({
     }
 });
 
+
+export const { 
+    clearPaymentState 
+} = paymentSlice.actions;
 
 export default paymentSlice.reducer;

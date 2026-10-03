@@ -74,7 +74,8 @@ const getEquimentByIdService = async (id) => {
     // checking if the id is a valid mongoose object id
     // population is used to get the owner details along with the equipment details for mybe to show in the frontend
     const equipment = await Equipment.findById(id)
-        .populate("owner", "username email profileImage");
+        .populate("owner", "username email profileImage")
+        .populate("category", "name description");
 
     if(!equipment){
         throw new ApiError(404, "Equipment not found");
@@ -89,6 +90,7 @@ const getAllEqipmentsService = async () => {
     // getting all the equipments and populating the owner detials for each eq and selecting only the req fields to be sent in the response
     const equipments = await Equipment.find()
         .populate("owner", "username email profileImage")
+        .populate("category", "name description")
         .select("-refreshToken -accessToken -createdAt -updatedAt -__v");
 
     return equipments;
@@ -98,7 +100,9 @@ const getAllEqipmentsService = async () => {
 const getMyEquipmentsService = async (userId) => {
     const equipments = await Equipment.find({
         owner: userId
-    }).sort({ createdAt: -1 });
+    })
+    .populate("category", "name description")
+    .sort({ createdAt: -1 });
 
     return equipments;
 };

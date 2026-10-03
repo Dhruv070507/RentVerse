@@ -13,6 +13,7 @@ import {
     useNavigate
 } from "react-router-dom";
 
+import Footer from "../../components/Footer.jsx";
 import {
     getAllEquipment
 } from "../../features/adminSlice";
@@ -1074,7 +1075,10 @@ const AdminEquipment = () => {
 
             </div>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

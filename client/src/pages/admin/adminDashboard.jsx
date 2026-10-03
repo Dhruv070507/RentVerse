@@ -7,6 +7,8 @@ import {
     assignDeliveryAgent,
 } from "../../features/adminSlice";
 import { useNavigate } from "react-router-dom";
+import AdminNavbar from "../../components/adminNavbar.jsx";
+import Footer from "../../components/Footer.jsx";
 
 const AdminDashboard = () => {
     const dispatch = useDispatch();
@@ -294,6 +296,8 @@ const AdminDashboard = () => {
 
     return (
         <div className="min-h-screen bg-[#f8fafc] relative overflow-hidden">
+
+            <AdminNavbar />
 
             {/* Background */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -987,7 +991,10 @@ const AdminDashboard = () => {
 </section>
 
             </main>
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

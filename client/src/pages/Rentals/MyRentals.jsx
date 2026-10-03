@@ -7,6 +7,7 @@ import {
 import { createPayment } from "../../features/paymentSlice";
 import Navbar from "../../components/navbar";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../components/Footer.jsx";
 
 
 const MyRentals = () => {
@@ -288,7 +289,10 @@ const MyRentals = () => {
 
             </main>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

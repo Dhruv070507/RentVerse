@@ -8,6 +8,7 @@ import {
 } from "../../features/equipmentSlice";
 
 import Navbar from "../../components/navbar";
+import Footer from "../../components/Footer.jsx";
 
 
 const EditEquipment = () => {
@@ -292,7 +293,10 @@ const EditEquipment = () => {
 
             </div>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

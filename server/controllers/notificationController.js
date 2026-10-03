@@ -5,7 +5,21 @@ import {
     createNotificationService,
     getMyNotificationsService,
     markNotificationAsReadServices,
+    markAllNotificationsAsReadService,
 } from "../services/notificationService.js"
+
+
+const createNotification = asyncHandler(async (req, res) => {
+    const notification = await createNotificationService(req.body);
+
+    return res.status(201).json(
+        new ApiResponse(
+            201,
+            notification,
+            "Notification created successfully"
+        )
+    );
+})
 
 
 const getMyNotification = asyncHandler(async (req, res) =>{
@@ -41,7 +55,23 @@ const markNotificationAsRead = asyncHandler(async (req, res) =>{
 })
 
 
+const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
+
+    await markAllNotificationsAsReadService(req.user._id);
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            null,
+            "All notifications marked as read successfully"
+        )
+    );
+});
+
+
 export {
+    createNotification,
     markNotificationAsRead,
     getMyNotification,
+    markAllNotificationsAsRead,
 }

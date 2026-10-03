@@ -5,6 +5,7 @@ import {
     updatePaymentStatus
 } from "../../features/paymentSlice";
 import Navbar from "../../components/navbar";
+import Footer from "../../components/Footer.jsx";
 
 const Payments = () => {
 
@@ -210,7 +211,10 @@ const Payments = () => {
 
             </main>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

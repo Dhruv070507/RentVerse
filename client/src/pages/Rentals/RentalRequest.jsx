@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getRentalRequests, updateRentalStatus } from "../../features/rentalSlice";
 import Navbar from "../../components/navbar";
+import Footer from "../../components/Footer.jsx";
 
 
 const RentalRequests = () => {
@@ -283,7 +284,10 @@ const RentalRequests = () => {
 
             </main>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

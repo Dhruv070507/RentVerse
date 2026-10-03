@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+import Footer from "../../components/Footer.jsx";
 import {
     getDeliveryById,
     startDelivery,
@@ -622,7 +623,10 @@ const DeliveryDetails = () => {
 
             </main>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

@@ -35,6 +35,10 @@ const createRentalService = async (
         throw new ApiError(400, "Not enough equipment available for rent");
     }
 
+    if(equipment.owner.equals(userId)){
+        throw new ApiError(400, "You cannot rent your own equipment");
+    }
+
     // checking if the startDate and the endDate are valid
     const startDate = new Date(rentalStartDate);
     const endDate = new Date(rentalEndDate);

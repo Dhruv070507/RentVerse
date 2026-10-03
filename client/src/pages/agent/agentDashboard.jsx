@@ -2,7 +2,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { getMyDeliveries } from "../../features/deliverySlice";
-import AgentNavbar from "../../components/agentNavbar";
+import AgentNavbar from "../../components/agentNavbar.jsx";
+import Footer from "../../components/Footer.jsx";
+
 
 const ACTIVE_STATUSES = ["out_for_delivery", "out_for_return"];
 
@@ -739,7 +741,10 @@ const AgentDashboard = () => {
 
             </main>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { getAllDeliveries } from "../../features/adminSlice.js";
+import Footer from "../../components/Footer.jsx";
 
 
 /* =========================================================
@@ -1111,7 +1112,10 @@ const AdminDeliveries = () => {
 
             </div>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

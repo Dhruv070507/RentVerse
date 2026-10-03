@@ -9,6 +9,8 @@ import paymentReducer from "../features/paymentSlice"
 import deliveryReducer from "../features/deliverySlice"
 import adminReducer from "../features/adminSlice"
 import reviewReducer from "../features/reviewSlice"
+import notificationReducer from "../features/notificationSlice"
+import categoryReducer from "../features/categorySlice"
 
 
 export const store = configureStore({
@@ -20,5 +22,7 @@ export const store = configureStore({
         delivery: deliveryReducer,
         admin: adminReducer,
         review: reviewReducer,
+        notification: notificationReducer,
+        category: categoryReducer,
     }
 });

@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar";
+import Footer from "../../components/Footer.jsx";
 
 const PaymentFailed = () => {
 
@@ -53,7 +54,10 @@ const PaymentFailed = () => {
 
             </div>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

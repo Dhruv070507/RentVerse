@@ -11,6 +11,7 @@ import {
 } from "../../features/paymentSlice";
 
 import Navbar from "../../components/navbar";
+import Footer from "../../components/Footer.jsx";
 
 
 const Payment = () => {
@@ -306,7 +307,10 @@ const Payment = () => {
 
             </div>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

@@ -298,6 +298,14 @@ const deliverySlice = createSlice({
         clearOtp: (state) => {
             state.otp = null;
         },
+
+        clearDeliveryState: (state) => {
+            state.deliveries = [];
+            state.selectedDelivery = null;
+            state.loading = false;
+            state.error = null;
+            state.otp = null;
+        }
     },
 
     extraReducers: (builder) => {
@@ -522,6 +530,7 @@ export const {
     clearDeliveryError,
     clearSelectedDelivery,
     clearOtp,
+    clearDeliveryState
 } = deliverySlice.actions;
 
 export default deliverySlice.reducer;

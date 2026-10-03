@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers } from "../../features/adminSlice";
+import Footer from "../../components/Footer.jsx";
 
 const AdminUsers = () => {
     const dispatch = useDispatch();
@@ -719,11 +720,13 @@ const AdminUsers = () => {
 
             </main>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 
 
 export default AdminUsers;
-
 

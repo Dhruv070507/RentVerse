@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getAllRentals } from "../../features/adminSlice";
+import Footer from "../../components/Footer.jsx";
 
 
 const statusStyles = {
@@ -827,7 +828,10 @@ const AdminRentals = () => {
 
             </div>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

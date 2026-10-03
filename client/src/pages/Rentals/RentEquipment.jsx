@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { createRental } from "../../features/rentalSlice";
 import Navbar from "../../components/navbar";
+import Footer from "../../components/Footer.jsx";
 
 
 const RentEquipment = () => {
@@ -190,7 +191,10 @@ const RentEquipment = () => {
 
             </main>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

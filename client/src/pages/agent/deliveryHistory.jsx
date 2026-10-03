@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getMyDeliveries } from "../../features/deliverySlice";
+import Footer from "../../components/Footer.jsx";
 
 const DeliveryHistory = () => {
     const dispatch = useDispatch();
@@ -349,7 +350,10 @@ const DeliveryHistory = () => {
 
             </main>
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

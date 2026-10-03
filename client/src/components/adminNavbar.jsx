@@ -3,17 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../features/authSlice";
 
-const Navbar = () => {
+const AdminNavbar = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { notifications } = useSelector(
     (state) => state.notification
-  );
-
-  const { isAuthenticated } = useSelector(
-    (state) => state.auth
   );
 
   const unreadCount = notifications.filter(
@@ -30,7 +26,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between font-semibold">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/admin/dashboard" className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center">
             <span className="text-white font-bold text-lg">
               R
@@ -43,28 +39,28 @@ const Navbar = () => {
         </Link>
 
 
-        {/* Navigation Links */}
+        {/* Navigation */}
         <div className="hidden md:flex items-center gap-8">
 
           <Link
-            to="/"
+            to="/admin/dashboard"
             className="text-base text-gray-600 hover:text-black transition"
           >
-            Home
+            Dashboard
           </Link>
 
           <Link
-            to="/payments"
+            to="/admin/users"
             className="text-base text-gray-600 hover:text-black transition"
           >
-            Payments
+            Users
           </Link>
 
           <Link
-            to="/my-equipments"
+            to="/admin/categories"
             className="text-base text-gray-600 hover:text-black transition"
           >
-            My Equipment
+            Categories
           </Link>
 
         </div>
@@ -72,24 +68,6 @@ const Navbar = () => {
 
         {/* Right Side */}
         <div className="flex items-center gap-4">
-
-        {!isAuthenticated && (
-          <Link
-            to="/login"
-            className="
-              px-5 py-2.5
-              rounded-full
-              bg-black
-              text-white
-              text-sm font-medium
-              hover:bg-gray-800
-              transition
-            "
-          >
-            Login
-          </Link>
-        )}
-
 
           {/* Notification */}
           <Link
@@ -116,7 +94,6 @@ const Navbar = () => {
                 transition
               "
             >
-              {/* Bell Icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -132,7 +109,6 @@ const Navbar = () => {
                 />
               </svg>
 
-              {/* Unread Badge */}
               {unreadCount > 0 && (
                 <span
                   className="
@@ -153,7 +129,6 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Label */}
             <span className="text-xs font-medium text-gray-600">
               Notifications
             </span>
@@ -161,7 +136,6 @@ const Navbar = () => {
 
 
           {/* Logout */}
-          {isAuthenticated && (
           <button
             onClick={handleLogout}
             className="
@@ -176,7 +150,7 @@ const Navbar = () => {
           >
             Logout
           </button>
-          )}
+
         </div>
 
       </div>
@@ -184,4 +158,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default AdminNavbar;

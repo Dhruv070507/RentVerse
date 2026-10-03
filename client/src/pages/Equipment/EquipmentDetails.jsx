@@ -5,6 +5,7 @@ import api from "../../services/api";
 import Navbar from "../../components/navbar";
 import ReviewModal from "../../components/ReviewModal";
 import { getMyRentals } from "../../features/rentalSlice";
+import Footer from "../../components/Footer.jsx";
 
 
 const EquipmentDetails = () => {
@@ -636,7 +637,10 @@ const EquipmentDetails = () => {
                 />
             )}
 
-        </div>
+        
+
+            <Footer />
+</div>
     );
 };
 

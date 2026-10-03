@@ -107,7 +107,26 @@ const loginUserService = async ({ email, password }) => {
 };
 
 
+const logoutUserService = async (userId) => {
+
+    const user = await User.findById(userId);
+
+    if(!user)
+        throw new ApiError(404, "User doesn't exist");
+
+    // clearing the refresh token so that use cant get new access
+    // tokens after the logout
+    user.refreshToken = "";
+
+    // no validation is required bc only the refresh token is being cleard
+    await user.save({ validateBeforeSave: false });
+
+    return true;
+};
+
+
 export {
     registerUserService,
-    loginUserService
+    loginUserService,
+    logoutUserService,
 };

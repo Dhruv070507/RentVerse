@@ -1,66 +1,64 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api";
-import { loginSuccess } from "../../features/authSlice";
-import Navbar from "../../components/Navbar.jsx";
+import { loginUser } from "../../features/authSlice";
+import Navbar from "../../components/navbar.jsx";
+import Footer from "../../components/Footer.jsx";
 
 const Login = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { loading, error } = useSelector(
+    (state) => state.auth
+  );
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    setError("");
-    setLoading(true);
-
-    try {
-      const response = await api.post("/users/login", {
+    const result = await dispatch(
+      loginUser({
         email,
-        password,
-      });
+        password
+      })
+    );
 
-      const { user, accessToken, refreshToken } = response.data.data;
+    // Check whether login was successful
+    if (loginUser.fulfilled.match(result)) {
 
-      dispatch(
-        loginSuccess({
-          user,
-          accessToken,
-          refreshToken,
-        })
-      );
+      const user = result.payload.user;
 
-      // Redirect the user based on their role
+      // Redirect based on user role
       if (user.role === "delivery_agent") {
+
         navigate("/agent/dashboard");
+
       } else if (user.role === "admin") {
+
         navigate("/admin/dashboard");
+
       } else {
+
         navigate("/");
       }
-
-    } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          "Login failed. Please try again."
-      );
-    } finally {
-      setLoading(false);
     }
   };
 
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
+
       <Navbar />
 
       {/* Main */}
       <main className="flex-1 flex items-center justify-center px-6 pb-20">
+
         <section className="w-full max-w-md">
 
           {/* Heading */}
@@ -80,8 +78,12 @@ const Login = () => {
 
           </div>
 
+
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-6"
+          >
 
             {/* Error */}
             {error && (
@@ -90,8 +92,10 @@ const Login = () => {
               </div>
             )}
 
+
             {/* Email */}
             <div>
+
               <label
                 htmlFor="email"
                 className="font-sans block text-sm text-[#0b1b34] mb-2"
@@ -108,7 +112,9 @@ const Login = () => {
                 required
                 className="font-sans w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#0b1b34] placeholder:text-gray-400 outline-none transition focus:border-[#0b1b34]"
               />
+
             </div>
+
 
             {/* Password */}
             <div>
@@ -143,6 +149,7 @@ const Login = () => {
 
             </div>
 
+
             {/* Login Button */}
             <button
               type="submit"
@@ -154,10 +161,12 @@ const Login = () => {
 
           </form>
 
+
           {/* Register */}
           <div className="text-center mt-8">
 
             <p className="font-sans text-sm text-gray-500">
+
               Don't have an account?{" "}
 
               <button
@@ -167,14 +176,19 @@ const Login = () => {
               >
                 Create an account
               </button>
+
             </p>
 
           </div>
 
         </section>
+
       </main>
 
-    </div>
+    
+
+            <Footer />
+</div>
   );
 };
 
