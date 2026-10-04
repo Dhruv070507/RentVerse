@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -7,7 +7,8 @@ import {
 } from "../../features/rentalSlice";
 
 import {
-    createPayment
+    createPayment,
+    verifyRazorpayPayment
 } from "../../features/paymentSlice";
 
 import Navbar from "../../components/navbar";
@@ -30,13 +31,9 @@ const Payment = () => {
 
 
     const {
-        payment,
         loading: paymentLoading,
         error: paymentError
     } = useSelector((state) => state.payment);
-
-
-    const [paymentMethod, setPaymentMethod] = useState("");
 
 
     useEffect(() => {
@@ -50,28 +47,101 @@ const Payment = () => {
 
         e.preventDefault();
 
-        if (!paymentMethod) {
-            return;
-        }
-
-
         try {
 
-            await dispatch(
+            const paymentData = await dispatch(
                 createPayment({
-                    rentalId,
-                    paymentMethod
+                    rentalId
                 })
             ).unwrap();
 
 
-            navigate("/payment/success");
+            const options = {
+
+                key: paymentData.keyId,
+
+                amount: paymentData.order.amount,
+
+                currency: paymentData.order.currency,
+
+                name: "RentVerse",
+
+                description: `Payment for ${rental.equipment?.name}`,
+
+                order_id: paymentData.order.id,
+
+                handler: async (response) => {
+
+                    try {
+
+                        await dispatch(
+                            verifyRazorpayPayment({
+                                paymentId: paymentData.payment._id,
+
+                                razorpayPaymentId:
+                                    response.razorpay_payment_id,
+
+                                razorpayOrderId:
+                                    response.razorpay_order_id,
+
+                                razorpaySignature:
+                                    response.razorpay_signature
+                            })
+                        ).unwrap();
+
+
+                        navigate("/payment/success");
+
+                    } catch (error) {
+
+                        console.log(
+                            "Payment verification failed:",
+                            error
+                        );
+
+                    }
+
+                },
+
+                prefill: {
+                    name: "",
+                    email: "",
+                    contact: ""
+                },
+
+                theme: {
+                    color: "#0b1b34"
+                }
+
+            };
+
+
+            const razorpay = new window.Razorpay(options);
+
+            razorpay.open();
+
+
+            razorpay.on(
+                "payment.failed",
+                function (response) {
+
+                    console.log(
+                        "Razorpay payment failed:",
+                        response.error
+                    );
+
+                }
+            );
 
         } catch (error) {
 
-            console.log("Payment failed:", error);
+            console.log(
+                "Payment initialization failed:",
+                error
+            );
 
         }
+
     };
 
 
@@ -119,7 +189,7 @@ const Payment = () => {
                     </h1>
 
                     <p className="font-sans text-gray-500 mt-2">
-                        Complete your payment for this rental.
+                        Complete your payment securely with Razorpay.
                     </p>
 
                 </div>
@@ -204,82 +274,6 @@ const Payment = () => {
                     className="space-y-6"
                 >
 
-                    <div>
-
-                        <label className="block font-sans text-sm text-[#0b1b34] mb-3">
-                            Payment Method
-                        </label>
-
-
-                        <div className="space-y-3">
-
-                            <label className="flex items-center gap-3 border border-gray-200 rounded-xl px-5 py-4 cursor-pointer">
-
-                                <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="credit_card"
-                                    checked={
-                                        paymentMethod === "credit_card"
-                                    }
-                                    onChange={(e) =>
-                                        setPaymentMethod(e.target.value)
-                                    }
-                                />
-
-                                <span>
-                                    Credit Card
-                                </span>
-
-                            </label>
-
-
-                            <label className="flex items-center gap-3 border border-gray-200 rounded-xl px-5 py-4 cursor-pointer">
-
-                                <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="paypal"
-                                    checked={
-                                        paymentMethod === "paypal"
-                                    }
-                                    onChange={(e) =>
-                                        setPaymentMethod(e.target.value)
-                                    }
-                                />
-
-                                <span>
-                                    PayPal
-                                </span>
-
-                            </label>
-
-
-                            <label className="flex items-center gap-3 border border-gray-200 rounded-xl px-5 py-4 cursor-pointer">
-
-                                <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="bank_transfer"
-                                    checked={
-                                        paymentMethod === "bank_transfer"
-                                    }
-                                    onChange={(e) =>
-                                        setPaymentMethod(e.target.value)
-                                    }
-                                />
-
-                                <span>
-                                    Bank Transfer
-                                </span>
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-
                     {paymentError && (
 
                         <p className="text-red-500 text-sm">
@@ -291,10 +285,7 @@ const Payment = () => {
 
                     <button
                         type="submit"
-                        disabled={
-                            paymentLoading ||
-                            !paymentMethod
-                        }
+                        disabled={paymentLoading}
                         className="w-full px-6 py-3 rounded-full bg-[#0b1b34] text-white text-sm hover:bg-[#142944] transition disabled:opacity-50"
                     >
                         {paymentLoading
@@ -307,10 +298,10 @@ const Payment = () => {
 
             </div>
 
-        
 
             <Footer />
-</div>
+
+        </div>
     );
 };
 

@@ -54,7 +54,7 @@ const Navbar = () => {
           </Link>
 
           <Link
-            to="/payments"
+            to="/My-payments"
             className="text-base text-gray-600 hover:text-black transition"
           >
             Payments

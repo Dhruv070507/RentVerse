@@ -10,7 +10,7 @@ import EquipmentDetails from "./pages/Equipment/EquipmentDetails.jsx";
 import RentEquipment from "./pages/Rentals/RentEquipment.jsx";
 import MyRentals from "./pages/Rentals/MyRentals.jsx";
 import RentalRequests from "./pages/Rentals/RentalRequest.jsx";
-import Payments from "./pages/payment/payments.jsx";
+import MyPayments from "./pages/payment/Mypayments.jsx";
 import MyEquipment from "./pages/Equipment/MyEquipment.jsx";
 import EditEquipment from "./pages/Equipment/EditEquipment.jsx";
 import Payment from "./pages/payment/payment.jsx";
@@ -29,7 +29,9 @@ import AdminCategories from "./pages/admin/adminCategories.jsx";
 import About from "./pages/About.jsx";
 import HowItWorks from "./pages/HowItWorks.jsx";
 import Contact from "./pages/Contact.jsx";
-
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import TermsOfService from "./pages/TermsOfService.jsx";
+import SafetyTrust from "./pages/SafetyTrust.jsx";
 
 
 function App() {
@@ -44,6 +46,9 @@ function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/safety-trust" element={<SafetyTrust />} />
 
 
                 {/* Normal User Protected Routes */}
@@ -67,7 +72,9 @@ function App() {
                     <Route path="/rental-requests" element={<RentalRequests />} />
 
 
-                    <Route path="/payments" element={<Payments />} />
+                    {/* <Route path="/payments" element={<Payment />} /> */}
+
+                    <Route path="/my-payments" element={<MyPayments />} />
 
 
                     <Route path="/my-equipments" element={<MyEquipment />} />

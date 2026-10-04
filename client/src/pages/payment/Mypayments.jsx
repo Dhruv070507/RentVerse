@@ -2,9 +2,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     getMyPayments,
-    updatePaymentStatus
-} from "../../features/paymentSlice";
-import Navbar from "../../components/navbar";
+} from "../../features/paymentSlice.js";
+import Navbar from "../../components/navbar.jsx";
 import Footer from "../../components/Footer.jsx";
 
 const Payments = () => {

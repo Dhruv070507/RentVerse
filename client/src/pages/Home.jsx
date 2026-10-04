@@ -1,31 +1,25 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import Navbar from "../components/navbar.jsx";
 import Footer from "../components/Footer.jsx";
-import EquipmentCard from "../components/EquipmentCard.jsx";
 
 import { fetchCategories } from "../features/categorySlice";
+import { getMyRentals, getRentalRequests } from "../features/rentalSlice";
 
 
 const Home = () => {
 
     const dispatch = useDispatch();
 
-    const { isAuthenticated, user } = useSelector(
+    const { isAuthenticated } = useSelector(
         (state) => state.auth
     );
 
     const {
-        equipments = [],
-        loading
-    } = useSelector(
-        (state) => state.equipment
-    );
-
-    const {
-        rentals = []
+        rentals = [],
+        rentalRequests = []
     } = useSelector(
         (state) => state.rental
     );
@@ -39,7 +33,12 @@ const Home = () => {
 
     useEffect(() => {
         dispatch(fetchCategories());
-    }, [dispatch]);
+
+        if (isAuthenticated) {
+            dispatch(getMyRentals());
+            dispatch(getRentalRequests());
+        }
+    }, [dispatch, isAuthenticated]);
 
     return (
         <div className="min-h-screen bg-white text-[#0b1b34]">
@@ -385,207 +384,324 @@ const Home = () => {
 
 
             {/* =====================================================
-                MY RENTALS / REQUESTS
+    MY RENTALS & REQUESTS
+===================================================== */}
+
+{isAuthenticated && (
+    <section className="bg-white">
+
+        <div className="max-w-7xl mx-auto px-6 py-28">
+
+            {/* Heading */}
+
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+
+                <div>
+
+                    <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
+                        YOUR ACTIVITY
+                    </p>
+
+                    <h2 className="font-display text-4xl md:text-5xl text-[#0b1b34]">
+                        Your rentals & requests.
+                    </h2>
+
+                    <p className="font-sans mt-4 text-sm text-gray-500 max-w-xl">
+                        Keep track of the equipment you've rented and the requests you've made.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {/* =====================================================
+                RENTALS
             ===================================================== */}
 
-            {isAuthenticated && (
-                <section className="bg-white">
+            <div className="mb-20">
 
-                    <div className="max-w-7xl mx-auto px-6 py-28">
+                <div className="flex items-end justify-between mb-8">
 
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                    <div>
 
-                            <div>
+                        <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
+                            RENTALS
+                        </p>
 
-                                <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                                    YOUR ACTIVITY
-                                </p>
+                        <h3 className="font-display text-3xl md:text-4xl text-[#0b1b34]">
+                            Equipment you've rented.
+                        </h3>
 
-                                <h2 className="font-display text-4xl md:text-5xl text-[#0b1b34]">
-                                    Your rentals & requests.
-                                </h2>
+                    </div>
 
-                                <p className="font-sans mt-4 text-sm text-gray-500 max-w-xl">
-                                    Keep track of the equipment you've rented
-                                    and the requests you've made.
-                                </p>
+                    <Link
+                        to="/my-rentals"
+                        className="text-sm font-medium text-[#0b1b34] hover:underline whitespace-nowrap"
+                    >
+                        View all rentals →
+                    </Link>
 
-                            </div>
-
-                            <Link
-                                to="/my-rentals"
-                                className="
-                                    text-sm
-                                    font-medium
-                                    text-[#0b1b34]
-                                    hover:underline
-                                    whitespace-nowrap
-                                "
-                            >
-                                Browse all →
-                            </Link>
-
-                        </div>
+                </div>
 
 
-                        {rentals.length === 0 ? (
+                {(() => {
 
-                            <div className="
-                                border-y
-                                border-gray-100
-                                py-12
-                            ">
+                    const actualRentals = rentals.filter(
+                        (rental) =>
+                            rental.status === "approved" ||
+                            rental.status === "completed"
+                    );
+
+                    if (actualRentals.length === 0) {
+
+                        return (
+                            <div className="border-y border-gray-100 py-12">
 
                                 <p className="text-sm text-gray-500">
-                                    You don't have any rentals yet.
+                                    You don't have any active rentals yet.
                                 </p>
 
-                                <Link
-                                    to="/equipments"
-                                    className="inline-block mt-4 text-sm font-medium text-[#0b1b34] hover:underline"
-                                >
-                                    Explore equipment →
-                                </Link>
-
                             </div>
+                        );
 
-                        ) : (
+                    }
 
-                            <div className="
-                                grid
-                                grid-cols-1
-                                md:grid-cols-2
-                                lg:grid-cols-3
-                                gap-6
-                            ">
+                    return (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                                {rentals.slice(0, 3).map((rental) => (
+                            {actualRentals.slice(0, 3).map((rental) => (
 
-                                    <div
-                                        key={rental._id}
-                                        className="
-                                            border
-                                            border-gray-100
-                                            rounded-2xl
-                                            p-6
-                                            hover:border-gray-300
-                                            transition
-                                        "
-                                    >
+                                <div
+                                    key={rental._id}
+                                    className="
+                                        border
+                                        border-gray-100
+                                        rounded-2xl
+                                        p-6
+                                        hover:border-gray-300
+                                        transition
+                                    "
+                                >
+
+                                    <div className="flex items-center justify-between">
 
                                         <p className="text-xs uppercase tracking-wider text-gray-400">
                                             Rental
                                         </p>
 
-                                        <h3 className="mt-3 text-lg font-semibold text-[#0b1b34]">
-                                            {rental.equipment?.name || "Equipment"}
-                                        </h3>
+                                        <span className="
+                                            text-xs
+                                            px-3
+                                            py-1
+                                            rounded-full
+                                            bg-green-50
+                                            text-green-700
+                                            capitalize
+                                        ">
+                                            {rental.status}
+                                        </span>
 
-                                        <p className="mt-2 text-sm text-gray-500">
-                                            Status: {rental.status}
+                                    </div>
+
+
+                                    <h4 className="mt-5 text-lg font-semibold text-[#0b1b34]">
+                                        {rental.equipment?.name || "Equipment"}
+                                    </h4>
+
+
+                                    <p className="mt-2 text-sm text-gray-500">
+                                        {rental.rentalStartDate
+                                            ? new Date(
+                                                rental.rentalStartDate
+                                            ).toLocaleDateString()
+                                            : "Start date unavailable"
+                                        }
+
+                                        {" — "}
+
+                                        {rental.rentalEndDate
+                                            ? new Date(
+                                                rental.rentalEndDate
+                                            ).toLocaleDateString()
+                                            : "End date unavailable"
+                                        }
+                                    </p>
+
+
+                                    <div className="mt-6 pt-5 border-t border-gray-100">
+
+                                        <p className="text-xs text-gray-400 uppercase tracking-wider">
+                                            Total
+                                        </p>
+
+                                        <p className="mt-1 text-lg font-semibold text-[#0b1b34]">
+                                            ₹{rental.totalPrice}
                                         </p>
 
                                     </div>
 
-                                ))}
+                                </div>
 
-                            </div>
+                            ))}
 
-                        )}
+                        </div>
+                    );
 
-                    </div>
+                })()}
 
-                </section>
-            )}
+            </div>
 
 
             {/* =====================================================
-                EXPLORE EQUIPMENT
-            ===================================================== */}
+    REQUESTS
+===================================================== */}
 
-            <section className="bg-[#f7f8fa]">
+<div>
 
-                <div className="max-w-7xl mx-auto px-6 py-28">
+    <div className="flex items-end justify-between mb-8">
 
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div>
 
-                        <div>
+            <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
+                REQUESTS
+            </p>
 
-                            <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                                EXPLORE
-                            </p>
+            <h3 className="font-display text-3xl md:text-4xl text-[#0b1b34]">
+                Requests for your equipment.
+            </h3>
 
-                            <h2 className="font-display text-4xl md:text-5xl text-[#0b1b34]">
-                                Find what you need.
-                            </h2>
+        </div>
 
-                            <p className="font-sans mt-4 text-sm md:text-base text-gray-500 max-w-xl">
-                                Browse equipment available from people around
-                                you and find something that fits your next project.
-                            </p>
 
-                        </div>
+        <Link
+            to="/rental-requests"
+            className="text-sm font-medium text-[#0b1b34] hover:underline whitespace-nowrap"
+        >
+            View all requests →
+        </Link>
 
-                        <Link
-                            to="/equipments"
-                            className="
-                                text-sm
-                                font-medium
-                                text-[#0b1b34]
-                                hover:underline
-                                whitespace-nowrap
-                            "
-                        >
-                            View all equipment →
-                        </Link>
+    </div>
+
+
+    {rentalRequests.length === 0 ? (
+
+        <div className="border-y border-gray-100 py-12">
+
+            <p className="text-sm text-gray-500">
+                You don't have any rental requests yet.
+            </p>
+
+        </div>
+
+    ) : (
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {rentalRequests.slice(0, 3).map((request) => (
+
+                <div
+                    key={request._id}
+                    className="
+                        border
+                        border-gray-100
+                        rounded-2xl
+                        p-6
+                        hover:border-gray-300
+                        transition
+                    "
+                >
+
+                    {/* Request + Status */}
+
+                    <div className="flex items-center justify-between">
+
+                        <p className="text-xs uppercase tracking-wider text-gray-400">
+                            Request
+                        </p>
+
+                        <span className="
+                            text-xs
+                            px-3
+                            py-1
+                            rounded-full
+                            bg-gray-100
+                            text-gray-600
+                            capitalize
+                        ">
+                            {request.status}
+                        </span>
 
                     </div>
 
 
-                    {loading ? (
+                    {/* Equipment */}
 
-                        <p className="text-sm text-gray-500">
-                            Loading equipment...
+                    <h4 className="mt-5 text-lg font-semibold text-[#0b1b34]">
+                        {request.equipment?.name || "Equipment"}
+                    </h4>
+
+
+                    {/* Requested By */}
+
+                    <p className="mt-2 text-sm text-gray-500">
+                        Requested by{" "}
+                        <span className="text-[#0b1b34] font-medium">
+                            {request.renter?.username || "User"}
+                        </span>
+                    </p>
+
+
+                    {/* Rental Dates */}
+
+                    <p className="mt-2 text-sm text-gray-500">
+
+                        {request.rentalStartDate
+                            ? new Date(
+                                request.rentalStartDate
+                            ).toLocaleDateString()
+                            : "Start date unavailable"
+                        }
+
+                        {" — "}
+
+                        {request.rentalEndDate
+                            ? new Date(
+                                request.rentalEndDate
+                            ).toLocaleDateString()
+                            : "End date unavailable"
+                        }
+
+                    </p>
+
+
+                    {/* Amount */}
+
+                    <div className="mt-6 pt-5 border-t border-gray-100">
+
+                        <p className="text-xs text-gray-400 uppercase tracking-wider">
+                            Rental amount
                         </p>
 
-                    ) : equipments.length === 0 ? (
-
-                        <p className="text-sm text-gray-500">
-                            No equipment available right now.
+                        <p className="mt-1 text-lg font-semibold text-[#0b1b34]">
+                            ₹{request.totalPrice}
                         </p>
 
-                    ) : (
-
-                        <div className="
-                            grid
-                            grid-cols-1
-                            md:grid-cols-2
-                            lg:grid-cols-3
-                            gap-6
-                        ">
-
-                            {equipments
-                                .filter(
-                                    (equipment) =>
-                                        equipment.owner?._id !== user?._id
-                                )
-                                .slice(0, 3)
-                                .map((equipment) => (
-
-                                    <EquipmentCard
-                                        key={equipment._id}
-                                        equipment={equipment}
-                                    />
-
-                                ))}
-
-                        </div>
-
-                    )}
+                    </div>
 
                 </div>
 
-            </section>
+            ))}
+
+        </div>
+
+    )}
+
+</div>
+</div>
+
+    </section>
+)}
 
 
             {/* =====================================================

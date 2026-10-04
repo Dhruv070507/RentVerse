@@ -6,16 +6,14 @@ import api from "../services/api";
 
 export const createPayment = createAsyncThunk(
     "payment/createPayment",
-    async ({ rentalId, paymentMethod }, { rejectWithValue }) => {
+    async ({ rentalId }, { rejectWithValue }) => {
 
         try {
 
             const response = await api.post(
                 "/payment/create",
                 {
-                    rentalId,
-                    paymentMethod
-                }
+                    rentalId                }
             );
 
             return response.data.data;
@@ -30,6 +28,48 @@ export const createPayment = createAsyncThunk(
             return rejectWithValue(
                 error.response?.data?.message ||
                 "Failed to create payment"
+            );
+        }
+    }
+);
+
+
+export const verifyRazorpayPayment = createAsyncThunk(
+    "payment/verifyRazorpayPayment",
+    async (
+        {
+            paymentId,
+            razorpayPaymentId,
+            razorpayOrderId,
+            razorpaySignature
+        },
+        { rejectWithValue }
+    ) => {
+
+        try {
+
+            const response = await api.post(
+                "/payment/verify",
+                {
+                    paymentId,
+                    razorpayPaymentId,
+                    razorpayOrderId,
+                    razorpaySignature
+                }
+            );
+
+            return response.data.data;
+
+        } catch (error) {
+
+            console.log(
+                "Verify payment error:",
+                error.response?.data
+            );
+
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to verify payment"
             );
         }
     }
@@ -66,45 +106,11 @@ export const getMyPayments = createAsyncThunk(
 );
 
 
-// Updating payment status
-
-export const updatePaymentStatus = createAsyncThunk(
-    "payment/updatePaymentStatus",
-    async ({ paymentId, status }, { rejectWithValue }) => {
-
-        try {
-
-            const response = await api.put(
-                `/payment/${paymentId}`,
-                { status }
-            );
-
-            return response.data.data;
-
-        } catch (error) {
-
-            console.log(
-                "Update payment error:",
-                error.response?.data
-            );
-
-            return rejectWithValue(
-                error.response?.data?.message ||
-                "Failed to update payment"
-            );
-        }
-    }
-);
-
-
 const initialState = {
-
+ 
     payment: null,
-
     payments: [],
-
     loading: false,
-
     error: null
 };
 
@@ -150,6 +156,30 @@ const paymentSlice = createSlice({
 
             })
 
+            .addCase(verifyRazorpayPayment.pending, (state) => {
+
+                state.loading = true;
+                state.error = null;
+
+            })
+            .addCase(verifyRazorpayPayment.fulfilled, (state, action) => {
+
+                state.loading = false;
+                state.payment = action.payload;
+
+                state.payments = state.payments.map((payment) =>
+                    payment._id === action.payload._id
+                        ? action.payload
+                        : payment
+                );
+
+            })
+            .addCase(verifyRazorpayPayment.rejected, (state, action) => {
+
+                state.loading = false;
+                state.error = action.payload;
+
+            })
 
             // Getting user's payments
             .addCase(getMyPayments.pending, (state) => {
@@ -172,36 +202,6 @@ const paymentSlice = createSlice({
                 state.error = action.payload;
 
             })
-
-
-            // Updating payment status
-            .addCase(updatePaymentStatus.pending, (state) => {
-
-                state.loading = true;
-                state.error = null;
-
-            })
-
-            .addCase(updatePaymentStatus.fulfilled, (state, action) => {
-
-                state.loading = false;
-
-                state.payment = action.payload;
-
-                state.payments = state.payments.map((payment) =>
-                    payment._id === action.payload._id
-                        ? action.payload
-                        : payment
-                );
-
-            })
-
-            .addCase(updatePaymentStatus.rejected, (state, action) => {
-
-                state.loading = false;
-                state.error = action.payload;
-
-            });
 
     }
 });

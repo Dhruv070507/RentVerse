@@ -82,21 +82,21 @@ const Footer = () => {
                         <div className="mt-5 flex flex-col gap-3">
 
                             <Link
-                                to="/privacy"
+                                to="/privacy-policy"
                                 className="text-sm text-gray-400 hover:text-white transition"
                             >
                                 Privacy Policy
                             </Link>
 
                             <Link
-                                to="/terms"
+                                to="/terms-of-service"
                                 className="text-sm text-gray-400 hover:text-white transition"
                             >
                                 Terms of Service
                             </Link>
 
                             <Link
-                                to="/safety"
+                                to="/safety-trust"
                                 className="text-sm text-gray-400 hover:text-white transition"
                             >
                                 Safety & Trust

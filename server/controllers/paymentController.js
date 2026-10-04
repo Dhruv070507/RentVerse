@@ -3,18 +3,17 @@ import asyncHandler from "../utils/asyncHandler.js";
 
 import {
     createPaymentService,
+    verifyRazorpayPaymentService,
     getMyPaymentsService,
     getPaymentByIdService,
-    updatePaymentStatusService
 } from "../services/paymentService.js";
 
 
 const createPayment = asyncHandler(async (req, res) => {
-    const { rentalId, paymentMethod } = req.body;
+    const { rentalId } = req.body;
 
     const payment = await createPaymentService(
         rentalId,
-        paymentMethod,
         req.user._id
     );
 
@@ -22,7 +21,34 @@ const createPayment = asyncHandler(async (req, res) => {
         new ApiResponse(
             201,
             payment,
-            "Payment created successfully"
+            "Razorpay order created successfully"
+        )
+    );
+});
+
+
+const verifyRazorpayPayment = asyncHandler(async (req, res) => {
+
+    const {
+        paymentId,
+        razorpayPaymentId,
+        razorpayOrderId,
+        razorpaySignature
+    } = req.body;
+
+    const payment = await verifyRazorpayPaymentService(
+        paymentId,
+        razorpayPaymentId,
+        razorpayOrderId,
+        razorpaySignature,
+        req.user._id
+    );
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            payment,
+            "Payment verified successfully"
         )
     );
 });
@@ -62,29 +88,9 @@ const getPaymentById = asyncHandler(async (req, res) => {
 });
 
 
-const updatePaymentStatus = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    const payment = await updatePaymentStatusService(
-        id,
-        status,
-        req.user._id
-    );
-
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            payment,
-            "Payment status updated successfully"
-        )
-    );
-});
-
-
 export {
     createPayment,
+    verifyRazorpayPayment,
     getMyPayments,
     getPaymentById,
-    updatePaymentStatus,
 };

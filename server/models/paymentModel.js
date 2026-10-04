@@ -14,19 +14,23 @@ const paymentSchema = new mongoose.Schema(
             min: 0,
         },
 
-        paymentMethod: {
-            type: String,
-            enum: ["credit_card", "paypal", "bank_transfer"],
-            required: true,
-        },
-
         paymentStatus: {
             type: String,
             enum: ["pending", "completed", "failed"],
             default: "pending",
         },
 
-        transactionId: {
+        razorpayOrderId: {
+            type: String,
+            default: "",
+        },
+
+        razorpayPaymentId: {
+            type: String,
+            default: "",
+        },
+
+        razorpaySignature: {
             type: String,
             default: "",
         },
