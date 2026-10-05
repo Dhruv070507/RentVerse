@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers } from "../../features/adminSlice";
 import Footer from "../../components/Footer.jsx";
+import AdminNavbar from "../../components/adminNavbar.jsx";
 
 const AdminUsers = () => {
     const dispatch = useDispatch();
@@ -121,6 +122,8 @@ const AdminUsers = () => {
         return (
             <div className="min-h-screen bg-white relative overflow-hidden">
 
+                <AdminNavbar />
+
                 {/* Background glow */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     <div className="absolute -top-40 -right-32 w-[520px] h-[520px] rounded-full bg-blue-400/20 blur-[90px]" />
@@ -160,6 +163,8 @@ const AdminUsers = () => {
     if (error) {
         return (
             <div className="min-h-screen bg-white relative overflow-hidden">
+
+                <AdminNavbar />
 
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute -top-40 -right-32 w-[520px] h-[520px] rounded-full bg-red-400/10 blur-[90px]" />
@@ -207,6 +212,8 @@ const AdminUsers = () => {
 
     return (
         <div className="min-h-screen bg-white relative overflow-hidden">
+
+            <AdminNavbar />
 
             {/* =========================================
                 BACKGROUND
@@ -729,4 +736,3 @@ const AdminUsers = () => {
 
 
 export default AdminUsers;
-

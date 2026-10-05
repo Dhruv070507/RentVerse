@@ -17,6 +17,7 @@ import Footer from "../../components/Footer.jsx";
 import {
     getAllEquipment
 } from "../../features/adminSlice";
+import AdminNavbar from "../../components/adminNavbar.jsx"
 
 
 /* =========================================================
@@ -206,7 +207,6 @@ const SectionHeader = ({
     return (
 
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5">
-
             <div>
 
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">
@@ -680,6 +680,8 @@ const AdminEquipment = () => {
     return (
 
         <div className="min-h-screen bg-[#f7f7f5]">
+
+            <AdminNavbar />
 
             <div className="max-w-7xl mx-auto px-5 md:px-8 py-8 md:py-10">
 

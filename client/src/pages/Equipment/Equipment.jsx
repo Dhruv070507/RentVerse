@@ -23,6 +23,7 @@ const Equipment = () => {
     const [categorySearch, setCategorySearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [showCategories, setShowCategories] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
 
 
     // Fetch equipments
@@ -30,6 +31,22 @@ const Equipment = () => {
         dispatch(fetchEquipments());
     }, [dispatch]);
 
+
+    const handleSearch = (e) => {
+
+    e.preventDefault();
+
+    const equipmentSection = document.getElementById(
+        "equipment-section"
+    );
+
+    if (equipmentSection) {
+        equipmentSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+};
 
     // Getting unique categories from populated equipment data
     const categories = useMemo(() => {
@@ -245,29 +262,31 @@ const Equipment = () => {
                                 />
                             </svg>
 
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                placeholder="What are you looking for?"
-                                className="
-                                    w-full
-                                    pl-14
-                                    pr-5
-                                    py-5
-                                    rounded-2xl
-                                    bg-gray-50
-                                    border
-                                    border-gray-100
-                                    text-sm
-                                    text-[#0b1b34]
-                                    placeholder:text-gray-400
-                                    outline-none
-                                    focus:bg-white
-                                    focus:border-[#0b1b34]
-                                    transition
-                                "
-                            />
+                            <form onSubmit={handleSearch}>
+                                <input
+                                    type="text"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    placeholder="What are you looking for?"
+                                    className="
+                                        w-full
+                                        pl-14
+                                        pr-5
+                                        py-5
+                                        rounded-2xl
+                                        bg-gray-50
+                                        border
+                                        border-gray-100
+                                        text-sm
+                                        text-[#0b1b34]
+                                        placeholder:text-gray-400
+                                        outline-none
+                                        focus:bg-white
+                                        focus:border-[#0b1b34]
+                                        transition
+                                    "
+                                />
+                            </form>
 
                         </div>
 
@@ -448,6 +467,176 @@ const Equipment = () => {
             </div>
 
         </section>
+
+
+        {/* =====================================================
+            EQUIPMENT
+        ===================================================== */}
+
+        <section id="equipment-section"className="bg-white">
+
+            <div className="max-w-7xl mx-auto px-6 py-28">
+
+                <div className="
+                    flex
+                    flex-col
+                    md:flex-row
+                    md:items-end
+                    justify-between
+                    gap-6
+                    mb-14
+                ">
+
+                    <div>
+
+                        <p className="
+                            font-sans
+                            text-xs
+                            tracking-[0.2em]
+                            text-gray-400
+                            uppercase
+                            mb-5
+                        ">
+                            AVAILABLE EQUIPMENT
+                        </p>
+
+                        <h2 className="
+                            font-display
+                            text-4xl
+                            md:text-6xl
+                            text-[#0b1b34]
+                        ">
+                            Ready when you are.
+                        </h2>
+
+                    </div>
+
+
+                    <div className="flex items-center gap-5">
+
+                        <p className="text-sm text-gray-500">
+
+                            <span className="
+                                font-semibold
+                                text-[#0b1b34]
+                            ">
+                                {filteredEquipments.length}
+                            </span>{" "}
+
+                            available
+
+                        </p>
+
+
+                        {(search || selectedCategory !== "all") && (
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setSearch("");
+                                    setSelectedCategory("all");
+                                    setCategorySearch("");
+                                }}
+                                className="
+                                    text-sm
+                                    font-medium
+                                    text-[#0b1b34]
+                                    hover:underline
+                                "
+                            >
+                                Clear filters
+                            </button>
+
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                {equipments.length === 0 ? (
+
+                    <div className="
+                        py-24
+                        border-y
+                        border-gray-100
+                        text-center
+                    ">
+
+                        <p className="
+                            font-display
+                            text-3xl
+                            text-[#0b1b34]
+                        ">
+                            No equipment available yet.
+                        </p>
+
+                        <p className="
+                            mt-3
+                            text-sm
+                            text-gray-500
+                        ">
+                            New equipment will appear here when owners
+                            list their gear.
+                        </p>
+
+                    </div>
+
+                ) : filteredEquipments.length === 0 ? (
+
+                    <div className="
+                        py-28
+                        rounded-3xl
+                        bg-gray-50
+                        text-center
+                    ">
+
+                        <p className="
+                            font-display
+                            text-3xl
+                            text-[#0b1b34]
+                        ">
+                            Nothing matched your search.
+                        </p>
+
+                        <p className="
+                            mt-3
+                            text-sm
+                            text-gray-500
+                        ">
+                            Try another equipment name or category.
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div className="
+                        grid
+                        grid-cols-1
+                        md:grid-cols-2
+                        lg:grid-cols-3
+                        gap-x-7
+                        gap-y-14
+                    ">
+
+                        {filteredEquipments.map((equipment) => (
+
+                            <EquipmentCard
+                                key={equipment._id}
+                                equipment={equipment}
+                            />
+
+                        ))}
+
+                    </div>
+
+                )}
+
+            </div>
+
+        </section>
+
 
 
         {/* =====================================================
@@ -689,175 +878,6 @@ const Equipment = () => {
                     ))}
 
                 </div>
-
-            </div>
-
-        </section>
-
-
-        {/* =====================================================
-            EQUIPMENT
-        ===================================================== */}
-
-        <section className="bg-white">
-
-            <div className="max-w-7xl mx-auto px-6 py-28">
-
-                <div className="
-                    flex
-                    flex-col
-                    md:flex-row
-                    md:items-end
-                    justify-between
-                    gap-6
-                    mb-14
-                ">
-
-                    <div>
-
-                        <p className="
-                            font-sans
-                            text-xs
-                            tracking-[0.2em]
-                            text-gray-400
-                            uppercase
-                            mb-5
-                        ">
-                            AVAILABLE EQUIPMENT
-                        </p>
-
-                        <h2 className="
-                            font-display
-                            text-4xl
-                            md:text-6xl
-                            text-[#0b1b34]
-                        ">
-                            Ready when you are.
-                        </h2>
-
-                    </div>
-
-
-                    <div className="flex items-center gap-5">
-
-                        <p className="text-sm text-gray-500">
-
-                            <span className="
-                                font-semibold
-                                text-[#0b1b34]
-                            ">
-                                {filteredEquipments.length}
-                            </span>{" "}
-
-                            available
-
-                        </p>
-
-
-                        {(search || selectedCategory !== "all") && (
-
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setSearch("");
-                                    setSelectedCategory("all");
-                                    setCategorySearch("");
-                                }}
-                                className="
-                                    text-sm
-                                    font-medium
-                                    text-[#0b1b34]
-                                    hover:underline
-                                "
-                            >
-                                Clear filters
-                            </button>
-
-                        )}
-
-                    </div>
-
-                </div>
-
-
-                {equipments.length === 0 ? (
-
-                    <div className="
-                        py-24
-                        border-y
-                        border-gray-100
-                        text-center
-                    ">
-
-                        <p className="
-                            font-display
-                            text-3xl
-                            text-[#0b1b34]
-                        ">
-                            No equipment available yet.
-                        </p>
-
-                        <p className="
-                            mt-3
-                            text-sm
-                            text-gray-500
-                        ">
-                            New equipment will appear here when owners
-                            list their gear.
-                        </p>
-
-                    </div>
-
-                ) : filteredEquipments.length === 0 ? (
-
-                    <div className="
-                        py-28
-                        rounded-3xl
-                        bg-gray-50
-                        text-center
-                    ">
-
-                        <p className="
-                            font-display
-                            text-3xl
-                            text-[#0b1b34]
-                        ">
-                            Nothing matched your search.
-                        </p>
-
-                        <p className="
-                            mt-3
-                            text-sm
-                            text-gray-500
-                        ">
-                            Try another equipment name or category.
-                        </p>
-
-                    </div>
-
-                ) : (
-
-                    <div className="
-                        grid
-                        grid-cols-1
-                        md:grid-cols-2
-                        lg:grid-cols-3
-                        gap-x-7
-                        gap-y-14
-                    ">
-
-                        {filteredEquipments.map((equipment) => (
-
-                            <EquipmentCard
-                                key={equipment._id}
-                                equipment={equipment}
-                            />
-
-                        ))}
-
-                    </div>
-
-                )}
 
             </div>
 

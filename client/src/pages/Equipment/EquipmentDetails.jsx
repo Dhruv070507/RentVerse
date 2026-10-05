@@ -151,7 +151,7 @@ const EquipmentDetails = () => {
             <div className="max-w-7xl mx-auto px-6 pt-8">
 
                 <Link
-                    to="/"
+                    to="/equipments"
                     className="text-sm text-gray-500 hover:text-black transition"
                 >
                     ← Back to equipment

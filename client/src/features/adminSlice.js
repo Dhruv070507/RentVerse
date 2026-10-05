@@ -167,6 +167,26 @@ export const getAllDeliveries = createAsyncThunk(
 );
 
 
+export const assignReturnAgent = createAsyncThunk(
+    "admin/assignReturnAgent",
+    async ({ deliveryId, agentId }, { rejectWithValue }) => {
+        try {
+            const response = await api.patch(
+                `/deliveries/${deliveryId}/assign-return`,
+                { agentId }
+            );
+
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to assign return agent"
+            );
+        }
+    }
+);
+
+
 export const getAllEquipment = createAsyncThunk(
     "admin/getAllEquipment",
 
@@ -301,17 +321,14 @@ const adminSlice = createSlice({
             )
 
 
-            .addCase(
-                assignDeliveryAgent.fulfilled,
-                (state, action) => {
-
-                    state.unassignedDeliveries =
-                        state.unassignedDeliveries.filter(
-                            (delivery) =>
-                                delivery._id !== action.payload._id
-                        );
-                }
-            )
+            .addCase(assignDeliveryAgent.fulfilled, (state, action) => {
+            state.unassignedDeliveries = state.unassignedDeliveries.map(
+                (delivery) =>
+                    delivery._id === action.payload._id
+                        ? action.payload
+                        : delivery
+            );
+        })
 
 
             .addCase(
@@ -388,6 +405,14 @@ const adminSlice = createSlice({
                     state.error = action.payload;
                 }
             )
+
+            .addCase(assignReturnAgent.fulfilled, (state, action) => {
+                state.deliveries = state.deliveries.map((delivery) =>
+                    delivery._id === action.payload._id
+                        ? action.payload
+                        : delivery
+                );
+            })
     }
 });
 

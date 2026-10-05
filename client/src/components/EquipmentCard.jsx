@@ -22,13 +22,6 @@ const EquipmentCard = ({ equipment, rental }) => {
         0;
 
 
-    /*
-     * A user can review only when:
-     *
-     * 1. A rental is provided
-     * 2. That rental is completed
-     */
-
     const canReview =
         rental &&
         rental.status === "completed";
@@ -38,28 +31,35 @@ const EquipmentCard = ({ equipment, rental }) => {
 
         <>
 
-            <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-lg transition duration-300">
+            <article className="group bg-white border border-gray-200 rounded-3xl overflow-hidden transition duration-500 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(11,27,52,0.10)]">
 
 
-                {/* =================================================
-                    EQUIPMENT IMAGE
-                ================================================= */}
+                {/* =====================================================
+                    IMAGE
+                ===================================================== */}
 
-                <div className="h-56 bg-gray-100 relative">
+                <div className="relative h-64 overflow-hidden bg-gray-100">
 
                     {equipment.images?.[0] ? (
 
                         <img
                             src={equipment.images[0]}
                             alt={equipment.name}
-                            className="w-full h-full object-cover"
+                            className="
+                                w-full
+                                h-full
+                                object-cover
+                                transition
+                                duration-700
+                                group-hover:scale-105
+                            "
                         />
 
                     ) : (
 
                         <div className="w-full h-full flex items-center justify-center">
 
-                            <span className="text-sm text-gray-400">
+                            <span className="font-sans text-sm text-gray-400">
                                 No image available
                             </span>
 
@@ -72,31 +72,43 @@ const EquipmentCard = ({ equipment, rental }) => {
 
                     {equipment.available !== undefined && (
 
-                        <div className="absolute top-4 right-4">
+                        <div className="absolute top-5 left-5">
 
                             <span
-                                className={`px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm ${
-                                    equipment.available
-                                        ? "bg-green-50/90 text-green-700"
-                                        : "bg-red-50/90 text-red-700"
-                                }`}
+                                className={`
+                                    inline-flex
+                                    items-center
+                                    gap-2
+                                    px-3.5
+                                    py-2
+                                    rounded-full
+                                    backdrop-blur-md
+                                    text-xs
+                                    font-medium
+                                    ${
+                                        equipment.available
+                                            ? "bg-white/90 text-green-700"
+                                            : "bg-white/90 text-red-700"
+                                    }
+                                `}
                             >
 
-                                <span className="inline-flex items-center gap-1.5">
-
-                                    <span
-                                        className={`w-1.5 h-1.5 rounded-full ${
+                                <span
+                                    className={`
+                                        w-1.5
+                                        h-1.5
+                                        rounded-full
+                                        ${
                                             equipment.available
                                                 ? "bg-green-500"
                                                 : "bg-red-500"
-                                        }`}
-                                    />
+                                        }
+                                    `}
+                                />
 
-                                    {equipment.available
-                                        ? "Available"
-                                        : "Unavailable"}
-
-                                </span>
+                                {equipment.available
+                                    ? "Available"
+                                    : "Unavailable"}
 
                             </span>
 
@@ -107,23 +119,30 @@ const EquipmentCard = ({ equipment, rental }) => {
                 </div>
 
 
-                {/* =================================================
-                    EQUIPMENT INFORMATION
-                ================================================= */}
+                {/* =====================================================
+                    CONTENT
+                ===================================================== */}
 
-                <div className="p-5">
+                <div className="p-7">
+
+
+                    {/* Category / small label */}
+
+                    <p className="font-sans text-[10px] uppercase tracking-[0.18em] text-gray-400">
+                        Equipment
+                    </p>
 
 
                     {/* Equipment name */}
 
-                    <h2 className="font-display text-xl text-[#0b1b34]">
+                    <h2 className="font-display text-2xl text-[#0b1b34] mt-2 leading-tight">
                         {equipment.name}
                     </h2>
 
 
                     {/* Description */}
 
-                    <p className="font-sans text-sm text-gray-500 mt-2 line-clamp-2 min-h-[40px]">
+                    <p className="font-sans text-sm text-gray-500 mt-3 leading-relaxed line-clamp-2 min-h-[42px]">
                         {equipment.description}
                     </p>
 
@@ -132,39 +151,37 @@ const EquipmentCard = ({ equipment, rental }) => {
                         RATING
                     ================================================= */}
 
-                    <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2 mt-5">
 
                         <div className="flex items-center gap-0.5">
 
-                            {[1, 2, 3, 4, 5].map(
-                                (star) => (
+                            {[1, 2, 3, 4, 5].map((star) => (
 
-                                    <span
-                                        key={star}
-                                        className={
-                                            star <=
-                                            Math.round(
-                                                Number(rating)
-                                            )
-                                                ? "text-yellow-400 text-sm"
-                                                : "text-gray-200 text-sm"
+                                <span
+                                    key={star}
+                                    className={`
+                                        text-sm
+                                        ${
+                                            star <= Math.round(Number(rating))
+                                                ? "text-[#0b1b34]"
+                                                : "text-gray-200"
                                         }
-                                    >
-                                        ★
-                                    </span>
+                                    `}
+                                >
+                                    ★
+                                </span>
 
-                                )
-                            )}
+                            ))}
 
                         </div>
 
 
-                        <span className="text-sm font-medium text-[#0b1b34]">
+                        <span className="font-sans text-sm font-medium text-[#0b1b34]">
                             {Number(rating).toFixed(1)}
                         </span>
 
 
-                        <span className="text-xs text-gray-400">
+                        <span className="font-sans text-xs text-gray-400">
                             ({reviewCount}{" "}
                             {reviewCount === 1
                                 ? "review"
@@ -175,67 +192,103 @@ const EquipmentCard = ({ equipment, rental }) => {
 
 
                     {/* =================================================
-                        PRICE
+                        PRICE + ACTION
                     ================================================= */}
 
-                    <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+                    <div className="mt-7 pt-5 border-t border-gray-100">
 
-                        <div>
+                        <div className="flex items-end justify-between gap-4">
 
-                            <p className="text-[10px] uppercase tracking-wider text-gray-400">
-                                Rental Price
-                            </p>
+                            <div>
 
-                            <p className="font-display text-lg text-[#0b1b34] mt-0.5">
+                                <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-gray-400">
+                                    Rental price
+                                </p>
 
-                                ₹{equipment.rentalPrice}
+                                <div className="flex items-baseline gap-1 mt-1">
 
-                                <span className="font-sans text-xs text-gray-400">
-                                    {" "} / day
+                                    <span className="font-display text-2xl text-[#0b1b34]">
+                                        ₹{equipment.rentalPrice}
+                                    </span>
+
+                                    <span className="font-sans text-xs text-gray-400">
+                                        / day
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <Link
+                                to={`/equipment/${equipment._id}`}
+                                className="
+                                    inline-flex
+                                    items-center
+                                    justify-center
+                                    px-5
+                                    py-3
+                                    rounded-full
+                                    bg-[#0b1b34]
+                                    text-white
+                                    font-sans
+                                    text-sm
+                                    font-medium
+                                    transition
+                                    hover:bg-[#142944]
+                                "
+                            >
+                                View Details
+                                <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
+                                    →
                                 </span>
-
-                            </p>
+                            </Link>
 
                         </div>
 
 
-                        <Link
-                            to={`/equipment/${equipment._id}`}
-                            className="font-sans text-sm px-4 py-2.5 rounded-xl bg-[#0b1b34] text-white hover:bg-[#142944] transition"
-                        >
-                            View Details →
-                        </Link>
+                        {/* =================================================
+                            WRITE REVIEW
+                        ================================================= */}
+
+                        {canReview && (
+
+                            <button
+                                onClick={() =>
+                                    setShowReviewModal(true)
+                                }
+                                className="
+                                    w-full
+                                    mt-4
+                                    py-3
+                                    rounded-full
+                                    border
+                                    border-gray-200
+                                    text-[#0b1b34]
+                                    font-sans
+                                    text-sm
+                                    font-medium
+                                    hover:border-[#0b1b34]
+                                    hover:bg-[#0b1b34]
+                                    hover:text-white
+                                    transition
+                                "
+                            >
+                                ★ Write a Review
+                            </button>
+
+                        )}
 
                     </div>
 
-
-                    {/* =================================================
-                        WRITE REVIEW
-                    ================================================= */}
-
-                    {canReview && (
-
-                        <button
-                            onClick={() =>
-                                setShowReviewModal(true)
-                            }
-                            className="w-full mt-3 py-2.5 rounded-xl border border-[#0b1b34] text-[#0b1b34] text-sm font-medium hover:bg-[#0b1b34] hover:text-white transition"
-                        >
-
-                            ★ Write a Review
-
-                        </button>
-
-                    )}
-
                 </div>
 
-            </div>
+            </article>
 
 
-            {/* =================================================
+            {/* =====================================================
                 REVIEW MODAL
-            ================================================= */}
+            ===================================================== */}
 
             {showReviewModal && (
 
@@ -245,14 +298,7 @@ const EquipmentCard = ({ equipment, rental }) => {
                         setShowReviewModal(false)
                     }
                     onSuccess={() => {
-
-                        /*
-                         * Review was successfully submitted.
-                         *
-                         * We close the modal here.
-                         * The review list can be refreshed separately.
-                         */
-
+                        setShowReviewModal(false);
                     }}
                 />
 

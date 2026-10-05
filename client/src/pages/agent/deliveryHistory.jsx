@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getMyDeliveries } from "../../features/deliverySlice";
 import Footer from "../../components/Footer.jsx";
+import AgentNavbar from "../../components/agentNavbar.jsx";
 
 const DeliveryHistory = () => {
     const dispatch = useDispatch();
@@ -92,6 +93,8 @@ const DeliveryHistory = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+
+            <AgentNavbar />
 
             {/* HEADER */}
 

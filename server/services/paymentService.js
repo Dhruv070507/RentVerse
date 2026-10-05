@@ -3,6 +3,7 @@ import crypto from "crypto";
 import ApiError from "../utils/ApiError.js";
 import Payment from "../models/paymentModel.js";
 import Rental from "../models/rentalModel.js";
+import Delivery from "../models/deliveryModel.js";
 import { createNotificationService } from "./notificationService.js";
 
 
@@ -130,6 +131,13 @@ const verifyRazorpayPaymentService = async (
         throw new ApiError(404, "Payment doesn't exist");
     }
 
+    if(!payment.rental){
+        throw new ApiError(
+            404,
+            "Rental associated with this payment doesn't exist"
+        );
+    }
+
     if(!payment.rental.renter.equals(userId)){
         throw new ApiError(
             403,
@@ -151,15 +159,12 @@ const verifyRazorpayPaymentService = async (
         );
     }
 
-    // generate the signature using the orderId and paymentId
     const generatedSignature = crypto
         .createHmac(
             "sha256",
             process.env.RAZORPAY_KEY_SECRET
         )
-        // the data to be hashed
         .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-        // the generated result is in binary so we convert it to hex
         .digest("hex");
 
     if(generatedSignature !== razorpaySignature){
@@ -175,6 +180,24 @@ const verifyRazorpayPaymentService = async (
 
     await payment.save();
 
+
+    // Create delivery after successful payment
+    const existingDelivery = await Delivery.findOne({
+        rental: payment.rental._id
+    });
+
+    if(!existingDelivery){
+
+        await Delivery.create({
+            rental: payment.rental._id,
+            deliveryAgent: null,
+            returnAgent: null,
+            deliveryAddress: payment.rental.address,
+            deliveryStatus: "pending"
+        });
+    }
+
+
     await createNotificationService({
         receiver: payment.rental.renter,
         type: "payment_completed",
@@ -185,7 +208,6 @@ const verifyRazorpayPaymentService = async (
 
     return payment;
 };
-
 
 const getMyPaymentsService = async (userId) => {
 

@@ -137,7 +137,7 @@ export const generateDeliveryOtp = createAsyncThunk(
     async (deliveryId, { rejectWithValue }) => {
         try {
             const response = await api.post(
-                `/deliveries/${deliveryId}/delivery-otp`
+                `/deliveries/${deliveryId}/generate-otp`
             );
 
             return response.data.data;
@@ -148,8 +148,7 @@ export const generateDeliveryOtp = createAsyncThunk(
             );
         }
     }
-);
-
+);  
 
 // ===============================
 // COMPLETE DELIVERY
@@ -240,7 +239,6 @@ export const generateReturnOtp = createAsyncThunk(
     }
 );
 
-
 // ===============================
 // COMPLETE RETURN
 // ===============================
@@ -312,217 +310,292 @@ const deliverySlice = createSlice({
 
         builder
 
-            // ===============================
-            // GET MY DELIVERIES
-            // ===============================
+        // ===============================
+        // GET MY DELIVERIES
+        // ===============================
 
-            .addCase(getMyDeliveries.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
+        .addCase(getMyDeliveries.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
 
-            .addCase(getMyDeliveries.fulfilled, (state, action) => {
-                state.loading = false;
-                state.deliveries = action.payload;
-            })
+        .addCase(getMyDeliveries.fulfilled, (state, action) => {
+            state.loading = false;
+            state.deliveries = action.payload;
+        })
 
-            .addCase(getMyDeliveries.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-
-            // ===============================
-            // GET ALL DELIVERIES - ADMIN
-            // ===============================
-
-            .addCase(getAllDeliveries.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-
-            .addCase(getAllDeliveries.fulfilled, (state, action) => {
-                state.loading = false;
-                state.deliveries = action.payload;
-            })
-
-            .addCase(getAllDeliveries.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-
-            // ===============================
-            // GET DELIVERY BY ID
-            // ===============================
-
-            .addCase(getDeliveryById.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-
-            .addCase(getDeliveryById.fulfilled, (state, action) => {
-                state.loading = false;
-                state.selectedDelivery = action.payload;
-            })
-
-            .addCase(getDeliveryById.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-
-
-            // ===============================
-            // CREATE DELIVERY
-            // ===============================
-
-            .addCase(createDelivery.fulfilled, (state, action) => {
-                state.deliveries.unshift(action.payload);
-            })
-
-
-            // ===============================
-            // ASSIGN DELIVERY
-            // ===============================
-
-            .addCase(assignDeliveryAgent.fulfilled, (state, action) => {
-                state.selectedDelivery = action.payload;
-            })
-
-
-            // ===============================
-            // START DELIVERY
-            // ===============================
-
-            .addCase(startDelivery.fulfilled, (state, action) => {
-                state.selectedDelivery = action.payload;
-
-                const index = state.deliveries.findIndex(
-                    (delivery) => delivery._id === action.payload._id
-                );
-
-                if (index !== -1) {
-                    state.deliveries[index] = action.payload;
-                }
-            })
-
-
-            // ===============================
-            // DELIVERY OTP
-            // ===============================
-
-            .addCase(generateDeliveryOtp.fulfilled, (state, action) => {
-                state.otp = action.payload.otp;
-            })
-
-
-            // ===============================
-            // COMPLETE DELIVERY
-            // ===============================
-
-            .addCase(completeDelivery.fulfilled, (state, action) => {
-                state.selectedDelivery = action.payload;
-
-                const index = state.deliveries.findIndex(
-                    (delivery) => delivery._id === action.payload._id
-                );
-
-                if (index !== -1) {
-                    state.deliveries[index] = action.payload;
-                }
-            })
-
-
-            // ===============================
-            // ASSIGN RETURN
-            // ===============================
-
-            .addCase(assignReturnAgent.fulfilled, (state, action) => {
-                state.selectedDelivery = action.payload;
-            })
-
-
-            // ===============================
-            // START RETURN
-            // ===============================
-
-            .addCase(startReturn.fulfilled, (state, action) => {
-                state.selectedDelivery = action.payload;
-
-                const index = state.deliveries.findIndex(
-                    (delivery) => delivery._id === action.payload._id
-                );
-
-                if (index !== -1) {
-                    state.deliveries[index] = action.payload;
-                }
-            })
-
-
-            // ===============================
-            // RETURN OTP
-            // ===============================
-
-            .addCase(generateReturnOtp.fulfilled, (state, action) => {
-                state.otp = action.payload.otp;
-            })
-
-
-            // ===============================
-            // COMPLETE RETURN
-            // ===============================
-
-            .addCase(completeReturn.fulfilled, (state, action) => {
-                state.selectedDelivery = action.payload;
-
-                const index = state.deliveries.findIndex(
-                    (delivery) => delivery._id === action.payload._id
-                );
-
-                if (index !== -1) {
-                    state.deliveries[index] = action.payload;
-                }
-            });
+        .addCase(getMyDeliveries.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
 
 
         // ===============================
-        // GLOBAL ERRORS
+        // GET ALL DELIVERIES - ADMIN
         // ===============================
 
-        builder
-            .addCase(createDelivery.rejected, (state, action) => {
-                state.error = action.payload;
-            })
+        .addCase(getAllDeliveries.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
 
-            .addCase(assignDeliveryAgent.rejected, (state, action) => {
-                state.error = action.payload;
-            })
+        .addCase(getAllDeliveries.fulfilled, (state, action) => {
+            state.loading = false;
+            state.deliveries = action.payload;
+        })
 
-            .addCase(startDelivery.rejected, (state, action) => {
-                state.error = action.payload;
-            })
+        .addCase(getAllDeliveries.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
 
-            .addCase(generateDeliveryOtp.rejected, (state, action) => {
-                state.error = action.payload;
-            })
 
-            .addCase(completeDelivery.rejected, (state, action) => {
-                state.error = action.payload;
-            })
+        // ===============================
+        // GET DELIVERY BY ID
+        // ===============================
 
-            .addCase(assignReturnAgent.rejected, (state, action) => {
-                state.error = action.payload;
-            })
+        .addCase(getDeliveryById.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
 
-            .addCase(startReturn.rejected, (state, action) => {
-                state.error = action.payload;
-            })
+        .addCase(getDeliveryById.fulfilled, (state, action) => {
+            state.loading = false;
+            state.selectedDelivery = action.payload;
+        })
 
-            .addCase(generateReturnOtp.rejected, (state, action) => {
-                state.error = action.payload;
-            })
+        .addCase(getDeliveryById.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
 
-            .addCase(completeReturn.rejected, (state, action) => {
-                state.error = action.payload;
-            });
+
+        // ===============================
+        // CREATE DELIVERY
+        // ===============================
+
+        .addCase(createDelivery.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        .addCase(createDelivery.fulfilled, (state, action) => {
+            state.loading = false;
+            state.deliveries.unshift(action.payload);
+        })
+
+        .addCase(createDelivery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // ===============================
+        // ASSIGN DELIVERY AGENT
+        // ===============================
+
+        .addCase(assignDeliveryAgent.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        .addCase(assignDeliveryAgent.fulfilled, (state, action) => {
+            state.loading = false;
+            state.selectedDelivery = action.payload;
+
+            const index = state.deliveries.findIndex(
+                (delivery) => delivery._id === action.payload._id
+            );
+
+            if (index !== -1) {
+                state.deliveries[index] = action.payload;
+            }
+        })
+
+        .addCase(assignDeliveryAgent.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // ===============================
+        // START DELIVERY
+        // ===============================
+
+        .addCase(startDelivery.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        .addCase(startDelivery.fulfilled, (state, action) => {
+            state.loading = false;
+            state.selectedDelivery = action.payload;
+
+            const index = state.deliveries.findIndex(
+                (delivery) => delivery._id === action.payload._id
+            );
+
+            if (index !== -1) {
+                state.deliveries[index] = action.payload;
+            }
+        })
+
+        .addCase(startDelivery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // ===============================
+        // GENERATE DELIVERY OTP
+        // ===============================
+
+        .addCase(generateDeliveryOtp.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        .addCase(generateDeliveryOtp.fulfilled, (state) => {
+            state.loading = false;
+            state.otp = null;
+        })
+
+        .addCase(generateDeliveryOtp.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // ===============================
+        // COMPLETE DELIVERY
+        // ===============================
+
+        .addCase(completeDelivery.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        .addCase(completeDelivery.fulfilled, (state, action) => {
+            state.loading = false;
+            state.selectedDelivery = action.payload;
+
+            const index = state.deliveries.findIndex(
+                (delivery) => delivery._id === action.payload._id
+            );
+
+            if (index !== -1) {
+                state.deliveries[index] = action.payload;
+            }
+        })
+
+        .addCase(completeDelivery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // ===============================
+        // ASSIGN RETURN AGENT
+        // ===============================
+
+        .addCase(assignReturnAgent.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        .addCase(assignReturnAgent.fulfilled, (state, action) => {
+            state.loading = false;
+            state.selectedDelivery = action.payload;
+
+            const index = state.deliveries.findIndex(
+                (delivery) => delivery._id === action.payload._id
+            );
+
+            if (index !== -1) {
+                state.deliveries[index] = action.payload;
+            }
+        })
+
+        .addCase(assignReturnAgent.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // ===============================
+        // START RETURN
+        // ===============================
+
+        .addCase(startReturn.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        .addCase(startReturn.fulfilled, (state, action) => {
+            state.loading = false;
+            state.selectedDelivery = action.payload;
+
+            const index = state.deliveries.findIndex(
+                (delivery) => delivery._id === action.payload._id
+            );
+
+            if (index !== -1) {
+                state.deliveries[index] = action.payload;
+            }
+        })
+
+        .addCase(startReturn.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // ===============================
+        // GENERATE RETURN OTP
+        // ===============================
+
+        .addCase(generateReturnOtp.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        .addCase(generateReturnOtp.fulfilled, (state) => {
+            state.loading = false;
+            state.otp = null;
+        })
+
+        .addCase(generateReturnOtp.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+
+
+        // ===============================
+        // COMPLETE RETURN
+        // ===============================
+
+        .addCase(completeReturn.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+
+        .addCase(completeReturn.fulfilled, (state, action) => {
+            state.loading = false;
+            state.selectedDelivery = action.payload;
+
+            const index = state.deliveries.findIndex(
+                (delivery) => delivery._id === action.payload._id
+            );
+
+            if (index !== -1) {
+                state.deliveries[index] = action.payload;
+            }
+        })
+
+        .addCase(completeReturn.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        });
     },
 });
 

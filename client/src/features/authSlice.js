@@ -24,6 +24,50 @@ export const loginUser = createAsyncThunk(
 );
 
 
+// Forgot Password
+export const forgotPassword = createAsyncThunk(
+    "auth/forgotPassword",
+    async (email, { rejectWithValue }) => {
+        try {
+            const response = await api.post(
+                "/users/forgot-password",
+                { email }
+            );
+
+            return response.data.data;
+
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to send password reset link"
+            );
+        }
+    }
+);
+
+
+// Reset Password
+export const resetPassword = createAsyncThunk(
+    "auth/resetPassword",
+    async ({ token, password }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(
+                `/users/reset-password/${token}`,
+                { password }
+            );
+
+            return response.data.data;
+
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to reset password"
+            );
+        }
+    }
+);
+
+
 export const logoutUser = createAsyncThunk(
     "auth/logoutUser",
     async (_, { dispatch, rejectWithValue }) => {
@@ -34,9 +78,9 @@ export const logoutUser = createAsyncThunk(
             dispatch(clearPaymentState());
             dispatch(clearDeliveryState());
             dispatch(clearNotificationState());
-            dispatch(logout());
 
             return true;
+
         } catch (error) {
             return rejectWithValue(
                 error.response?.data?.message || "Logout failed"
@@ -53,7 +97,15 @@ const initialState = {
     isAuthenticated: !!localStorage.getItem("accessToken"),
 
     loading: false,
-    error: null
+    error: null,
+
+    forgotPasswordLoading: false,
+    forgotPasswordError: null,
+    forgotPasswordMessage: null,
+
+    resetPasswordLoading: false,
+    resetPasswordError: null,
+    resetPasswordMessage: null,
 };
 
 
@@ -112,6 +164,52 @@ const authSlice = createSlice({
             });
 
 
+        // Forgot Password
+        builder
+            .addCase(forgotPassword.pending, (state) => {
+                state.forgotPasswordLoading = true;
+                state.forgotPasswordError = null;
+                state.forgotPasswordMessage = null;
+            })
+
+            .addCase(forgotPassword.fulfilled, (state, action) => {
+                state.forgotPasswordLoading = false;
+                state.forgotPasswordError = null;
+                state.forgotPasswordMessage =
+                    action.payload?.message ||
+                    "Password reset link sent successfully";
+            })
+
+            .addCase(forgotPassword.rejected, (state, action) => {
+                state.forgotPasswordLoading = false;
+                state.forgotPasswordError = action.payload;
+                state.forgotPasswordMessage = null;
+            });
+
+
+        // Reset Password
+        builder
+            .addCase(resetPassword.pending, (state) => {
+                state.resetPasswordLoading = true;
+                state.resetPasswordError = null;
+                state.resetPasswordMessage = null;
+            })
+
+            .addCase(resetPassword.fulfilled, (state, action) => {
+                state.resetPasswordLoading = false;
+                state.resetPasswordError = null;
+                state.resetPasswordMessage =
+                    action.payload?.message ||
+                    "Password reset successfully";
+            })
+
+            .addCase(resetPassword.rejected, (state, action) => {
+                state.resetPasswordLoading = false;
+                state.resetPasswordError = action.payload;
+                state.resetPasswordMessage = null;
+            });
+
+
         // Logout
         builder
             .addCase(logoutUser.pending, (state) => {
@@ -134,9 +232,6 @@ const authSlice = createSlice({
             })
 
             .addCase(logoutUser.rejected, (state, action) => {
-
-                // Even if backend logout fails,
-                // clear the local authentication state.
 
                 state.loading = false;
                 state.user = null;

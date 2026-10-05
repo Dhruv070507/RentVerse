@@ -9,8 +9,7 @@ const ReviewModal = ({
     onSuccess
 }) => {
 
-    const dispatch =
-        useDispatch();
+    const dispatch = useDispatch();
 
 
     const {
@@ -22,14 +21,9 @@ const ReviewModal = ({
     );
 
 
-    const [rating, setRating] =
-        useState(0);
-
-    const [hoverRating, setHoverRating] =
-        useState(0);
-
-    const [comment, setComment] =
-        useState("");
+    const [rating, setRating] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0);
+    const [comment, setComment] = useState("");
 
 
     /* =====================================================
@@ -44,9 +38,7 @@ const ReviewModal = ({
 
             onClose();
 
-            dispatch(
-                clearReviewState()
-            );
+            dispatch(clearReviewState());
 
         }
 
@@ -79,15 +71,9 @@ const ReviewModal = ({
 
         dispatch(
             addReview({
-
-                rentalId:
-                    rental._id,
-
+                rentalId: rental._id,
                 rating,
-
-                comment:
-                    comment.trim()
-
+                comment: comment.trim()
             })
         );
 
@@ -96,81 +82,230 @@ const ReviewModal = ({
 
     return (
 
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-5 py-8">
 
-            {/* Overlay */}
+            {/* =====================================================
+                OVERLAY
+            ===================================================== */}
 
             <div
                 onClick={onClose}
-                className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                className="
+                    absolute
+                    inset-0
+                    bg-[#0b1b34]/70
+                    backdrop-blur-sm
+                "
             />
 
 
-            {/* Modal */}
+            {/* =====================================================
+                MODAL
+            ===================================================== */}
 
-            <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 md:p-8">
+            <div
+                className="
+                    relative
+                    w-full
+                    max-w-xl
+                    max-h-[90vh]
+                    overflow-y-auto
+                    bg-white
+                    rounded-3xl
+                    shadow-2xl
+                    px-7
+                    py-8
+                    md:px-10
+                    md:py-10
+                "
+            >
 
-                {/* Close */}
+                {/* =====================================================
+                    CLOSE BUTTON
+                ===================================================== */}
 
                 <button
+                    type="button"
                     onClick={onClose}
-                    className="absolute top-5 right-5 w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition"
+                    className="
+                        absolute
+                        top-6
+                        right-6
+                        w-10
+                        h-10
+                        rounded-full
+                        border
+                        border-gray-100
+                        bg-white
+                        text-gray-400
+                        text-xl
+                        flex
+                        items-center
+                        justify-center
+                        hover:bg-gray-50
+                        hover:text-[#0b1b34]
+                        transition
+                    "
+                    aria-label="Close"
                 >
                     ×
                 </button>
 
 
-                {/* Header */}
+                {/* =====================================================
+                    HEADER
+                ===================================================== */}
 
-                <div className="pr-10">
+                <div className="pr-12">
 
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-gray-400 font-semibold">
-                        Rental Review
+                    <p className="
+                        font-sans
+                        text-[10px]
+                        tracking-[0.25em]
+                        text-gray-400
+                        uppercase
+                        mb-4
+                    ">
+                        RENTAL REVIEW
                     </p>
 
-                    <h2 className="font-display text-3xl text-[#0b1b34] mt-1">
-                        Share your experience
+
+                    <h2 className="
+                        font-display
+                        text-4xl
+                        md:text-5xl
+                        leading-tight
+                        text-[#0b1b34]
+                    ">
+                        Share your experience.
                     </h2>
 
-                    <p className="text-sm text-gray-500 mt-2">
-                        How was your experience with this equipment?
+
+                    <p className="
+                        font-sans
+                        text-sm
+                        md:text-base
+                        text-gray-500
+                        leading-relaxed
+                        mt-4
+                        max-w-md
+                    ">
+                        Your experience helps other renters make
+                        better decisions when choosing equipment.
                     </p>
 
                 </div>
 
 
-                {/* Equipment */}
 
-                <div className="mt-6 p-4 bg-gray-50 rounded-2xl">
+                {/* =====================================================
+                    EQUIPMENT
+                ===================================================== */}
 
-                    <p className="text-xs text-gray-400">
+                <div className="
+                    mt-8
+                    border-y
+                    border-gray-100
+                    py-5
+                ">
+
+                    <p className="
+                        font-sans
+                        text-[10px]
+                        uppercase
+                        tracking-[0.2em]
+                        text-gray-400
+                    ">
                         Equipment
                     </p>
 
-                    <p className="font-medium text-[#0b1b34] mt-1">
-                        {rental?.equipment?.name ||
-                            rental?.equipment?.title ||
-                            "Equipment"}
-                    </p>
+
+                    <div className="flex items-center justify-between gap-4 mt-2">
+
+                        <h3 className="
+                            font-display
+                            text-2xl
+                            text-[#0b1b34]
+                        ">
+                            {rental?.equipment?.name ||
+                                rental?.equipment?.title ||
+                                "Equipment"}
+                        </h3>
+
+
+                        <span className="
+                            shrink-0
+                            text-xs
+                            text-gray-400
+                        ">
+                            Completed rental
+                        </span>
+
+                    </div>
 
                 </div>
 
 
+
+                {/* =====================================================
+                    FORM
+                ===================================================== */}
+
                 <form
                     onSubmit={handleSubmit}
-                    className="mt-6"
+                    className="mt-8"
                 >
 
-                    {/* Rating */}
+
+                    {/* =================================================
+                        RATING
+                    ================================================= */}
 
                     <div>
 
-                        <p className="text-sm font-medium text-[#0b1b34]">
-                            Your rating
-                        </p>
+                        <div className="flex items-end justify-between">
+
+                            <div>
+
+                                <p className="
+                                    font-sans
+                                    text-xs
+                                    uppercase
+                                    tracking-[0.15em]
+                                    text-gray-400
+                                ">
+                                    Your rating
+                                </p>
+
+                                <p className="
+                                    font-sans
+                                    text-sm
+                                    text-gray-500
+                                    mt-1
+                                ">
+                                    How would you rate this equipment?
+                                </p>
+
+                            </div>
 
 
-                        <div className="flex gap-2 mt-3">
+                            {rating > 0 && (
+
+                                <span className="
+                                    font-sans
+                                    text-sm
+                                    font-medium
+                                    text-[#0b1b34]
+                                ">
+                                    {rating}/5
+                                </span>
+
+                            )}
+
+                        </div>
+
+
+                        <div className="flex gap-2 mt-5">
 
                             {[1, 2, 3, 4, 5].map(
                                 (star) => (
@@ -179,33 +314,43 @@ const ReviewModal = ({
                                         key={star}
                                         type="button"
                                         onMouseEnter={() =>
-                                            setHoverRating(
-                                                star
-                                            )
+                                            setHoverRating(star)
                                         }
                                         onMouseLeave={() =>
-                                            setHoverRating(
-                                                0
-                                            )
+                                            setHoverRating(0)
                                         }
                                         onClick={() =>
-                                            setRating(
-                                                star
-                                            )
+                                            setRating(star)
                                         }
-                                        className="text-3xl transition-transform hover:scale-110"
+                                        className="
+                                            w-11
+                                            h-11
+                                            rounded-full
+                                            border
+                                            border-gray-100
+                                            flex
+                                            items-center
+                                            justify-center
+                                            transition
+                                            hover:border-gray-300
+                                            hover:scale-105
+                                        "
                                     >
 
                                         <span
-                                            className={
-                                                star <=
-                                                (
-                                                    hoverRating ||
-                                                    rating
-                                                )
-                                                    ? "text-yellow-400"
-                                                    : "text-gray-200"
-                                            }
+                                            className={`
+                                                text-xl
+                                                transition
+                                                ${
+                                                    star <=
+                                                    (
+                                                        hoverRating ||
+                                                        rating
+                                                    )
+                                                        ? "text-yellow-400"
+                                                        : "text-gray-200"
+                                                }
+                                            `}
                                         >
                                             ★
                                         </span>
@@ -220,36 +365,79 @@ const ReviewModal = ({
                     </div>
 
 
-                    {/* Comment */}
 
-                    <div className="mt-6">
+                    {/* =================================================
+                        COMMENT
+                    ================================================= */}
 
-                        <label className="text-sm font-medium text-[#0b1b34]">
+                    <div className="mt-8">
+
+                        <label
+                            htmlFor="review-comment"
+                            className="
+                                font-sans
+                                text-xs
+                                uppercase
+                                tracking-[0.15em]
+                                text-gray-400
+                            "
+                        >
                             Your review
                         </label>
 
+
                         <textarea
+                            id="review-comment"
                             value={comment}
                             onChange={(e) =>
-                                setComment(
-                                    e.target.value
-                                )
+                                setComment(e.target.value)
                             }
                             rows={5}
                             placeholder="Tell others about your experience..."
-                            className="w-full mt-2 px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50/70 text-sm outline-none resize-none focus:border-[#0b1b34] focus:bg-white transition"
+                            className="
+                                w-full
+                                mt-3
+                                px-0
+                                py-4
+                                border-0
+                                border-b
+                                border-gray-200
+                                bg-transparent
+                                font-sans
+                                text-sm
+                                text-[#0b1b34]
+                                placeholder:text-gray-400
+                                outline-none
+                                resize-none
+                                focus:border-[#0b1b34]
+                                transition
+                            "
                         />
 
                     </div>
 
 
-                    {/* Error */}
+
+                    {/* =================================================
+                        ERROR
+                    ================================================= */}
 
                     {error && (
 
-                        <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-100">
+                        <div className="
+                            mt-5
+                            border-l-2
+                            border-red-500
+                            bg-red-50
+                            px-4
+                            py-3
+                        ">
 
-                            <p className="text-xs text-red-600">
+                            <p className="
+                                font-sans
+                                text-sm
+                                text-red-600
+                            ">
                                 {error}
                             </p>
 
@@ -258,23 +446,87 @@ const ReviewModal = ({
                     )}
 
 
-                    {/* Submit */}
 
-                    <button
-                        type="submit"
-                        disabled={
-                            submitting ||
-                            rating === 0 ||
-                            !comment.trim()
-                        }
-                        className="w-full mt-6 py-3.5 rounded-xl bg-[#0b1b34] text-white text-sm font-medium hover:bg-[#142944] disabled:opacity-40 disabled:cursor-not-allowed transition"
-                    >
+                    {/* =================================================
+                        ACTIONS
+                    ================================================= */}
 
-                        {submitting
-                            ? "Submitting Review..."
-                            : "Submit Review"}
+                    <div className="
+                        flex
+                        flex-col-reverse
+                        sm:flex-row
+                        gap-3
+                        mt-8
+                    ">
 
-                    </button>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="
+                                flex-1
+                                px-6
+                                py-3.5
+                                rounded-full
+                                border
+                                border-gray-200
+                                bg-white
+                                text-[#0b1b34]
+                                font-sans
+                                text-sm
+                                font-medium
+                                hover:bg-gray-50
+                                transition
+                            "
+                        >
+                            Cancel
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            disabled={
+                                submitting ||
+                                rating === 0 ||
+                                !comment.trim()
+                            }
+                            className="
+                                flex-1
+                                px-6
+                                py-3.5
+                                rounded-full
+                                bg-[#0b1b34]
+                                text-white
+                                font-sans
+                                text-sm
+                                font-medium
+                                hover:bg-[#142944]
+                                disabled:opacity-40
+                                disabled:cursor-not-allowed
+                                transition
+                            "
+                        >
+                            {submitting
+                                ? "Submitting..."
+                                : "Submit Review →"
+                            }
+                        </button>
+
+                    </div>
+
+
+                    {/* =================================================
+                        FOOTNOTE
+                    ================================================= */}
+
+                    <p className="
+                        font-sans
+                        text-xs
+                        text-gray-400
+                        text-center
+                        mt-5
+                    ">
+                        Your review will be visible to other RentVerse users.
+                    </p>
 
                 </form>
 
@@ -285,4 +537,4 @@ const ReviewModal = ({
 };
 
 
-export default ReviewModal;
+export default ReviewModal; 

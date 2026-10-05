@@ -49,36 +49,71 @@ const createDeliveryService = async (rentalId) => {
 };
 
 
-const getDeliveryByIdService = async(deliveryId, userId) =>{
+const getDeliveryByIdService = async (deliveryId, userId) => {
 
     const delivery = await Delivery.findById(deliveryId)
-                    .populate(
-                        "rental",
-                        "renter owner equipment rentalStartDate rentalEndDate status"
-                        )
-                    .populate(
-                        "deliveryAgent",
-                        "username profileImage"
-                        )
-                    .populate(
-                        "returnAgent",
-                        "username profileImage"
-                    )
+        .populate(
+            "rental",
+            "renter owner equipment rentalStartDate rentalEndDate status"
+        )
+        .populate(
+            "deliveryAgent",
+            "username profileImage"
+        )
+        .populate(
+            "returnAgent",
+            "username profileImage"
+        );
 
-    if(!delivery)
-        throw new ApiError(404, "Delivery doesn't exist");
+    if (!delivery)
+        throw new ApiError(
+            404,
+            "Delivery doesn't exist"
+        );
+
+    if (!delivery.rental)
+        throw new ApiError(
+            404,
+            "Rental associated with this delivery doesn't exist"
+        );
+
+    if (!delivery.rental.renter)
+        throw new ApiError(
+            404,
+            "Renter associated with this rental doesn't exist"
+        );
+
+    if (!delivery.rental.owner)
+        throw new ApiError(
+            404,
+            "Owner associated with this rental doesn't exist"
+        );
 
     const isRenter = delivery.rental.renter.equals(userId);
+
     const isOwner = delivery.rental.owner.equals(userId);
 
-    const isDeliveryAgent = delivery.deliveryAgent && delivery.deliveryAgent._id.equals(userId);
-    const isReturnAgent = delivery.returnAgent && delivery.returnAgent._id.equals(userId);
+    const isDeliveryAgent =
+        delivery.deliveryAgent &&
+        delivery.deliveryAgent._id.equals(userId);
 
-    if(!isRenter && !isOwner && !isDeliveryAgent && !isReturnAgent)
-        throw new ApiError(403, "You are not authorized to view this delivery");
+    const isReturnAgent =
+        delivery.returnAgent &&
+        delivery.returnAgent._id.equals(userId);
+
+    if (
+        !isRenter &&
+        !isOwner &&
+        !isDeliveryAgent &&
+        !isReturnAgent
+    )
+        throw new ApiError(
+            403,
+            "You are not authorized to view this delivery"
+        );
 
     return delivery;
-}
+};
 
 
 const getMyDeliveriesService = async(userId) => {
@@ -134,7 +169,7 @@ const getAllDeliveriesService = async () => {
             path: "rental",
             populate: {
                 path: "renter",
-                select: "name email"
+                select: "username email profileImage"
             }
         })
         .populate("deliveryAgent", "name email")
@@ -201,7 +236,7 @@ const startDeliveryService = async(deliveryId, deliveryAgentId) => {
         throw new ApiError(403, "You are not assigned to this delivery");
 
 
-    if(delivery.deliveryStatus !== "Pending")
+    if(delivery.deliveryStatus !== "pending")
         throw new ApiError(400, "Delivery cannot be started in this state");
 
     delivery.deliveryStatus = "out_for_delivery";
@@ -254,7 +289,6 @@ const generateDeliveryOtpService = async (deliveryId, userId) => {
 
     await delivery.save();
 
-    // Notify the renter about the delivery OTP
     await createNotificationService({
         receiver: rental.renter,
         type: "delivery_otp",
@@ -262,7 +296,10 @@ const generateDeliveryOtpService = async (deliveryId, userId) => {
         rental: rental._id
     });
 
-    return otp;
+    return {
+        success: true,
+        message: "Delivery OTP sent to the renter"
+    };
 };
 
 
@@ -408,8 +445,7 @@ const startReturnService = async (deliveryId, userId) => {
 
 const generateReturnOtpService = async (deliveryId, userId) => {
 
-    const delivery = await Delivery.findById(deliveryId)
-        .populate("rental", "renter");
+    const delivery = await Delivery.findById(deliveryId);
 
     if (!delivery)
         throw new ApiError(
@@ -418,10 +454,10 @@ const generateReturnOtpService = async (deliveryId, userId) => {
         );
 
     if (!delivery.returnAgent)
-        throw new ApiError(
-            400,
-            "No return agent has been assigned"
-        );
+    throw new ApiError(
+        400,
+        "No return agent has been assigned"
+    );
 
     if (!delivery.returnAgent.equals(userId))
         throw new ApiError(
@@ -435,21 +471,31 @@ const generateReturnOtpService = async (deliveryId, userId) => {
             "Return OTP cannot be generated in this state"
         );
 
+    const rental = await Rental.findById(delivery.rental);
+
+    if (!rental)
+        throw new ApiError(
+            404,
+            "Rental doesn't exist"
+        );
+
     const otp = generateOtp();
 
     delivery.returnOtp = otp;
 
     await delivery.save();
 
-    // Notify the renter about the return OTP
     await createNotificationService({
-        receiver: delivery.rental.renter,
+        receiver: rental.renter,
         type: "return_otp",
         message: `Your return OTP is ${otp}. Share it with the return agent.`,
-        rental: delivery.rental._id
+        rental: rental._id
     });
 
-    return otp;
+    return {
+        success: true,
+        message: "Return OTP sent to the renter"
+    };
 };
 
 

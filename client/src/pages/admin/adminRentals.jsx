@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getAllRentals } from "../../features/adminSlice";
 import Footer from "../../components/Footer.jsx";
+import AdminNavbar from "../../components/adminNavbar.jsx"
 
 
 const statusStyles = {
@@ -449,6 +450,8 @@ const AdminRentals = () => {
 
     return (
         <div className="min-h-screen bg-[#f7f7f5]">
+
+            <AdminNavbar />
 
             <div className="max-w-7xl mx-auto px-5 md:px-8 py-8 md:py-10">
 

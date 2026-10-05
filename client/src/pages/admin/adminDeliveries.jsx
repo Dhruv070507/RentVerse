@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { getAllDeliveries } from "../../features/adminSlice.js";
 import Footer from "../../components/Footer.jsx";
+import AdminNavbar from "../../components/adminNavbar.jsx"
 
 
 /* =========================================================
@@ -657,6 +658,8 @@ const AdminDeliveries = () => {
     return (
 
         <div className="min-h-screen bg-[#f7f7f5]">
+
+            <AdminNavbar />
 
             <div className="max-w-7xl mx-auto px-5 md:px-8 py-8 md:py-10">
 

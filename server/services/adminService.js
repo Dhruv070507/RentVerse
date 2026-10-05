@@ -103,7 +103,6 @@ const getAllUsersService = async () => {
 const getUnassignedDeliveriesService = async () => {
 
     const deliveries = await Delivery.find({
-        deliveryAgent: null,
         deliveryStatus: "pending"
     })
         .populate({

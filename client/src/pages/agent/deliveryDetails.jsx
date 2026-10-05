@@ -13,6 +13,7 @@ import {
     completeReturn,
     clearOtp,
 } from "../../features/deliverySlice";
+import AgentNavbar from "../../components/agentNavbar.jsx";
 
 const DeliveryDetails = () => {
     const { id } = useParams();
@@ -22,7 +23,6 @@ const DeliveryDetails = () => {
         selectedDelivery,
         loading,
         error,
-        otp,
     } = useSelector((state) => state.delivery);
 
     const [deliveryOtp, setDeliveryOtp] = useState("");
@@ -38,28 +38,34 @@ const DeliveryDetails = () => {
 
     if (loading && !selectedDelivery) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <p className="text-gray-500">
-                    Loading delivery...
-                </p>
+            <div className="min-h-screen bg-gray-50">
+                <AgentNavbar />
+                <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center">
+                    <p className="text-gray-500">
+                        Loading delivery...
+                    </p>
+                </div>
             </div>
         );
     }
 
     if (!selectedDelivery) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <h2 className="text-xl font-semibold">
-                        Delivery not found
-                    </h2>
+            <div className="min-h-screen bg-gray-50">
+                <AgentNavbar />
+                <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center">
+                    <div className="text-center">
+                        <h2 className="text-xl font-semibold">
+                            Delivery not found
+                        </h2>
 
-                    <Link
-                        to="/agent/dashboard"
-                        className="inline-block mt-4 text-sm underline"
-                    >
-                        Back to dashboard
-                    </Link>
+                        <Link
+                            to="/agent/dashboard"
+                            className="inline-block mt-4 text-sm underline"
+                        >
+                            Back to dashboard
+                        </Link>
+                    </div>
                 </div>
             </div>
         );
@@ -94,12 +100,25 @@ const DeliveryDetails = () => {
     };
 
     const handleStartDelivery = async () => {
-        await dispatch(startDelivery(delivery._id));
-        dispatch(getDeliveryById(delivery._id));
-    };
+            await dispatch(startDelivery(delivery._id));
+            dispatch(getDeliveryById(delivery._id));
+        };
 
-    const handleGenerateDeliveryOtp = async () => {
-        await dispatch(generateDeliveryOtp(delivery._id));
+        const handleGenerateDeliveryOtp = async () => {
+        console.log("Generate Delivery OTP clicked");
+        console.log("Delivery ID:", delivery?._id);
+
+        const result = await dispatch(
+            generateDeliveryOtp(delivery._id)
+        );
+
+        console.log("Generate OTP result:", result);
+
+        if (generateDeliveryOtp.fulfilled.match(result)) {
+            alert("Delivery OTP sent to renter.");
+        } else {
+            console.error("Generate OTP failed:", result.payload);
+        }
     };
 
     const handleCompleteDelivery = async () => {
@@ -200,6 +219,8 @@ const DeliveryDetails = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+
+            <AgentNavbar />
 
             {/* HEADER */}
 
@@ -357,7 +378,7 @@ const DeliveryDetails = () => {
 
                 {/* DELIVERY ACTION */}
 
-                {status === "Pending" && (
+                {status === "pending" && (
                     <section className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
 
                         <h2 className="text-lg font-semibold">
@@ -405,21 +426,6 @@ const DeliveryDetails = () => {
                         >
                             Generate Delivery OTP
                         </button>
-
-
-                        {otp && (
-                            <div className="mt-5 bg-gray-50 rounded-xl p-5">
-
-                                <p className="text-sm text-gray-500">
-                                    Generated OTP
-                                </p>
-
-                                <p className="text-3xl font-bold tracking-widest mt-1">
-                                    {otp}
-                                </p>
-
-                            </div>
-                        )}
 
 
                         <div className="mt-5 flex flex-col sm:flex-row gap-3">
@@ -538,70 +544,56 @@ const DeliveryDetails = () => {
 
                 {/* RETURN OTP */}
 
-                {status === "out_for_return" && (
-                    <section className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+{status === "out_for_return" && (
+    <section className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
 
-                        <h2 className="text-lg font-semibold">
-                            Complete Return
-                        </h2>
+        <h2 className="text-lg font-semibold">
+            Complete Return
+        </h2>
 
-                        <p className="text-sm text-gray-500 mt-2">
-                            Generate the return OTP and verify it
-                            with the renter.
-                        </p>
+        <p className="text-sm text-gray-500 mt-2">
+            Generate the return OTP and ask the renter
+            to provide it to you.
+        </p>
 
-                        <button
-                            onClick={handleGenerateReturnOtp}
-                            disabled={loading}
-                            className="mt-5 px-5 py-3 border border-gray-900 rounded-xl text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
-                        >
-                            Generate Return OTP
-                        </button>
+        <button
+            onClick={handleGenerateReturnOtp}
+            disabled={loading}
+            className="mt-5 px-5 py-3 border border-gray-900 rounded-xl text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+        >
+            {loading
+                ? "Generating..."
+                : "Generate Return OTP"}
+        </button>
 
+        <div className="mt-5 flex flex-col sm:flex-row gap-3">
 
-                        {otp && (
-                            <div className="mt-5 bg-gray-50 rounded-xl p-5">
+            <input
+                type="text"
+                value={returnOtp}
+                onChange={(e) =>
+                    setReturnOtp(e.target.value)
+                }
+                placeholder="Enter renter OTP"
+                maxLength={6}
+                className="border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-black"
+            />
 
-                                <p className="text-sm text-gray-500">
-                                    Generated OTP
-                                </p>
+            <button
+                onClick={handleCompleteReturn}
+                disabled={
+                    loading ||
+                    !returnOtp.trim()
+                }
+                className="px-5 py-3 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+            >
+                Complete Return
+            </button>
 
-                                <p className="text-3xl font-bold tracking-widest mt-1">
-                                    {otp}
-                                </p>
+        </div>
 
-                            </div>
-                        )}
-
-
-                        <div className="mt-5 flex flex-col sm:flex-row gap-3">
-
-                            <input
-                                type="text"
-                                value={returnOtp}
-                                onChange={(e) =>
-                                    setReturnOtp(e.target.value)
-                                }
-                                placeholder="Enter renter OTP"
-                                maxLength={6}
-                                className="border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-black"
-                            />
-
-                            <button
-                                onClick={handleCompleteReturn}
-                                disabled={
-                                    loading ||
-                                    !returnOtp.trim()
-                                }
-                                className="px-5 py-3 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
-                            >
-                                Complete Return
-                            </button>
-
-                        </div>
-
-                    </section>
-                )}
+    </section>
+)}
 
 
                 {/* COMPLETED */}

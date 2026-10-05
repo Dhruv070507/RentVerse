@@ -5,6 +5,8 @@ import {
     registerUserService,
     loginUserService,
     logoutUserService,
+    forgotPasswordService,
+    resetPasswordService,
 } from "../services/userService.js";
 
 
@@ -19,7 +21,6 @@ const userRegister = asyncHandler(async (req, res) => {
         profileImage: req.file
     });
 
-    // Sending the response to client
     return res.status(201).json(
         new ApiResponse(
             201,
@@ -28,6 +29,7 @@ const userRegister = asyncHandler(async (req, res) => {
         )
     );
 });
+
 
 // Login
 const userLogin = asyncHandler(async (req, res) => {
@@ -44,7 +46,25 @@ const userLogin = asyncHandler(async (req, res) => {
 });
 
 
+// Forgot Password
+const forgotPassword = asyncHandler(async (req, res) => {
+
+    const { email } = req.body;
+
+    const result = await forgotPasswordService(email);
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            result,
+            "Password reset link sent successfully"
+        )
+    );
+});
+
+
 const getProfile = asyncHandler(async (req, res) => {
+
     return res.status(200).json(
         new ApiResponse(
             200,
@@ -69,9 +89,31 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 
+const resetPassword = asyncHandler(async (req, res) => {
+
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const result = await resetPasswordService(
+        token,
+        password
+    );
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            result,
+            "Password reset successfully"
+        )
+    );
+});
+
+
 export {
     userRegister,
     userLogin,
+    forgotPassword,
     getProfile,
     logoutUser,
+    resetPassword,
 };

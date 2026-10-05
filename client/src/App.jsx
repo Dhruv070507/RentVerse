@@ -32,6 +32,9 @@ import Contact from "./pages/Contact.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import TermsOfService from "./pages/TermsOfService.jsx";
 import SafetyTrust from "./pages/SafetyTrust.jsx";
+import ForgotPassword from "./pages/auth/ForgotPassword.jsx"
+import ResetPassword from "./pages/auth/ResetPassword.jsx"
+import Register from "./pages/auth/Register.jsx";
 
 
 function App() {
@@ -49,6 +52,9 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
                 <Route path="/safety-trust" element={<SafetyTrust />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+                <Route path="/register" element={<Register />} />
 
 
                 {/* Normal User Protected Routes */}

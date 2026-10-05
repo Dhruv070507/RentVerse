@@ -5,6 +5,8 @@ import {
     userRegister,
     getProfile,
     logoutUser,
+    forgotPassword,
+    resetPassword,
 } from "../controllers/userController.js";
 
 import authenticationMiddleware from "../middlewares/authenticationMiddleware.js";
@@ -14,6 +16,8 @@ const router = Router();
 
 router.post("/register", upload.single("profileImage"), userRegister);
 router.post("/login", userLogin);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 router.get("/profile", authenticationMiddleware, getProfile);
 router.post("/logout", authenticationMiddleware, logoutUser);
 
