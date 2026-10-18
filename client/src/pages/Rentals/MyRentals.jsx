@@ -1,733 +1,329 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import {
-    getMyPayments
-} from "../../features/paymentSlice";
-
-import {
-    getMyRentals,
-    cancelRental
-} from "../../features/rentalSlice";
+import { getMyPayments } from "../../features/paymentSlice";
+import { getMyRentals, cancelRental } from "../../features/rentalSlice";
 
 import Navbar from "../../components/navbar";
 import Footer from "../../components/Footer.jsx";
-
+import { IconCheck, IconClock, IconPackage, IconMapPin, IconDocument } from "../../components/Icons.jsx";
 
 const MyRentals = () => {
-
     const dispatch = useDispatch();
+    const [filterTab, setFilterTab] = useState("all");
 
     const {
-        rentals,
+        rentals = [],
         loading,
         error
     } = useSelector((state) => state.rental);
 
     const {
-        payments
+        payments = []
     } = useSelector((state) => state.payment);
 
-
     useEffect(() => {
-
         dispatch(getMyRentals());
         dispatch(getMyPayments());
-
     }, [dispatch]);
 
-
-
     const handleCancel = (rentalId) => {
-
         if (window.confirm("Are you sure you want to cancel this rental request?")) {
-
             dispatch(cancelRental(rentalId));
-
         }
-
     };
 
-
-    const activeRentals = rentals.filter(
-        (rental) => rental.status === "approved"
-    );
-
-
-    const pendingRequests = rentals.filter(
-        (rental) => rental.status === "pending"
-    );
-
-
+    const activeRentals = rentals.filter((r) => r.status === "approved");
+    const pendingRequests = rentals.filter((r) => r.status === "pending");
     const completedRentals = rentals.filter(
-        (rental) =>
-            rental.status === "completed" ||
-            rental.status === "cancelled" ||
-            rental.status === "rejected"
+        (r) =>
+            r.status === "completed" ||
+            r.status === "cancelled" ||
+            r.status === "rejected"
     );
 
+    const displayedRentals = rentals.filter((r) => {
+        if (filterTab === "active") return r.status === "approved";
+        if (filterTab === "pending") return r.status === "pending";
+        if (filterTab === "history") {
+            return (
+                r.status === "completed" ||
+                r.status === "cancelled" ||
+                r.status === "rejected"
+            );
+        }
+        return true;
+    });
+
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case "approved":
+                return "bg-blue-50 text-blue-700 border-blue-200/60";
+            case "pending":
+                return "bg-slate-100 text-slate-800 border-slate-200/60";
+            case "completed":
+                return "bg-slate-900 text-white border-slate-800";
+            case "cancelled":
+            case "rejected":
+                return "bg-slate-100 text-slate-600 border-slate-200/60";
+            default:
+                return "bg-slate-50 text-slate-700 border-slate-200";
+        }
+    };
 
     if (loading) {
-
         return (
-            <div className="min-h-screen bg-white">
-
+            <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
                 <Navbar />
-
-                <main className="pt-32 px-6 pb-20">
-
-                    <div className="max-w-7xl mx-auto">
-
-                        <div className="max-w-2xl">
-
-                            <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                                RENTAL ACTIVITY
-                            </p>
-
-                            <h1 className="font-display text-5xl text-[#0b1b34]">
-                                My Rentals
-                            </h1>
-
-                            <p className="font-sans text-gray-500 mt-4">
-                                Loading your rental activity...
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </main>
-
+                <div className="flex-1 flex flex-col items-center justify-center p-6">
+                    <div className="w-12 h-12 border-3 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4" />
+                    <p className="font-display font-semibold text-slate-700 text-sm">
+                        Loading your rentals...
+                    </p>
+                </div>
                 <Footer />
-
             </div>
         );
-
     }
-
-
-    if (error) {
-
-        return (
-            <div className="min-h-screen bg-white">
-
-                <Navbar />
-
-                <main className="pt-32 px-6 pb-20">
-
-                    <div className="max-w-7xl mx-auto">
-
-                        <div className="border-y border-gray-200 py-10">
-
-                            <p className="font-sans text-sm text-red-500">
-                                {error}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </main>
-
-                <Footer />
-
-            </div>
-        );
-
-    }
-
 
     return (
-        <div className="min-h-screen bg-white">
-
+        <div className="min-h-screen bg-slate-50/50 text-slate-900 font-sans selection:bg-blue-500 selection:text-white flex flex-col justify-between">
             <Navbar />
 
-
-            {/* =====================================================
-                HERO
-            ===================================================== */}
-
-            <section className="pt-32 pb-20 px-6">
-
+            {/* Header Banner */}
+            <section className="bg-slate-900 border-b border-slate-800 text-white py-12 sm:py-14 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
+                    <span className="inline-block text-xs font-semibold uppercase tracking-wider text-slate-300 bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-full mb-4">
+                        Renter Dashboard
+                    </span>
+                    <h1 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white">
+                        My Rental Bookings
+                    </h1>
+                    <p className="mt-3 text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
+                        Monitor approval status, manage payments, track rental periods, and review your rental history with full transparency.
+                    </p>
+                </div>
+            </section>
 
-                    <div className="max-w-3xl">
-
-                        <p className="font-sans text-xs tracking-[0.25em] text-gray-400 uppercase mb-5">
-                            YOUR RENTAL ACTIVITY
-                        </p>
-
-                        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl leading-[1.05] text-[#0b1b34]">
-                            Everything you're
-                            <br />
-                            renting.
-                        </h1>
-
-                        <p className="font-sans text-gray-500 text-base md:text-lg leading-relaxed mt-6 max-w-2xl">
-                            Keep track of your equipment rentals, pending
-                            requests, rental periods, payments, and activity
-                            from one place.
-                        </p>
-
-                    </div>
-
-
-                    {/* Summary */}
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-16 pt-8 border-t border-gray-200">
-
+            {/* Summary KPI Cards */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10 mb-8 w-full">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div>
-
-                            <p className="font-sans text-xs uppercase tracking-[0.18em] text-gray-400">
-                                Active rentals
-                            </p>
-
-                            <p className="font-display text-4xl text-[#0b1b34] mt-2">
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">
+                                Active Rentals
+                            </span>
+                            <p className="font-display font-extrabold text-3xl text-slate-900 mt-2">
                                 {activeRentals.length}
                             </p>
-
                         </div>
+                        <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
+                            <IconCheck className="w-5 h-5 text-blue-600" />
+                        </div>
+                    </div>
 
-
+                    <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div>
-
-                            <p className="font-sans text-xs uppercase tracking-[0.18em] text-gray-400">
-                                Pending requests
-                            </p>
-
-                            <p className="font-display text-4xl text-[#0b1b34] mt-2">
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">
+                                Pending Requests
+                            </span>
+                            <p className="font-display font-extrabold text-3xl text-slate-900 mt-2">
                                 {pendingRequests.length}
                             </p>
-
                         </div>
-
-
-                        <div>
-
-                            <p className="font-sans text-xs uppercase tracking-[0.18em] text-gray-400">
-                                Total activity
-                            </p>
-
-                            <p className="font-display text-4xl text-[#0b1b34] mt-2">
-                                {rentals.length}
-                            </p>
-
+                        <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
+                            <IconClock className="w-5 h-5 text-slate-600" />
                         </div>
-
                     </div>
 
-                </div>
-
-            </section>
-
-
-            {/* =====================================================
-                ACTIVE RENTALS
-            ===================================================== */}
-
-            <section className="bg-[#0b1b34] text-white py-20 px-6">
-
-                <div className="max-w-7xl mx-auto">
-
-                    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-
+                    <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div>
-
-                            <p className="font-sans text-xs tracking-[0.2em] text-white/50 uppercase mb-4">
-                                CURRENTLY RENTING
-                            </p>
-
-                            <h2 className="font-display text-4xl md:text-5xl">
-                                Active rentals
-                            </h2>
-
-                            <p className="font-sans text-white/60 mt-4 max-w-xl">
-                                Equipment that has been approved and is
-                                currently part of your rental activity.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    {activeRentals.length === 0 ? (
-
-                        <div className="border-y border-white/10 py-12">
-
-                            <p className="font-sans text-white/60">
-                                You don't have any active rentals yet.
-                            </p>
-
-                            <Link
-                                to="/equipment"
-                                className="inline-block mt-5 text-sm text-white underline underline-offset-4"
-                            >
-                                Explore equipment →
-                            </Link>
-
-                        </div>
-
-                    ) : (
-
-                       <div className="space-y-0">
-
-    {activeRentals.map((rental) => {
-
-        const payment = payments?.find(
-            (payment) =>
-                payment.rental?._id === rental._id ||
-                payment.rental === rental._id
-        );
-
-        return (
-
-            <div
-                key={rental._id}
-                className="border-t border-white/10 py-8 last:border-b"
-            >
-
-                <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr_auto] gap-8 lg:items-center">
-
-                    {/* Equipment */}
-
-                    <div>
-
-                        <div className="flex items-center gap-3 mb-4">
-
-                            <span className="text-xs uppercase tracking-[0.15em] text-white/40">
-                                Active rental
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">
+                                Completed / Closed
                             </span>
-
-                            <span className="px-3 py-1 rounded-full bg-white/10 text-xs capitalize">
-                                {rental.status}
-                            </span>
-
+                            <p className="font-display font-extrabold text-3xl text-slate-900 mt-2">
+                                {completedRentals.length}
+                            </p>
                         </div>
-
-
-                        <h3 className="font-display text-3xl">
-                            {rental.equipment?.name || "Equipment"}
-                        </h3>
-
-
-                        <p className="font-sans text-sm text-white/50 mt-2">
-                            Rented from{" "}
-                            {rental.owner?.username || "Equipment owner"}
-                        </p>
-
-                    </div>
-
-
-                    {/* Rental details */}
-
-                    <div className="grid grid-cols-2 gap-6">
-
-                        <div>
-
-                            <p className="text-xs uppercase tracking-[0.15em] text-white/40">
-                                Rental period
-                            </p>
-
-
-                            <p className="font-sans text-sm mt-2">
-                                {new Date(
-                                    rental.rentalStartDate
-                                ).toLocaleDateString()}
-                            </p>
-
-
-                            <p className="font-sans text-sm text-white/50">
-                                to{" "}
-                                {new Date(
-                                    rental.rentalEndDate
-                                ).toLocaleDateString()}
-                            </p>
-
+                        <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
+                            <IconPackage className="w-5 h-5 text-slate-600" />
                         </div>
-
-
-                        <div>
-
-                            <p className="text-xs uppercase tracking-[0.15em] text-white/40">
-                                Total
-                            </p>
-
-
-                            <p className="font-display text-2xl mt-2">
-                                ₹{rental.totalPrice}
-                            </p>
-
-
-                            <p className="text-sm text-white/50">
-                                Qty. {rental.quantity}
-                            </p>
-
-                        </div>
-
                     </div>
-
-
-                    {/* Payment action */}
-
-                    <div className="lg:text-right">
-
-                        {payment?.paymentStatus === "completed" ? (
-
-                            <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-green-50 text-green-700 text-sm font-medium">
-
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-
-                                Paid
-
-                            </div>
-
-                        ) : payment?.paymentStatus === "pending" ? (
-
-                            <Link
-                                to={`/payment/${rental._id}`}
-                                className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-white text-[#0b1b34] text-sm font-medium hover:bg-gray-100 transition"
-                            >
-                                Complete Payment
-                            </Link>
-
-                        ) : (
-
-                            <Link
-                                to={`/payment/${rental._id}`}
-                                className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-white text-[#0b1b34] text-sm font-medium hover:bg-gray-100 transition"
-                            >
-                                Pay Now
-                            </Link>
-
-                        )}
-
-                    </div>
-
                 </div>
-
             </div>
 
-        );
-
-    })}
-
-                        </div>
-
-                    )}
-
+            {/* Main Rentals Section */}
+            <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-36 w-full">
+                {/* Filter Tabs */}
+                <div className="flex items-center gap-3 mb-10 border-b border-slate-200 pb-5 overflow-x-auto">
+                    {[
+                        { key: "all", label: `All Rentals (${rentals.length})` },
+                        { key: "active", label: `Active (${activeRentals.length})` },
+                        { key: "pending", label: `Pending (${pendingRequests.length})` },
+                        { key: "history", label: `History (${completedRentals.length})` }
+                    ].map((tab) => (
+                        <button
+                            key={tab.key}
+                            onClick={() => setFilterTab(tab.key)}
+                            className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                                filterTab === tab.key
+                                    ? "bg-slate-900 text-white shadow-xs"
+                                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
                 </div>
 
-            </section>
-
-
-            {/* =====================================================
-                PENDING REQUESTS
-            ===================================================== */}
-
-            <section className="py-20 px-6">
-
-                <div className="max-w-7xl mx-auto">
-
-                    <div className="max-w-2xl mb-12">
-
-                        <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                            WAITING FOR APPROVAL
-                        </p>
-
-                        <h2 className="font-display text-4xl md:text-5xl text-[#0b1b34]">
-                            Pending requests
-                        </h2>
-
-                        <p className="font-sans text-gray-500 mt-4">
-                            Requests you've sent to equipment owners.
-                            Once approved, they'll move into your active
-                            rentals.
-                        </p>
-
+                {error && (
+                    <div className="mb-8 p-4 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-semibold">
+                        {error}
                     </div>
+                )}
 
-
-                    {pendingRequests.length === 0 ? (
-
-                        <div className="border-y border-gray-200 py-12">
-
-                            <p className="font-sans text-sm text-gray-500">
-                                You don't have any pending rental requests.
-                            </p>
-
+                {displayedRentals.length === 0 ? (
+                    <div className="bg-white rounded-2xl border border-slate-200 p-16 sm:p-20 text-center max-w-lg mx-auto shadow-sm my-8">
+                        <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-4">
+                            <IconDocument className="w-7 h-7" />
                         </div>
+                        <h3 className="font-display font-bold text-xl text-slate-900">
+                            No bookings found
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-2 mb-8 leading-relaxed">
+                            You have no rental bookings in this view right now. Explore the marketplace to reserve gear for your upcoming projects.
+                        </p>
+                        <Link
+                            to="/equipments"
+                            className="px-6 py-3 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-semibold hover:bg-slate-800 transition-colors inline-block cursor-pointer shadow-sm"
+                        >
+                            Explore Equipment Marketplace
+                        </Link>
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        {displayedRentals.map((rental) => {
+                            const payment = payments?.find(
+                                (p) =>
+                                    p.rental?._id === rental._id ||
+                                    p.rental === rental._id
+                            );
 
-                    ) : (
-
-                        <div>
-
-                            {pendingRequests.map((rental) => (
-
+                            return (
                                 <div
                                     key={rental._id}
-                                    className="border-t border-gray-200 py-8 last:border-b"
+                                    className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 lg:p-9 shadow-sm hover:shadow-md hover:border-slate-300 transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-8 lg:gap-12"
                                 >
-
-                                    <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr_auto] gap-8 lg:items-center">
-
-                                        <div>
-
-                                            <div className="flex items-center gap-3 mb-3">
-
-                                                <span className="text-xs uppercase tracking-[0.15em] text-gray-400">
-                                                    Rental request
-                                                </span>
-
-                                                <span className="px-3 py-1 rounded-full bg-yellow-50 text-yellow-700 text-xs capitalize">
-                                                    {rental.status}
-                                                </span>
-
-                                            </div>
-
-                                            <h3 className="font-display text-2xl text-[#0b1b34]">
-                                                {rental.equipment?.name || "Equipment"}
-                                            </h3>
-
-                                            <p className="font-sans text-sm text-gray-500 mt-2">
-                                                Owner:{" "}
-                                                {rental.owner?.username || "Equipment owner"}
-                                            </p>
-
-                                        </div>
-
-
-                                        <div className="grid grid-cols-2 gap-6">
-
-                                            <div>
-
-                                                <p className="text-xs uppercase tracking-[0.15em] text-gray-400">
-                                                    Requested period
-                                                </p>
-
-                                                <p className="text-sm text-[#0b1b34] mt-2">
-                                                    {new Date(
-                                                        rental.rentalStartDate
-                                                    ).toLocaleDateString()}
-                                                </p>
-
-                                                <p className="text-sm text-gray-400">
-                                                    to{" "}
-                                                    {new Date(
-                                                        rental.rentalEndDate
-                                                    ).toLocaleDateString()}
-                                                </p>
-
-                                            </div>
-
-
-                                            <div>
-
-                                                <p className="text-xs uppercase tracking-[0.15em] text-gray-400">
-                                                    Amount
-                                                </p>
-
-                                                <p className="font-display text-2xl text-[#0b1b34] mt-2">
-                                                    ₹{rental.totalPrice}
-                                                </p>
-
-                                                <p className="text-sm text-gray-400">
-                                                    Qty. {rental.quantity}
-                                                </p>
-
-                                            </div>
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <button
-                                                onClick={() =>
-                                                    handleCancel(rental._id)
-                                                }
-                                                className="px-6 py-3 rounded-full border border-gray-200 text-[#0b1b34] text-sm hover:border-gray-400 transition"
+                                    {/* Left: Info */}
+                                    <div className="flex-1 space-y-3">
+                                        <div className="flex items-center gap-3 flex-wrap">
+                                            <span
+                                                className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border ${getStatusBadge(
+                                                    rental.status
+                                                )}`}
                                             >
-                                                Cancel request
-                                            </button>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            ))}
-
-                        </div>
-
-                    )}
-
-                </div>
-
-            </section>
-
-
-            {/* =====================================================
-                HISTORY
-            ===================================================== */}
-
-            {completedRentals.length > 0 && (
-
-                <section className="bg-gray-50 py-20 px-6">
-
-                    <div className="max-w-7xl mx-auto">
-
-                        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
-
-                            <div>
-
-                                <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                                    PAST ACTIVITY
-                                </p>
-
-                                <h2 className="font-display text-4xl text-[#0b1b34]">
-                                    Rental history
-                                </h2>
-
-                            </div>
-
-                        </div>
-
-
-                        <div>
-
-                            {completedRentals.map((rental) => (
-
-                                <div
-                                    key={rental._id}
-                                    className="border-t border-gray-200 py-7 last:border-b"
-                                >
-
-                                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_auto] gap-6 md:items-center">
-
-                                        <div>
-
-                                            <h3 className="font-display text-xl text-[#0b1b34]">
-                                                {rental.equipment?.name || "Equipment"}
-                                            </h3>
-
-                                            <p className="text-sm text-gray-500 mt-1">
-                                                {rental.owner?.username || "Equipment owner"}
-                                            </p>
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <p className="text-xs uppercase tracking-[0.15em] text-gray-400">
-                                                Period
-                                            </p>
-
-                                            <p className="text-sm text-gray-600 mt-2">
-                                                {new Date(
-                                                    rental.rentalStartDate
-                                                ).toLocaleDateString()}
-                                                {" — "}
-                                                {new Date(
-                                                    rental.rentalEndDate
-                                                ).toLocaleDateString()}
-                                            </p>
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <p className="text-xs uppercase tracking-[0.15em] text-gray-400">
-                                                Amount
-                                            </p>
-
-                                            <p className="font-display text-xl text-[#0b1b34] mt-2">
-                                                ₹{rental.totalPrice}
-                                            </p>
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <span className={`inline-block px-3 py-1.5 rounded-full text-xs capitalize ${
-                                                rental.status === "completed"
-                                                    ? "bg-green-50 text-green-700"
-                                                    : rental.status === "cancelled"
-                                                    ? "bg-gray-100 text-gray-600"
-                                                    : "bg-red-50 text-red-600"
-                                            }`}>
                                                 {rental.status}
                                             </span>
 
+                                            {payment?.paymentStatus === "completed" ? (
+                                                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                                                    Paid
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                                                    Payment Pending
+                                                </span>
+                                            )}
                                         </div>
 
-                                    </div>
+                                        <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900">
+                                            {rental.equipment?.name || "Equipment"}
+                                        </h3>
 
+                                        <p className="text-xs sm:text-sm text-slate-500 flex flex-wrap items-center gap-x-4 gap-y-1">
+                                             <span>
+                                                 Owner:{" "}
+                                                 <span className="font-semibold text-slate-700">
+                                                     @{rental.owner?.username || "owner"}
+                                                 </span>
+                                             </span>
+                                             {rental.address && (
+                                                 <span className="inline-flex items-center gap-1.5 text-slate-600">
+                                                     <IconMapPin className="w-3.5 h-3.5 text-slate-400" />
+                                                     <span>Delivery: {rental.address}</span>
+                                                 </span>
+                                             )}
+                                         </p>
+                                     </div>
+
+                                     {/* Middle: Dates & Price */}
+                                     <div className="flex items-center gap-8 sm:gap-12 border-t sm:border-t-0 sm:border-l border-slate-100 pt-5 sm:pt-0 sm:pl-10">
+                                         <div>
+                                             <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                                                 Rental Period
+                                             </span>
+                                             <p className="text-sm font-semibold text-slate-800 mt-1">
+                                                 {new Date(rental.rentalStartDate).toLocaleDateString()}
+                                             </p>
+                                             <p className="text-xs text-slate-400 mt-0.5">
+                                                 to {new Date(rental.rentalEndDate).toLocaleDateString()}
+                                             </p>
+                                         </div>
+
+                                         <div>
+                                             <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                                                 Total Cost
+                                             </span>
+                                             <p className="font-display font-extrabold text-2xl text-slate-900 mt-1">
+                                                 ₹{rental.totalPrice}
+                                             </p>
+                                             <p className="text-xs text-slate-400 font-medium mt-0.5">
+                                                 Qty: {rental.quantity}
+                                             </p>
+                                         </div>
+                                     </div>
+
+                                     {/* Right: Actions */}
+                                     <div className="flex items-center gap-3 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-100 justify-end flex-wrap">
+                                         {rental.status === "pending" && (
+                                             <button
+                                                 onClick={() => handleCancel(rental._id)}
+                                                 className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
+                                             >
+                                                 Cancel Request
+                                             </button>
+                                         )}
+
+                                         {rental.status === "approved" && payment?.paymentStatus !== "completed" && (
+                                             <Link
+                                                 to={`/payment/${rental._id}`}
+                                                 className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-semibold hover:bg-blue-700 shadow-sm transition-all"
+                                             >
+                                                 Pay ₹{rental.totalPrice} Now
+                                             </Link>
+                                         )}
+
+                                         {rental.equipment?._id && (
+                                             <Link
+                                                 to={`/equipment/${rental.equipment._id}`}
+                                                 className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs sm:text-sm font-semibold hover:bg-slate-50 transition-colors"
+                                             >
+                                                 View Item
+                                             </Link>
+                                         )}
+                                     </div>
                                 </div>
-
-                            ))}
-
-                        </div>
-
+                            );
+                        })}
                     </div>
-
-                </section>
-
-            )}
-
-
-            {/* =====================================================
-                CTA
-            ===================================================== */}
-
-            <section className="bg-[#0b1b34] px-6 py-20">
-
-                <div className="max-w-7xl mx-auto">
-
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
-
-                        <div className="max-w-2xl">
-
-                            <p className="font-sans text-xs tracking-[0.2em] text-white/40 uppercase mb-4">
-                                NEED SOMETHING ELSE?
-                            </p>
-
-                            <h2 className="font-display text-4xl md:text-5xl text-white">
-                                Find your next piece of equipment.
-                            </h2>
-
-                            <p className="font-sans text-white/60 mt-4 max-w-xl">
-                                Explore equipment from other users and find
-                                what you need for your next project.
-                            </p>
-
-                        </div>
-
-
-                        <Link
-                            to="/equipment"
-                            className="inline-flex items-center justify-center px-7 py-4 rounded-full bg-white text-[#0b1b34] text-sm font-medium hover:bg-gray-100 transition whitespace-nowrap"
-                        >
-                            Explore equipment →
-                        </Link>
-
-                    </div>
-
-                </div>
-
-            </section>
-
+                )}
+            </main>
 
             <Footer />
-
         </div>
     );
 };
-
 
 export default MyRentals;

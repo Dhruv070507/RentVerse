@@ -137,7 +137,7 @@ export const generateDeliveryOtp = createAsyncThunk(
     async (deliveryId, { rejectWithValue }) => {
         try {
             const response = await api.post(
-                `/deliveries/${deliveryId}/generate-otp`
+                `/deliveries/${deliveryId}/delivery-otp`
             );
 
             return response.data.data;
@@ -209,6 +209,9 @@ export const startReturn = createAsyncThunk(
 
             return response.data.data;
         } catch (error) {
+            console.log("START RETURN ERROR:", error.response?.data);
+            console.log("STATUS:", error.response?.status);
+
             return rejectWithValue(
                 error.response?.data?.message ||
                 "Failed to start return"
@@ -253,6 +256,10 @@ export const completeReturn = createAsyncThunk(
 
             return response.data.data;
         } catch (error) {
+            console.log("COMPLETE RETURN ERROR:", error.response?.data);
+            console.log("STATUS:", error.response?.status);
+            console.log("REQUEST DATA:", { deliveryId, otp });
+
             return rejectWithValue(
                 error.response?.data?.message ||
                 "Failed to complete return"

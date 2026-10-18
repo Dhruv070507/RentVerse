@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { getMyDeliveries } from "../../features/deliverySlice";
 import AgentNavbar from "../../components/agentNavbar.jsx";
 import Footer from "../../components/Footer.jsx";
-
+import { IconPackage, IconSearch, IconAlert } from "../../components/Icons.jsx";
 
 const ACTIVE_STATUSES = ["out_for_delivery", "out_for_return"];
 
@@ -22,35 +22,23 @@ const AgentDashboard = () => {
         dispatch(getMyDeliveries());
     }, [dispatch]);
 
-    // --------------------------------
-    // Statistics
-    // --------------------------------
-
     const stats = useMemo(() => {
         return {
             total: deliveries.length,
-
             pending: deliveries.filter(
                 (d) => d.deliveryStatus === "pending"
             ).length,
-
             active: deliveries.filter((d) =>
                 ACTIVE_STATUSES.includes(d.deliveryStatus)
             ).length,
-
             delivered: deliveries.filter(
                 (d) => d.deliveryStatus === "delivered"
             ).length,
-
             returned: deliveries.filter(
                 (d) => d.deliveryStatus === "returned"
             ).length,
         };
     }, [deliveries]);
-
-    // --------------------------------
-    // Filter Deliveries
-    // --------------------------------
 
     const filteredDeliveries = useMemo(() => {
         const searchValue = search.toLowerCase().trim();
@@ -79,24 +67,20 @@ const AgentDashboard = () => {
         });
     }, [deliveries, search, statusFilter]);
 
-    // --------------------------------
-    // Helpers
-    // --------------------------------
-
     const getStatusLabel = (status) => {
         switch (status) {
             case "pending":
-                return "Pending";
+                return "Pending Dispatch";
             case "out_for_delivery":
                 return "Out for Delivery";
             case "delivered":
-                return "Delivered";
+                return "Delivered to Customer";
             case "return_scheduled":
                 return "Return Scheduled";
             case "out_for_return":
                 return "Out for Return";
             case "returned":
-                return "Returned";
+                return "Returned to Owner";
             case "cancelled":
                 return "Cancelled";
             default:
@@ -108,8 +92,8 @@ const AgentDashboard = () => {
         switch (status) {
             case "pending":
                 return {
-                    badge: "bg-yellow-50 text-yellow-700 border-yellow-200",
-                    dot: "bg-yellow-500",
+                    badge: "bg-slate-100 text-slate-800 border-slate-200",
+                    dot: "bg-slate-500",
                 };
             case "out_for_delivery":
                 return {
@@ -118,40 +102,39 @@ const AgentDashboard = () => {
                 };
             case "delivered":
                 return {
-                    badge: "bg-green-50 text-green-700 border-green-200",
-                    dot: "bg-green-500",
+                    badge: "bg-blue-50 text-blue-700 border-blue-200",
+                    dot: "bg-blue-500",
                 };
             case "return_scheduled":
                 return {
-                    badge: "bg-purple-50 text-purple-700 border-purple-200",
-                    dot: "bg-purple-500",
+                    badge: "bg-slate-100 text-slate-700 border-slate-200",
+                    dot: "bg-slate-500",
                 };
             case "out_for_return":
                 return {
-                    badge: "bg-orange-50 text-orange-700 border-orange-200",
-                    dot: "bg-orange-500",
+                    badge: "bg-blue-50 text-blue-700 border-blue-200",
+                    dot: "bg-blue-500",
                 };
             case "returned":
                 return {
-                    badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
-                    dot: "bg-emerald-500",
+                    badge: "bg-slate-900 text-white border-slate-800",
+                    dot: "bg-slate-300",
                 };
             case "cancelled":
                 return {
-                    badge: "bg-red-50 text-red-700 border-red-200",
-                    dot: "bg-red-500",
+                    badge: "bg-slate-100 text-slate-700 border-slate-200",
+                    dot: "bg-slate-400",
                 };
             default:
                 return {
-                    badge: "bg-gray-50 text-gray-700 border-gray-200",
-                    dot: "bg-gray-500",
+                    badge: "bg-slate-50 text-slate-700 border-slate-200",
+                    dot: "bg-slate-500",
                 };
         }
     };
 
     const formatDate = (date) => {
         if (!date) return "—";
-
         return new Date(date).toLocaleDateString("en-IN", {
             day: "2-digit",
             month: "short",
@@ -159,592 +142,267 @@ const AgentDashboard = () => {
         });
     };
 
-    // --------------------------------
-    // Loading
-    // --------------------------------
-
-    if (loading) {
+    if (loading && deliveries.length === 0) {
         return (
-            <div className="min-h-screen bg-white relative overflow-hidden">
-
+            <div className="min-h-screen bg-slate-50">
                 <AgentNavbar />
-
-                {/* Background glow */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-40 -right-32 w-[520px] h-[520px] rounded-full bg-blue-400/20 blur-[90px]" />
-                    <div className="absolute top-[35%] right-[20%] w-[420px] h-[420px] rounded-full bg-indigo-400/15 blur-[90px]" />
-                    <div className="absolute bottom-[-150px] left-[15%] w-[500px] h-[400px] rounded-full bg-purple-400/15 blur-[100px]" />
-                </div>
-
-                <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-12">
-
-                    <div className="animate-pulse">
-
-                        <div className="h-3 w-32 bg-gray-200 rounded-full mb-4" />
-                        <div className="h-10 w-64 bg-gray-200 rounded-xl mb-3" />
-                        <div className="h-4 w-96 bg-gray-200 rounded-full mb-12" />
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5 mb-10">
-                            {[1, 2, 3, 4, 5].map((item) => (
-                                <div
-                                    key={item}
-                                    className="h-36 bg-white border border-gray-100 rounded-3xl shadow-sm"
-                                />
-                            ))}
-                        </div>
-
-                        <div className="h-[500px] bg-white border border-gray-100 rounded-3xl shadow-sm" />
-
+                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 animate-pulse">
+                    <div className="h-4 w-32 bg-slate-200 rounded-full mb-4" />
+                    <div className="h-10 w-72 bg-slate-200 rounded-2xl mb-4" />
+                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="h-28 bg-white border border-slate-200 rounded-3xl" />
+                        ))}
                     </div>
-                </div>
+                    <div className="h-96 bg-white border border-slate-200 rounded-3xl" />
+                </main>
             </div>
         );
     }
 
-    // --------------------------------
-    // Error
-    // --------------------------------
-
-    if (error) {
+    if (error && deliveries.length === 0) {
         return (
-            <div className="min-h-screen bg-white relative overflow-hidden">
-
+            <div className="min-h-screen bg-slate-50">
                 <AgentNavbar />
-
-                <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute -top-40 -right-32 w-[520px] h-[520px] rounded-full bg-red-400/10 blur-[90px]" />
-                </div>
-
-                <div className="relative z-10 min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
-
-                    <div className="max-w-md w-full bg-white border border-gray-200 rounded-3xl p-10 text-center shadow-xl shadow-gray-200/40">
-
-                        <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center mb-6">
-                            <span className="text-red-500 text-2xl font-bold">
-                                !
-                            </span>
+                <main className="min-h-[70vh] flex items-center justify-center px-6">
+                    <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-sm">
+                        <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center mx-auto mb-4 border border-slate-200">
+                            <IconAlert className="w-6 h-6" />
                         </div>
-
-                        <p className="text-xs tracking-[0.2em] text-red-400 uppercase mb-3">
-                            Something went wrong
-                        </p>
-
-                        <h2 className="font-display text-3xl text-[#0b1b34]">
-                            Unable to load deliveries
+                        <h2 className="font-display font-bold text-2xl text-slate-900">
+                            Unable to load tasks
                         </h2>
-
-                        <p className="text-gray-500 mt-3 leading-relaxed">
+                        <p className="text-xs sm:text-sm text-slate-500 mt-2 leading-relaxed">
                             {error}
                         </p>
-
                         <button
                             onClick={() => dispatch(getMyDeliveries())}
-                            className="mt-7 px-6 py-3 rounded-full bg-[#0b1b34] text-white text-sm hover:bg-[#142944] transition"
+                            className="mt-6 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition cursor-pointer"
                         >
                             Try Again
                         </button>
-
                     </div>
-
-                </div>
+                </main>
             </div>
         );
     }
 
-    // --------------------------------
-    // Main UI
-    // --------------------------------
-
-    const statCards = [
-        {
-            label: "Total",
-            value: stats.total,
-            icon: "D",
-            note: "All assigned deliveries",
-            valueColor: "text-[#0b1b34]",
-            iconStyle: "bg-[#0b1b34] text-white",
-        },
-        {
-            label: "Pending",
-            value: stats.pending,
-            icon: "P",
-            note: "Waiting to start",
-            valueColor: "text-yellow-600",
-            iconStyle: "bg-yellow-50 text-yellow-600",
-        },
-        {
-            label: "Active",
-            value: stats.active,
-            icon: "A",
-            note: "Currently in progress",
-            valueColor: "text-blue-600",
-            iconStyle: "bg-blue-50 text-blue-600",
-        },
-        {
-            label: "Delivered",
-            value: stats.delivered,
-            icon: "✓",
-            note: "Successfully completed",
-            valueColor: "text-green-600",
-            iconStyle: "bg-green-50 text-green-600",
-        },
-        {
-            label: "Returned",
-            value: stats.returned,
-            icon: "R",
-            note: "Equipment returned",
-            valueColor: "text-emerald-600",
-            iconStyle: "bg-emerald-50 text-emerald-600",
-        },
-    ];
-
     return (
-        <div className="min-h-screen bg-white relative overflow-hidden">
-
+        <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between font-sans selection:bg-blue-500 selection:text-white">
             <AgentNavbar />
 
-            {/* =========================================
-                BACKGROUND
-            ========================================= */}
-
-            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-
-                <div className="absolute -top-32 -right-20 w-[520px] h-[520px] rounded-full bg-blue-400/20 blur-[80px]" />
-
-                <div className="absolute top-[30%] right-[22%] w-[420px] h-[420px] rounded-full bg-indigo-400/15 blur-[85px]" />
-
-                <div className="absolute top-[18%] right-[2%] w-[300px] h-[300px] rounded-full bg-pink-400/15 blur-[70px]" />
-
-                <div className="absolute top-[45%] left-[-100px] w-[300px] h-[300px] rounded-full bg-orange-300/10 blur-[75px]" />
-
-                <div className="absolute bottom-[-120px] right-[35%] w-[500px] h-[400px] rounded-full bg-blue-400/15 blur-[90px]" />
-
-            </div>
-
-
-            <main className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-14 pb-20">
-
-                {/* =========================================
-                    HEADER
-                ========================================= */}
-
-                <section className="mb-12">
-
-                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
-
+            {/* Hero Header */}
+            <section className="bg-slate-900 border-b border-slate-800 text-white relative">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16 relative z-10">
+                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
                         <div>
-
-                            <p className="font-sans text-xs tracking-[0.25em] text-gray-400 uppercase mb-4">
-                                RENTVERSE DELIVERY
-                            </p>
-
-                            <h1 className="font-display text-5xl md:text-6xl leading-[1.05] text-[#0b1b34]">
-                                Manage your
-                                <br />
-                                <span className="text-gray-400">
-                                    deliveries.
-                                </span>
-                            </h1>
-
-                            <p className="font-sans max-w-xl mt-5 text-base md:text-lg text-gray-500 leading-relaxed">
-                                Manage assigned deliveries, track equipment
-                                movement, and keep every rental moving smoothly.
-                            </p>
-
-                        </div>
-
-
-                        {/* Active summary */}
-
-                        <div className="flex items-center gap-4 bg-white/80 backdrop-blur-md border border-gray-200 rounded-2xl px-5 py-4 shadow-sm">
-
-                            <div className="w-11 h-11 rounded-xl bg-[#0b1b34] text-white flex items-center justify-center">
-                                <span className="text-sm font-semibold">
-                                    {stats.active}
-                                </span>
-                            </div>
-
-                            <div>
-                                <p className="text-xs text-gray-400 uppercase tracking-wider">
-                                    Active Deliveries
-                                </p>
-
-                                <p className="text-sm font-semibold text-[#0b1b34] mt-0.5">
-                                    Currently in progress
-                                </p>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                {/* =========================================
-                    STATISTICS
-                ========================================= */}
-
-                <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5 mb-12">
-
-                    {statCards.map((card) => (
-
-                        <div
-                            key={card.label}
-                            className="group bg-white/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                        >
-
-                            <div className="flex items-start justify-between">
-
-                                <div>
-                                    <p className="text-xs font-medium tracking-wider text-gray-400 uppercase">
-                                        {card.label}
-                                    </p>
-
-                                    <h2
-                                        className={`font-display text-4xl mt-3 ${card.valueColor}`}
-                                    >
-                                        {card.value}
-                                    </h2>
-                                </div>
-
-                                <div
-                                    className={`w-11 h-11 rounded-2xl flex items-center justify-center ${card.iconStyle}`}
-                                >
-                                    <span className="text-sm font-semibold">
-                                        {card.icon}
-                                    </span>
-                                </div>
-
-                            </div>
-
-                            <div className="mt-7 pt-4 border-t border-gray-100">
-                                <p className="text-xs text-gray-400">
-                                    {card.note}
-                                </p>
-                            </div>
-
-                        </div>
-
-                    ))}
-
-                </section>
-
-
-                {/* =========================================
-                    DELIVERIES
-                ========================================= */}
-
-                <section>
-
-                    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-7">
-
-                        <div>
-
-                            <p className="font-sans text-xs tracking-[0.2em] text-gray-400 uppercase mb-2">
-                                DELIVERY DIRECTORY
-                            </p>
-
-                            <h2 className="font-display text-3xl md:text-4xl text-[#0b1b34]">
-                                My Deliveries
-                            </h2>
-
-                        </div>
-
-                        <p className="text-sm text-gray-400">
-                            Showing{" "}
-                            <span className="text-[#0b1b34] font-semibold">
-                                {filteredDeliveries.length}
-                            </span>{" "}
-                            of{" "}
-                            <span className="text-[#0b1b34] font-semibold">
-                                {deliveries.length}
+                            <span className="inline-block text-[11px] font-semibold uppercase tracking-wider text-slate-300 bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-full mb-3">
+                                Agent Dispatch Console
                             </span>
-                        </p>
-
-                    </div>
-
-
-                    {/* =========================================
-                        SEARCH + FILTER BAR
-                    ========================================= */}
-
-                    <div className="bg-white/85 backdrop-blur-md border border-gray-200 rounded-3xl p-5 md:p-6 shadow-sm mb-5">
-
-                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-
-                            {/* Search */}
-
-                            <div className="relative w-full lg:w-[360px]">
-
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                                    ⌕
-                                </span>
-
-                                <input
-                                    type="text"
-                                    value={search}
-                                    onChange={(e) =>
-                                        setSearch(e.target.value)
-                                    }
-                                    placeholder="Search by equipment or address..."
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm text-[#0b1b34] placeholder:text-gray-400 outline-none focus:bg-white focus:border-[#0b1b34]/30 focus:ring-4 focus:ring-[#0b1b34]/5 transition"
-                                />
-
-                            </div>
-
-
-                            {/* Filters */}
-
-                            <div className="flex flex-wrap items-center gap-2">
-
-                                {[
-                                    ["all", "All"],
-                                    ["pending", "Pending"],
-                                    ["active", "Active"],
-                                    ["delivered", "Delivered"],
-                                    ["returned", "Returned"],
-                                ].map(([value, label]) => (
-
-                                    <button
-                                        key={value}
-                                        onClick={() => setStatusFilter(value)}
-                                        className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                                            statusFilter === value
-                                                ? "bg-[#0b1b34] text-white shadow-sm"
-                                                : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 hover:text-[#0b1b34]"
-                                        }`}
-                                    >
-                                        {label}
-                                    </button>
-
-                                ))}
-
-                            </div>
-
+                            <h1 className="font-display font-black text-3xl sm:text-4xl md:text-5xl tracking-tight leading-tight">
+                                Delivery Workflow
+                            </h1>
+                            <p className="max-w-xl mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
+                                Manage pickup requests, fulfill customer handoffs with OTP verification, and process return drop-offs.
+                            </p>
                         </div>
 
-                    </div>
-
-
-                    {/* =========================================
-                        TABLE
-                    ========================================= */}
-
-                    <div className="bg-white/90 backdrop-blur-md border border-gray-200 rounded-3xl shadow-sm overflow-hidden">
-
-                        <div className="overflow-x-auto">
-
-                            <table className="w-full min-w-[900px]">
-
-                                <thead>
-
-                                    <tr className="border-b border-gray-100 bg-gray-50/70">
-
-                                        <th className="text-left px-6 py-4 text-[11px] font-semibold text-gray-400 uppercase tracking-[0.12em]">
-                                            Equipment
-                                        </th>
-
-                                        <th className="text-left px-6 py-4 text-[11px] font-semibold text-gray-400 uppercase tracking-[0.12em]">
-                                            Address
-                                        </th>
-
-                                        <th className="text-left px-6 py-4 text-[11px] font-semibold text-gray-400 uppercase tracking-[0.12em]">
-                                            Delivery Date
-                                        </th>
-
-                                        <th className="text-left px-6 py-4 text-[11px] font-semibold text-gray-400 uppercase tracking-[0.12em]">
-                                            Status
-                                        </th>
-
-                                        <th className="text-right px-6 py-4 text-[11px] font-semibold text-gray-400 uppercase tracking-[0.12em]">
-                                            Action
-                                        </th>
-
-                                    </tr>
-
-                                </thead>
-
-
-                                <tbody className="divide-y divide-gray-100">
-
-                                    {filteredDeliveries.length === 0 ? (
-
-                                        <tr>
-
-                                            <td
-                                                colSpan="5"
-                                                className="px-6 py-20 text-center"
-                                            >
-
-                                                <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mb-5">
-
-                                                    <span className="text-gray-300 text-xl">
-                                                        D
-                                                    </span>
-
-                                                </div>
-
-                                                <h3 className="font-display text-2xl text-[#0b1b34]">
-                                                    {deliveries.length === 0
-                                                        ? "No deliveries assigned"
-                                                        : "No deliveries found"}
-                                                </h3>
-
-                                                <p className="text-sm text-gray-400 mt-2">
-                                                    {deliveries.length === 0
-                                                        ? "Your assigned deliveries will appear here."
-                                                        : "Try changing your search or filter."}
-                                                </p>
-
-                                            </td>
-
-                                        </tr>
-
-                                    ) : (
-
-                                        filteredDeliveries.map((delivery) => {
-
-                                            const equipment =
-                                                delivery.rental?.equipment;
-
-                                            const statusStyle = getStatusStyle(
-                                                delivery.deliveryStatus
-                                            );
-
-                                            return (
-                                                <tr
-                                                    key={delivery._id}
-                                                    className="group hover:bg-gray-50/70 transition-colors"
-                                                >
-
-                                                    {/* Equipment */}
-
-                                                    <td className="px-6 py-5">
-
-                                                        <div className="flex items-center gap-3.5">
-
-                                                            <div className="w-11 h-11 shrink-0 rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center shadow-sm">
-
-                                                                {equipment?.images?.[0] ? (
-                                                                    <img
-                                                                        src={equipment.images[0]}
-                                                                        alt={
-                                                                            equipment.name ||
-                                                                            "Equipment"
-                                                                        }
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                ) : (
-                                                                    <span className="text-lg">
-                                                                        📦
-                                                                    </span>
-                                                                )}
-
-                                                            </div>
-
-                                                            <div className="min-w-0">
-
-                                                                <p className="font-semibold text-[#0b1b34] truncate">
-                                                                    {equipment?.name ||
-                                                                        "Equipment"}
-                                                                </p>
-
-                                                                <p className="text-[11px] text-gray-400 mt-1">
-                                                                    ID:{" "}
-                                                                    {delivery._id.slice(
-                                                                        -8
-                                                                    )}
-                                                                </p>
-
-                                                            </div>
-
-                                                        </div>
-
-                                                    </td>
-
-
-                                                    {/* Address */}
-
-                                                    <td className="px-6 py-5">
-
-                                                        <span className="text-sm text-gray-500 line-clamp-1 max-w-[280px]">
-                                                            {delivery.deliveryAddress ||
-                                                                "Not available"}
-                                                        </span>
-
-                                                    </td>
-
-
-                                                    {/* Delivery Date */}
-
-                                                    <td className="px-6 py-5">
-
-                                                        <span className="text-sm text-gray-500">
-                                                            {formatDate(
-                                                                delivery.deliveryDate
-                                                            )}
-                                                        </span>
-
-                                                    </td>
-
-
-                                                    {/* Status */}
-
-                                                    <td className="px-6 py-5">
-
-                                                        <span
-                                                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium ${statusStyle.badge}`}
-                                                        >
-
-                                                            <span
-                                                                className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`}
-                                                            />
-
-                                                            {getStatusLabel(
-                                                                delivery.deliveryStatus
-                                                            )}
-
-                                                        </span>
-
-                                                    </td>
-
-
-                                                    {/* Action */}
-
-                                                    <td className="px-6 py-5 text-right">
-
-                                                        <Link
-                                                            to={`/agent/delivery/${delivery._id}`}
-                                                            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#0b1b34] text-white text-sm font-medium hover:bg-[#142944] transition shadow-sm"
-                                                        >
-                                                            View Details
-                                                            <span>→</span>
-                                                        </Link>
-
-                                                    </td>
-
-                                                </tr>
-                                            );
-                                        })
-                                    )}
-
-                                </tbody>
-
-                            </table>
-
+                        <div className="flex items-center gap-4 bg-slate-800/80 border border-slate-700 p-4 sm:p-5 rounded-2xl self-start lg:self-auto">
+                            <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xl shadow-sm">
+                                {stats.active}
+                            </div>
+                            <div>
+                                <p className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                                    Active Dispatches
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-white mt-0.5">
+                                    Currently in transit
+                                </p>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </section>
 
+            <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10 relative z-20 pb-16">
+                {/* Statistics Cards */}
+                <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
+                    <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Assigned</p>
+                        <p className="font-display font-black text-3xl text-[#0b1b34] mt-2">{stats.total}</p>
+                        <p className="text-xs text-slate-500 mt-1">All history</p>
                     </div>
 
+                    <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Pending</p>
+                        <p className="font-display font-black text-3xl text-[#0b1b34] mt-2">{stats.pending}</p>
+                        <p className="text-xs text-slate-500 mt-1">Ready to start</p>
+                    </div>
+
+                    <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Active</p>
+                        <p className="font-display font-black text-3xl text-blue-600 mt-2">{stats.active}</p>
+                        <p className="text-xs text-slate-500 mt-1">In progress</p>
+                    </div>
+
+                    <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Delivered</p>
+                        <p className="font-display font-black text-3xl text-[#0b1b34] mt-2">{stats.delivered}</p>
+                        <p className="text-xs text-slate-500 mt-1">Fulfillment done</p>
+                    </div>
+
+                    <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Returned</p>
+                        <p className="font-display font-black text-3xl text-[#0b1b34] mt-2">{stats.returned}</p>
+                        <p className="text-xs text-slate-500 mt-1">Return completed</p>
+                    </div>
                 </section>
 
+                {/* Deliveries Directory */}
+                <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    {/* Filter Bar */}
+                    <div className="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row items-center justify-between gap-4">
+                        <div className="w-full lg:w-96 relative">
+                            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                                <IconSearch className="w-4 h-4" />
+                            </span>
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Search by equipment, address, or ID..."
+                                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 transition font-medium"
+                            />
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                            {[
+                                ["all", "All"],
+                                ["pending", "Pending"],
+                                ["active", "In Progress"],
+                                ["delivered", "Delivered"],
+                                ["returned", "Returned"],
+                            ].map(([val, label]) => (
+                                <button
+                                    key={val}
+                                    onClick={() => setStatusFilter(val)}
+                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                                        statusFilter === val
+                                            ? "bg-slate-900 text-white shadow-sm"
+                                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                    }`}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Table Column Labels */}
+                    <div className="hidden lg:grid grid-cols-[1.5fr_1.5fr_1fr_1fr_auto] gap-4 px-6 py-3.5 bg-slate-50/80 border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        <span>Equipment</span>
+                        <span>Delivery Address</span>
+                        <span>Delivery Date</span>
+                        <span>Status</span>
+                        <span className="text-right">Action</span>
+                    </div>
+
+                    {/* Rows */}
+                    {filteredDeliveries.length === 0 ? (
+                        <div className="py-16 text-center">
+                            <IconPackage className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                            <h3 className="font-display font-bold text-lg text-slate-900">
+                                {deliveries.length === 0
+                                    ? "No deliveries assigned yet"
+                                    : "No matching deliveries"}
+                            </h3>
+                            <p className="text-xs text-slate-400 mt-1">
+                                {deliveries.length === 0
+                                    ? "Your assigned tasks from the administrator will appear here."
+                                    : "Try adjusting your search query or status filter."}
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-slate-100">
+                            {filteredDeliveries.map((delivery) => {
+                                const equipment = delivery.rental?.equipment;
+                                const statusStyle = getStatusStyle(delivery.deliveryStatus);
+
+                                return (
+                                    <div
+                                        key={delivery._id}
+                                        className="px-6 py-5 hover:bg-slate-50/70 transition-colors grid grid-cols-1 lg:grid-cols-[1.5fr_1.5fr_1fr_1fr_auto] gap-4 lg:items-center"
+                                    >
+                                        {/* Equipment */}
+                                        <div className="flex items-center gap-3.5 min-w-0">
+                                            <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200 flex items-center justify-center">
+                                                {equipment?.images?.[0] ? (
+                                                    <img
+                                                        src={equipment.images[0]}
+                                                        alt={equipment.name || "Equipment"}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <IconPackage className="w-5 h-5 text-slate-400" />
+                                                )}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-bold text-sm text-slate-900 truncate">
+                                                    {equipment?.name || "Equipment"}
+                                                </p>
+                                                <p className="text-xs text-slate-400 mt-0.5">
+                                                    ID: {delivery._id.slice(-8)}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Address */}
+                                        <div className="min-w-0">
+                                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5 lg:hidden">Address</p>
+                                            <p className="text-xs sm:text-sm text-slate-600 line-clamp-2">
+                                                {delivery.deliveryAddress || "Not specified"}
+                                            </p>
+                                        </div>
+
+                                        {/* Date */}
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5 lg:hidden">Date</p>
+                                            <p className="text-xs sm:text-sm font-medium text-slate-700">
+                                                {formatDate(delivery.deliveryDate)}
+                                            </p>
+                                        </div>
+
+                                        {/* Status */}
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5 lg:hidden">Status</p>
+                                            <span
+                                                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${statusStyle.badge}`}
+                                            >
+                                                <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
+                                                {getStatusLabel(delivery.deliveryStatus)}
+                                            </span>
+                                        </div>
+
+                                        {/* Action */}
+                                        <div className="lg:text-right">
+                                            <Link
+                                                to={`/agent/delivery/${delivery._id}`}
+                                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition shadow-sm"
+                                            >
+                                                <span>Fulfill Order</span>
+                                                <span>→</span>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </section>
             </main>
 
-        
-
             <Footer />
-</div>
+        </div>
     );
 };
 

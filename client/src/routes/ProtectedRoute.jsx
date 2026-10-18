@@ -14,7 +14,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
     const location = useLocation();
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     /* Check if allowedRoles is provided.

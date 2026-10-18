@@ -1,198 +1,154 @@
 import React from "react";
-import Navbar from "../components/navbar";
-import Footer from "../components/Footer";
+import Navbar from "../components/navbar.jsx";
+import Footer from "../components/Footer.jsx";
+import {
+    IconShield,
+    IconLock,
+    IconCreditCard,
+    IconStar,
+    IconSearch,
+    IconTool,
+    IconClock
+} from "../components/Icons.jsx";
 
 const SafetyTrust = () => {
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white text-slate-900 flex flex-col justify-between font-sans selection:bg-slate-800 selection:text-white">
             <Navbar />
 
-            {/* Hero */}
-            <section className="bg-[#0b1b34] text-white">
-                <div className="max-w-5xl mx-auto px-6 py-28 md:py-36">
-
-                    <p className="font-sans text-xs tracking-[0.25em] text-blue-300 uppercase mb-6">
-                        SAFETY & TRUST
-                    </p>
-
-                    <h1 className="font-display text-5xl md:text-7xl leading-tight">
-                        Rent with confidence.
-                    </h1>
-
-                    <p className="font-sans max-w-2xl mt-7 text-base md:text-lg text-gray-300 leading-relaxed">
-                        A rental platform works best when both sides can trust
-                        the process. RentVerse is built around transparency,
-                        accountability, and responsible use.
-                    </p>
-
-                </div>
-            </section>
-
-
-            {/* Trust Intro */}
-            <section className="max-w-5xl mx-auto px-6 py-24">
-
-                <div className="max-w-3xl">
-
-                    <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-5">
-                        BUILT AROUND TRUST
-                    </p>
-
-                    <h2 className="font-display text-4xl md:text-5xl text-[#0b1b34] leading-tight">
-                        Good rentals start with good communication.
-                    </h2>
-
-                    <p className="font-sans text-gray-500 mt-6 leading-relaxed">
-                        RentVerse connects people who own equipment with people
-                        who need it. Clear information, responsible behaviour,
-                        and reliable communication help make every rental
-                        smoother.
-                    </p>
-
-                </div>
-
-
-                {/* Trust Sections */}
-                <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-16">
-
-                    <div>
-                        <p className="text-3xl font-display text-[#0b1b34]">
-                            01
+            <main className="flex-1">
+                {/* Hero */}
+                <section className="bg-slate-900 text-white pt-24 pb-20 md:pt-32 md:pb-24 border-b border-slate-800">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 text-center">
+                        <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-slate-300 bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-full mb-6">
+                            Trust & Security
+                        </span>
+                        <h1 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tight leading-tight">
+                            Rent with complete confidence.
+                        </h1>
+                        <p className="mt-4 max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-slate-300 leading-relaxed font-normal">
+                            RentVerse is engineered from the ground up to protect both equipment owners and renters through transparent policies, OTP verification, and secure escrow.
                         </p>
+                    </div>
+                </section>
 
-                        <h3 className="font-display text-2xl text-[#0b1b34] mt-4">
-                            Know what you're renting
-                        </h3>
-
-                        <p className="font-sans text-gray-500 mt-4 leading-relaxed">
-                            Equipment owners should provide accurate details
-                            about their equipment, including condition,
-                            availability, pricing, and location.
+                {/* 4 Pillars of Safety Grid */}
+                <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+                    <div className="text-center max-w-2xl mx-auto mb-16">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 inline-block mb-3">
+                            Our Protection Model
+                        </span>
+                        <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900">
+                            Four layers of rental safety
+                        </h2>
+                        <p className="mt-2 text-sm text-slate-500">
+                            How we maintain marketplace integrity for thousands of items
                         </p>
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-xs hover:border-slate-300 transition-colors">
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center mb-6 border border-slate-200">
+                                <IconShield className="w-5 h-5 text-slate-700" />
+                            </div>
+                            <h3 className="font-display font-bold text-xl text-slate-900">
+                                Verified Listings
+                            </h3>
+                            <p className="mt-3 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                                Owners provide detailed specifications and real condition photographs before tools can be booked.
+                            </p>
+                        </div>
 
-                    <div>
-                        <p className="text-3xl font-display text-[#0b1b34]">
-                            02
-                        </p>
+                        <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-xs hover:border-slate-300 transition-colors">
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center mb-6 border border-slate-200">
+                                <IconLock className="w-5 h-5 text-slate-700" />
+                            </div>
+                            <h3 className="font-display font-bold text-xl text-slate-900">
+                                OTP Handover
+                            </h3>
+                            <p className="mt-3 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                                Delivery agents verify physical delivery and pickup using one-time passcodes provided by the customer.
+                            </p>
+                        </div>
 
-                        <h3 className="font-display text-2xl text-[#0b1b34] mt-4">
-                            Communicate clearly
-                        </h3>
+                        <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-xs hover:border-slate-300 transition-colors">
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center mb-6 border border-slate-200">
+                                <IconCreditCard className="w-5 h-5 text-slate-700" />
+                            </div>
+                            <h3 className="font-display font-bold text-xl text-slate-900">
+                                Protected Escrow
+                            </h3>
+                            <p className="mt-3 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                                Funds are held securely through Razorpay until your rental request is approved and delivery is fulfilled.
+                            </p>
+                        </div>
 
-                        <p className="font-sans text-gray-500 mt-4 leading-relaxed">
-                            Clear communication between renters and owners
-                            helps prevent misunderstandings throughout the
-                            rental process.
-                        </p>
+                        <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-xs hover:border-slate-300 transition-colors">
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center mb-6 border border-slate-200">
+                                <IconStar className="w-5 h-5 text-slate-700" />
+                            </div>
+                            <h3 className="font-display font-bold text-xl text-slate-900">
+                                Authenticated Reviews
+                            </h3>
+                            <p className="mt-3 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                                Only genuine customers who completed a verified rental may leave star ratings and equipment feedback.
+                            </p>
+                        </div>
                     </div>
+                </section>
 
+                {/* Best Practices Section */}
+                <section className="bg-slate-50 py-20 border-t border-slate-200">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+                        <div className="text-center mb-12">
+                            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900">
+                                Community Guidelines
+                            </h2>
+                            <p className="mt-2 text-sm text-slate-500">
+                                Responsibilities shared by owners, renters, and delivery partners
+                            </p>
+                        </div>
 
-                    <div>
-                        <p className="text-3xl font-display text-[#0b1b34]">
-                            03
-                        </p>
+                        <div className="space-y-4">
+                            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs flex gap-4 items-start">
+                                <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200">
+                                    <IconSearch className="w-4 h-4 text-slate-700" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-sm text-slate-900">Inspect on Delivery</h4>
+                                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                                        Check equipment condition and test basic functionality alongside the delivery agent before sharing your OTP.
+                                    </p>
+                                </div>
+                            </div>
 
-                        <h3 className="font-display text-2xl text-[#0b1b34] mt-4">
-                            Respect the equipment
-                        </h3>
+                            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs flex gap-4 items-start">
+                                <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200">
+                                    <IconTool className="w-4 h-4 text-slate-700" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-sm text-slate-900">Operate with Safety Gear</h4>
+                                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                                        Always wear proper protective equipment (gloves, eye protection, ear defenders) when using power or heavy machinery.
+                                    </p>
+                                </div>
+                            </div>
 
-                        <p className="font-sans text-gray-500 mt-4 leading-relaxed">
-                            Renters should handle equipment responsibly and
-                            return it according to the agreed rental process.
-                        </p>
+                            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs flex gap-4 items-start">
+                                <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200">
+                                    <IconClock className="w-4 h-4 text-slate-700" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-sm text-slate-900">Respect Return Deadlines</h4>
+                                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                                        Return the gear on time so upcoming reservations and scheduled project dates for fellow community members are honored.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-
-                    <div>
-                        <p className="text-3xl font-display text-[#0b1b34]">
-                            04
-                        </p>
-
-                        <h3 className="font-display text-2xl text-[#0b1b34] mt-4">
-                            Protect your account
-                        </h3>
-
-                        <p className="font-sans text-gray-500 mt-4 leading-relaxed">
-                            Keep your password private and avoid sharing your
-                            account credentials with other people.
-                        </p>
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            {/* Safety Banner */}
-            <section className="bg-[#0b1b34] text-white">
-
-                <div className="max-w-5xl mx-auto px-6 py-24">
-
-                    <p className="text-xs tracking-[0.2em] text-blue-300 uppercase mb-5">
-                        A SHARED RESPONSIBILITY
-                    </p>
-
-                    <h2 className="font-display text-4xl md:text-5xl leading-tight">
-                        Trust is something we build together.
-                    </h2>
-
-                    <p className="font-sans max-w-2xl mt-6 text-gray-300 leading-relaxed">
-                        Owners, renters, delivery agents, and administrators
-                        all play a role in keeping the RentVerse community
-                        reliable and respectful.
-                    </p>
-
-                </div>
-
-            </section>
-
-
-            {/* Guidelines */}
-            <section className="max-w-5xl mx-auto px-6 py-24">
-
-                <div className="border-t border-gray-200">
-
-                    <div className="py-8 border-b border-gray-200">
-                        <h3 className="font-display text-2xl text-[#0b1b34]">
-                            Be accurate
-                        </h3>
-
-                        <p className="font-sans text-gray-500 mt-3 leading-relaxed">
-                            Provide honest information when creating equipment
-                            listings or making rental requests.
-                        </p>
-                    </div>
-
-
-                    <div className="py-8 border-b border-gray-200">
-                        <h3 className="font-display text-2xl text-[#0b1b34]">
-                            Be respectful
-                        </h3>
-
-                        <p className="font-sans text-gray-500 mt-3 leading-relaxed">
-                            Treat other members of the RentVerse community
-                            professionally and respectfully.
-                        </p>
-                    </div>
-
-
-                    <div className="py-8 border-b border-gray-200">
-                        <h3 className="font-display text-2xl text-[#0b1b34]">
-                            Report problems
-                        </h3>
-
-                        <p className="font-sans text-gray-500 mt-3 leading-relaxed">
-                            If something doesn't look right, report the issue
-                            so that it can be reviewed appropriately.
-                        </p>
-                    </div>
-
-                </div>
-
-            </section>
-
+                </section>
+            </main>
 
             <Footer />
         </div>

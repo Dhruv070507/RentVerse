@@ -55,20 +55,14 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password/:token" element={<ResetPassword />} />
                 <Route path="/register" element={<Register />} />
-
+                <Route path="/equipments" element={<Equipments />} />
+                <Route path="/equipment" element={<Equipments />} />
+                <Route path="/equipment/:id" element={<EquipmentDetails />} />
 
                 {/* Normal User Protected Routes */}
                 <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
 
-
                     <Route path="/add-equipment" element={<AddEquipment />} />
-
-
-                    <Route path="/equipments" element={<Equipments />} />
-
-
-                    <Route path="/equipment/:id" element={<EquipmentDetails />} />
-
 
                     <Route path="/equipment/:id/rent" element={<RentEquipment />} />
                    

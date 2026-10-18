@@ -4,150 +4,107 @@ import Footer from "../components/Footer.jsx";
 
 const TermsOfService = () => {
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white text-slate-900 flex flex-col justify-between font-sans selection:bg-slate-800 selection:text-white">
             <Navbar />
 
-            {/* Hero */}
-            <section className="bg-[#0b1b34] text-white">
-                <div className="max-w-5xl mx-auto px-6 py-28 md:py-36">
-
-                    <p className="font-sans text-xs tracking-[0.25em] text-blue-300 uppercase mb-6">
-                        TERMS
-                    </p>
-
-                    <h1 className="font-display text-5xl md:text-7xl leading-tight">
-                        Clear rules. Better rentals.
-                    </h1>
-
-                    <p className="font-sans max-w-2xl mt-7 text-base md:text-lg text-gray-300 leading-relaxed">
-                        These terms help keep RentVerse reliable, transparent,
-                        and fair for everyone using the platform.
-                    </p>
-
-                </div>
-            </section>
-
-
-            {/* Content */}
-            <main className="max-w-5xl mx-auto px-6 py-24">
-
-                <div className="space-y-20">
-
-                    <section>
-                        <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                            01 — Platform
+            <main className="flex-1">
+                {/* Hero */}
+                <section className="bg-slate-900 text-white pt-24 pb-20 md:pt-32 md:pb-24 border-b border-slate-800">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 text-center">
+                        <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-slate-300 bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-full mb-6">
+                            Agreement & Terms
+                        </span>
+                        <h1 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tight leading-tight">
+                            Terms of Service
+                        </h1>
+                        <p className="mt-4 text-xs sm:text-sm text-slate-400">
+                            Effective as of October 2026 • Governing all users
                         </p>
-
-                        <h2 className="font-display text-3xl md:text-4xl text-[#0b1b34]">
-                            Using RentVerse
-                        </h2>
-
-                        <p className="font-sans text-gray-600 leading-relaxed mt-6">
-                            RentVerse provides a platform that allows users to
-                            discover, list, request, rent, and manage equipment.
-                            By using the platform, you agree to use it
-                            responsibly and in accordance with these terms.
+                        <p className="mt-4 max-w-2xl mx-auto text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+                            Please review these terms carefully before accessing or listing equipment on RentVerse.
                         </p>
-                    </section>
+                    </div>
+                </section>
 
+                {/* Content Sections */}
+                <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+                    <div className="space-y-8">
+                        {/* Section 1 */}
+                        <div className="bg-white rounded-2xl p-8 sm:p-10 border border-slate-200 shadow-xs">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="w-8 h-8 rounded-lg bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center border border-slate-200">
+                                    01
+                                </span>
+                                <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-900">
+                                    Platform Usage & Eligibility
+                                </h2>
+                            </div>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                                RentVerse operates a peer-to-peer equipment rental ecosystem. By accessing our platform, you affirm that you are at least 18 years of age, legally capable of entering binding contracts, and that all information provided during registration is authentic and accurate.
+                            </p>
+                        </div>
 
-                    <section>
-                        <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                            02 — Accounts
-                        </p>
+                        {/* Section 2 */}
+                        <div className="bg-white rounded-2xl p-8 sm:p-10 border border-slate-200 shadow-xs">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="w-8 h-8 rounded-lg bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center border border-slate-200">
+                                    02
+                                </span>
+                                <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-900">
+                                    Equipment Owner Responsibilities
+                                </h2>
+                            </div>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                                Equipment owners represent and warrant that:
+                            </p>
+                            <ul className="mt-4 space-y-2 text-sm text-slate-600 list-disc list-inside">
+                                <li>They hold full legal ownership or authorization to lease the listed equipment.</li>
+                                <li>Equipment is in safe, fully operational condition with all essential accessories provided.</li>
+                                <li>Listed daily rental rates and item descriptions accurately reflect reality with no surprise surcharges.</li>
+                            </ul>
+                        </div>
 
-                        <h2 className="font-display text-3xl md:text-4xl text-[#0b1b34]">
-                            Your account
-                        </h2>
+                        {/* Section 3 */}
+                        <div className="bg-white rounded-2xl p-8 sm:p-10 border border-slate-200 shadow-xs">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="w-8 h-8 rounded-lg bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center border border-slate-200">
+                                    03
+                                </span>
+                                <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-900">
+                                    Renter Duties & Care of Gear
+                                </h2>
+                            </div>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                                Renters agree to operate machinery and tools solely in accordance with manufacturer safety guidelines. Renters are responsible for returning equipment on or before the agreed rental expiration date in the identical condition received, subject to reasonable wear and tear.
+                            </p>
+                        </div>
 
-                        <p className="font-sans text-gray-600 leading-relaxed mt-6">
-                            Users are responsible for providing accurate account
-                            information and keeping their login credentials
-                            secure. Your account should not be used by another
-                            person or for activities that violate the platform's
-                            rules.
-                        </p>
-                    </section>
+                        {/* Section 4 */}
+                        <div className="bg-white rounded-2xl p-8 sm:p-10 border border-slate-200 shadow-xs">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="w-8 h-8 rounded-lg bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center border border-slate-200">
+                                    04
+                                </span>
+                                <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-900">
+                                    Payments, Cancellations & Escrow
+                                </h2>
+                            </div>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                                All rental payments are processed through Razorpay. Once an owner approves a booking, payment must be completed before a delivery agent is dispatched. Cancellations made prior to delivery dispatch may be eligible for a full or partial refund according to platform cancellation guidelines.
+                            </p>
+                        </div>
 
-
-                    <section>
-                        <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                            03 — Equipment
-                        </p>
-
-                        <h2 className="font-display text-3xl md:text-4xl text-[#0b1b34]">
-                            Listing and renting equipment
-                        </h2>
-
-                        <p className="font-sans text-gray-600 leading-relaxed mt-6">
-                            Equipment owners are responsible for providing
-                            accurate information about their equipment,
-                            including its condition, availability, location,
-                            quantity, and rental price.
-                        </p>
-
-                        <p className="font-sans text-gray-600 leading-relaxed mt-4">
-                            Renters are responsible for treating rented
-                            equipment appropriately and following the agreed
-                            rental and return process.
-                        </p>
-                    </section>
-
-
-                    <section>
-                        <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                            04 — Responsible use
-                        </p>
-
-                        <h2 className="font-display text-3xl md:text-4xl text-[#0b1b34]">
-                            Use the platform responsibly
-                        </h2>
-
-                        <p className="font-sans text-gray-600 leading-relaxed mt-6">
-                            Users must not use RentVerse for fraudulent,
-                            misleading, unlawful, abusive, or otherwise
-                            inappropriate activities. Equipment listings and
-                            user interactions should remain accurate and
-                            respectful.
-                        </p>
-                    </section>
-
-
-                    <section>
-                        <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                            05 — Changes
-                        </p>
-
-                        <h2 className="font-display text-3xl md:text-4xl text-[#0b1b34]">
-                            Keeping the platform evolving
-                        </h2>
-
-                        <p className="font-sans text-gray-600 leading-relaxed mt-6">
-                            RentVerse may update platform features, policies,
-                            and these terms as the service develops. Continued
-                            use of the platform after changes means that users
-                            agree to the updated terms.
-                        </p>
-                    </section>
-
-                </div>
-
-
-                <div className="mt-24 bg-gray-50 rounded-3xl px-8 py-12 md:px-12 border border-gray-100">
-                    <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-4">
-                        Our principle
-                    </p>
-
-                    <h3 className="font-display text-3xl md:text-4xl text-[#0b1b34]">
-                        Keep renting simple and fair.
-                    </h3>
-
-                    <p className="font-sans text-gray-500 mt-4 max-w-2xl leading-relaxed">
-                        Every part of RentVerse is built around making equipment
-                        rental easier for both owners and renters.
-                    </p>
-                </div>
-
+                        {/* Highlight Banner */}
+                        <div className="rounded-2xl bg-slate-900 p-8 text-white border border-slate-800">
+                            <h3 className="font-display font-bold text-xl text-white mb-2">
+                                Fair Play & Community Accountability
+                            </h3>
+                            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                Violations of safety standards, intentional gear damage, harassment of delivery agents, or unauthorized sub-rentals will result in immediate permanent account termination and potential legal recourse.
+                            </p>
+                        </div>
+                    </div>
+                </section>
             </main>
 
             <Footer />

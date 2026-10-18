@@ -137,11 +137,11 @@ const updateRentalByIdService = async (id, status, userId) => {
 
 
     /* Rental must still be pending so that 
-        approved → approved ❌
-        approved → rejected ❌
+        approved -> approved (not allowed)
+        approved -> rejected (not allowed)
 
-        rejected → approved ❌
-        rejected → rejected ❌ */
+        rejected -> approved (not allowed)
+        rejected -> rejected (not allowed) */
     if (rental.status !== "pending") {
         throw new ApiError(
             400,

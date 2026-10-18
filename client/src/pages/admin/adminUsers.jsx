@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers } from "../../features/adminSlice";
 import Footer from "../../components/Footer.jsx";
 import AdminNavbar from "../../components/adminNavbar.jsx";
+import { IconSearch, IconAlert } from "../../components/Icons.jsx";
 
 const AdminUsers = () => {
     const dispatch = useDispatch();
@@ -96,15 +97,15 @@ const AdminUsers = () => {
     const getRoleStyles = (role) => {
         if (role === "admin") {
             return {
-                badge: "bg-purple-50 text-purple-700 border-purple-100",
-                dot: "bg-purple-500",
+                badge: "bg-slate-100 text-slate-800 border-slate-200",
+                dot: "bg-slate-500",
             };
         }
 
         if (role === "delivery_agent") {
             return {
-                badge: "bg-orange-50 text-orange-700 border-orange-100",
-                dot: "bg-orange-500",
+                badge: "bg-slate-100 text-slate-800 border-slate-200",
+                dot: "bg-slate-500",
             };
         }
 
@@ -120,16 +121,9 @@ const AdminUsers = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-white relative overflow-hidden">
+            <div className="min-h-screen bg-slate-50 relative">
 
                 <AdminNavbar />
-
-                {/* Background glow */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-40 -right-32 w-[520px] h-[520px] rounded-full bg-blue-400/20 blur-[90px]" />
-                    <div className="absolute top-[35%] right-[20%] w-[420px] h-[420px] rounded-full bg-indigo-400/15 blur-[90px]" />
-                    <div className="absolute bottom-[-150px] left-[15%] w-[500px] h-[400px] rounded-full bg-purple-400/15 blur-[100px]" />
-                </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-12">
 
@@ -167,20 +161,18 @@ const AdminUsers = () => {
                 <AdminNavbar />
 
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute -top-40 -right-32 w-[520px] h-[520px] rounded-full bg-red-400/10 blur-[90px]" />
+                    <div className="absolute -top-40 -right-32 w-[520px] h-[520px] rounded-full bg-slate-400/10 blur-[90px]" />
                 </div>
 
                 <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
 
                     <div className="max-w-md w-full bg-white border border-gray-200 rounded-3xl p-10 text-center shadow-xl shadow-gray-200/40">
 
-                        <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 flex items-center justify-center mb-6">
-                            <span className="text-red-500 text-2xl font-bold">
-                                !
-                            </span>
+                        <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-6">
+                            <IconAlert className="w-8 h-8 text-slate-700" />
                         </div>
 
-                        <p className="text-xs tracking-[0.2em] text-red-400 uppercase mb-3">
+                        <p className="text-xs tracking-[0.2em] text-slate-400 uppercase mb-3">
                             Something went wrong
                         </p>
 
@@ -381,7 +373,7 @@ const AdminUsers = () => {
                                 </h2>
                             </div>
 
-                            <div className="w-11 h-11 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                            <div className="w-11 h-11 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center">
                                 <span className="text-sm font-semibold">
                                     D
                                 </span>
@@ -414,7 +406,7 @@ const AdminUsers = () => {
                                 </h2>
                             </div>
 
-                            <div className="w-11 h-11 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                            <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
                                 <span className="text-sm font-semibold">
                                     A
                                 </span>
@@ -479,8 +471,8 @@ const AdminUsers = () => {
 
                             <div className="relative w-full lg:w-[360px]">
 
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                                    ⌕
+                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                                    <IconSearch className="w-4 h-4" />
                                 </span>
 
                                 <input

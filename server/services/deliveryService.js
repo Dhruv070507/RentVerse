@@ -1,6 +1,7 @@
 import ApiError from "../utils/ApiError.js";
 import Delivery from "../models/deliveryModel.js"
 import Rental from "../models/rentalModel.js"
+import Equipment from "../models/equipmentModel.js";
 import User from "../models/userModel.js"
 import generateOtp from "../utils/generateOtp.js";
 import { createNotificationService } from "./notificationService.js";
@@ -378,6 +379,7 @@ const assignReturnAgentService = async (deliveryId, agentId) => {
         );
 
     delivery.returnAgent = agentId;
+    delivery.deliveryStatus = "return_scheduled";
 
     await delivery.save();
 
@@ -414,7 +416,7 @@ const startReturnService = async (deliveryId, userId) => {
             "You are not assigned to this return"
         );
 
-    if (delivery.deliveryStatus !== "delivered")
+    if (delivery.deliveryStatus !== "return_scheduled")
         throw new ApiError(
             400,
             "Return cannot be started in this state"
@@ -500,7 +502,6 @@ const generateReturnOtpService = async (deliveryId, userId) => {
 
 
 const completeReturnService = async (deliveryId, userId, otp) => {
-
     const delivery = await Delivery.findById(deliveryId);
 
     if (!delivery)
@@ -539,9 +540,29 @@ const completeReturnService = async (deliveryId, userId, otp) => {
             "Invalid return OTP"
         );
 
+    const rental = await Rental.findById(delivery.rental);
+
+    if (!rental)
+        throw new ApiError(
+            404,
+            "Rental doesn't exist"
+        );
+
+    const equipment = await Equipment.findById(rental.equipment);
+
+    if (!equipment)
+        throw new ApiError(
+            404,
+            "Equipment doesn't exist"
+        );
+
+    // Increase available equipment quantity after return
+    equipment.quantity += 1;
+
+    await equipment.save();
+
     delivery.deliveryStatus = "returned";
     delivery.returnedAt = new Date();
-
     delivery.returnOtp = "";
 
     await delivery.save();
@@ -552,7 +573,6 @@ const completeReturnService = async (deliveryId, userId, otp) => {
 
     return completedReturn;
 };
-
 
 export {
     createDeliveryService,

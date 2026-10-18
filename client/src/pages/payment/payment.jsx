@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getRentalById } from "../../features/rentalSlice";
@@ -10,15 +10,12 @@ import {
 
 import Navbar from "../../components/navbar";
 import Footer from "../../components/Footer.jsx";
-
+import { IconShield, IconMapPin, IconAlert, IconLock } from "../../components/Icons.jsx";
 
 const Payment = () => {
-
     const { rentalId } = useParams();
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
 
     const {
         rental,
@@ -26,543 +23,264 @@ const Payment = () => {
         error: rentalError
     } = useSelector((state) => state.rental);
 
-
     const {
         loading: paymentLoading,
         error: paymentError
     } = useSelector((state) => state.payment);
 
-
     useEffect(() => {
-
         dispatch(getRentalById(rentalId));
-
     }, [dispatch, rentalId]);
 
-
     const handlePayment = async (e) => {
-
         e.preventDefault();
 
         try {
-
             const paymentData = await dispatch(
-                createPayment({
-                    rentalId
-                })
+                createPayment({ rentalId })
             ).unwrap();
 
-
             const options = {
-
                 key: paymentData.keyId,
-
                 amount: paymentData.order.amount,
-
                 currency: paymentData.order.currency,
-
                 name: "RentVerse",
-
-                description: `Payment for ${rental.equipment?.name}`,
-
+                description: `Rental payment for ${rental.equipment?.name || "Equipment"}`,
                 order_id: paymentData.order.id,
-
                 handler: async (response) => {
-
                     try {
-
                         await dispatch(
                             verifyRazorpayPayment({
                                 paymentId: paymentData.payment._id,
-
-                                razorpayPaymentId:
-                                    response.razorpay_payment_id,
-
-                                razorpayOrderId:
-                                    response.razorpay_order_id,
-
-                                razorpaySignature:
-                                    response.razorpay_signature
+                                razorpayPaymentId: response.razorpay_payment_id,
+                                razorpayOrderId: response.razorpay_order_id,
+                                razorpaySignature: response.razorpay_signature
                             })
                         ).unwrap();
 
-
                         navigate("/payment/success");
-
-                    } catch (error) {
-
-                        console.log(
-                            "Payment verification failed:",
-                            error
-                        );
-
+                    } catch (err) {
+                        console.error("Payment verification failed:", err);
+                        navigate("/payment/failure");
                     }
-
                 },
-
                 prefill: {
                     name: "",
                     email: "",
                     contact: ""
                 },
-
                 theme: {
-                    color: "#0b1b34"
+                    color: "#0f172a"
                 }
-
             };
 
-
             const razorpay = new window.Razorpay(options);
-
             razorpay.open();
 
-
-            razorpay.on(
-                "payment.failed",
-                function (response) {
-
-                    console.log(
-                        "Razorpay payment failed:",
-                        response.error
-                    );
-
-                }
-            );
-
-        } catch (error) {
-
-            console.log(
-                "Payment initialization failed:",
-                error
-            );
-
+            razorpay.on("payment.failed", function (response) {
+                console.error("Razorpay payment failed:", response.error);
+                navigate("/payment/failure");
+            });
+        } catch (err) {
+            console.error("Payment initialization failed:", err);
         }
-
     };
 
-
     if (rentalLoading) {
-
         return (
-            <div className="min-h-screen bg-white">
-
+            <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
                 <Navbar />
-
-                <main className="max-w-7xl mx-auto px-6 pt-36 pb-24">
-
-                    <p className="font-sans text-sm text-gray-500">
-                        Loading payment details...
+                <div className="flex-1 flex flex-col items-center justify-center p-6">
+                    <div className="w-12 h-12 border-3 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4" />
+                    <p className="font-display font-semibold text-slate-700 text-sm">
+                        Loading checkout session...
                     </p>
-
-                </main>
-
+                </div>
                 <Footer />
-
             </div>
         );
-
     }
 
-
-    if (rentalError) {
-
+    if (rentalError || !rental) {
         return (
-            <div className="min-h-screen bg-white">
-
+            <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
                 <Navbar />
-
-                <main className="max-w-7xl mx-auto px-6 pt-36 pb-24">
-
-                    <p className="font-sans text-sm text-red-500">
-                        {rentalError}
+                <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-md mx-auto">
+                    <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center mb-4">
+                        <IconAlert className="w-7 h-7" />
+                    </div>
+                    <h2 className="font-display text-2xl font-bold text-slate-900">
+                        Checkout Error
+                    </h2>
+                    <p className="text-sm text-slate-500 mt-2 mb-8 leading-relaxed">
+                        {rentalError || "Unable to retrieve this rental for payment. Please return to your rentals dashboard."}
                     </p>
-
-                </main>
-
+                    <Link
+                        to="/my-rentals"
+                        className="px-6 py-3 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors inline-block shadow-sm"
+                    >
+                        Return to My Rentals
+                    </Link>
+                </div>
                 <Footer />
-
             </div>
         );
-
     }
-
-
-    if (!rental) {
-        return null;
-    }
-
 
     return (
-        <div className="min-h-screen bg-white">
-
+        <div className="min-h-screen bg-slate-50/50 text-slate-900 font-sans selection:bg-blue-500 selection:text-white flex flex-col justify-between">
             <Navbar />
 
-
-            {/* =====================================================
-                HERO
-            ===================================================== */}
-
-            <section className="pt-36 pb-20 px-6">
-
-                <div className="max-w-7xl mx-auto">
-
-                    <div className="max-w-3xl">
-
-                        <p className="font-sans text-xs tracking-[0.25em] text-gray-400 uppercase mb-5">
-                            SECURE CHECKOUT
-                        </p>
-
-                        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl leading-[0.95] text-[#0b1b34]">
-                            Complete your
-                            <br />
-                            rental payment.
-                        </h1>
-
-                        <p className="font-sans text-gray-500 text-base md:text-lg mt-7 max-w-xl leading-relaxed">
-                            Review your rental details and securely complete
-                            your payment through Razorpay.
-                        </p>
-
-                    </div>
-
+            {/* Header Banner */}
+            <section className="bg-slate-900 border-b border-slate-800 text-white py-12 sm:py-14 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto text-center">
+                    <h1 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white">
+                        Secure Rental Checkout
+                    </h1>
+                    <p className="mt-3 text-slate-300 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+                        Review your rental booking breakdown and complete your payment with the authorized Razorpay gateway.
+                    </p>
                 </div>
-
             </section>
 
-
-            {/* =====================================================
-                PAYMENT SECTION
-            ===================================================== */}
-
-            <section className="px-6 pb-28">
-
-                <div className="max-w-7xl mx-auto">
-
-                    <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_0.65fr] gap-10">
-
-
-                        {/* =================================================
-                            RENTAL SUMMARY
-                        ================================================= */}
-
-                        <div>
-
-                            <div className="border-y border-gray-200">
-
-                                {/* Equipment */}
-
-                                <div className="py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-
-                                    <div>
-
-                                        <p className="font-sans text-xs tracking-[0.18em] uppercase text-gray-400 mb-2">
-                                            Equipment
-                                        </p>
-
-                                        <h2 className="font-display text-3xl text-[#0b1b34]">
-                                            {rental.equipment?.name}
-                                        </h2>
-
-                                    </div>
-
-                                    <div className="text-left sm:text-right">
-
-                                        <p className="font-sans text-xs text-gray-400 uppercase tracking-wider">
-                                            Quantity
-                                        </p>
-
-                                        <p className="font-sans text-lg text-[#0b1b34] mt-1">
-                                            {rental.quantity}
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                {/* Rental dates */}
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-gray-100">
-
-                                    <div className="py-7 sm:pr-8">
-
-                                        <p className="font-sans text-xs tracking-[0.18em] uppercase text-gray-400 mb-2">
-                                            Rental starts
-                                        </p>
-
-                                        <p className="font-sans text-base text-[#0b1b34]">
-                                            {new Date(
-                                                rental.rentalStartDate
-                                            ).toLocaleDateString(
-                                                "en-IN",
-                                                {
-                                                    day: "numeric",
-                                                    month: "long",
-                                                    year: "numeric"
-                                                }
-                                            )}
-                                        </p>
-
-                                    </div>
-
-
-                                    <div className="py-7 sm:pl-8 sm:border-l border-gray-100">
-
-                                        <p className="font-sans text-xs tracking-[0.18em] uppercase text-gray-400 mb-2">
-                                            Rental ends
-                                        </p>
-
-                                        <p className="font-sans text-base text-[#0b1b34]">
-                                            {new Date(
-                                                rental.rentalEndDate
-                                            ).toLocaleDateString(
-                                                "en-IN",
-                                                {
-                                                    day: "numeric",
-                                                    month: "long",
-                                                    year: "numeric"
-                                                }
-                                            )}
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                {/* Total */}
-
-                                <div className="border-t border-gray-200 py-8 flex items-center justify-between">
-
-                                    <div>
-
-                                        <p className="font-sans text-xs tracking-[0.18em] uppercase text-gray-400">
-                                            Total amount
-                                        </p>
-
-                                        <p className="font-sans text-sm text-gray-500 mt-1">
-                                            Including your complete rental cost
-                                        </p>
-
-                                    </div>
-
-                                    <p className="font-display text-4xl md:text-5xl text-[#0b1b34]">
-                                        ₹{rental.totalPrice}
-                                    </p>
-
-                                </div>
-
-                            </div>
-
+            {/* Checkout Main Card */}
+            <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10 pb-36 w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+                    {/* Left: Booking Order Details */}
+                    <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 p-8 sm:p-10 lg:p-12 shadow-sm">
+                        <div className="flex items-center justify-between pb-5 mb-8 border-b border-slate-100">
+                            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                Booking Summary
+                            </span>
+                            <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">
+                                Approved Request
+                            </span>
                         </div>
 
-
-                        {/* =================================================
-                            PAYMENT CARD
-                        ================================================= */}
-
-                        <div>
-
-                            <div className="bg-[#0b1b34] text-white rounded-3xl p-8 md:p-10">
-
-                                <p className="font-sans text-xs tracking-[0.2em] uppercase text-white/50 mb-4">
-                                    PAYMENT
-                                </p>
-
-                                <h2 className="font-display text-3xl md:text-4xl">
-                                    Pay securely
+                        <div className="space-y-8">
+                            <div>
+                                <span className="text-xs font-bold uppercase text-slate-400 block tracking-wider">
+                                    Equipment
+                                </span>
+                                <h2 className="font-display font-bold text-2xl text-slate-900 mt-1.5">
+                                    {rental.equipment?.name}
                                 </h2>
-
-                                <p className="font-sans text-sm text-white/60 mt-4 leading-relaxed">
-                                    Your payment is securely processed through
-                                    Razorpay. RentVerse does not store your
-                                    card or banking credentials.
+                                <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                                    Reserved Quantity: <span className="font-semibold text-slate-800">{rental.quantity} units</span>
                                 </p>
-
-
-                                {/* Amount */}
-
-                                <div className="border-t border-white/10 mt-8 pt-7">
-
-                                    <div className="flex items-end justify-between">
-
-                                        <span className="font-sans text-sm text-white/60">
-                                            Amount payable
-                                        </span>
-
-                                        <span className="font-display text-3xl">
-                                            ₹{rental.totalPrice}
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-
-                                {paymentError && (
-
-                                    <div className="mt-6 px-4 py-3 rounded-xl bg-red-500/10 border border-red-400/20">
-
-                                        <p className="font-sans text-sm text-red-300">
-                                            {paymentError}
-                                        </p>
-
-                                    </div>
-
-                                )}
-
-
-                                <form
-                                    onSubmit={handlePayment}
-                                    className="mt-8"
-                                >
-
-                                    <button
-                                        type="submit"
-                                        disabled={paymentLoading}
-                                        className="
-                                            w-full
-                                            px-6
-                                            py-4
-                                            rounded-full
-                                            bg-white
-                                            text-[#0b1b34]
-                                            font-sans
-                                            text-sm
-                                            font-semibold
-                                            hover:bg-gray-100
-                                            transition
-                                            disabled:opacity-50
-                                            disabled:cursor-not-allowed
-                                        "
-                                    >
-                                        {paymentLoading
-                                            ? "Preparing payment..."
-                                            : `Pay ₹${rental.totalPrice}`
-                                        }
-                                    </button>
-
-                                </form>
-
-
-                                {/* Trust */}
-
-                                <div className="mt-7 pt-6 border-t border-white/10">
-
-                                    <div className="flex items-start gap-3">
-
-                                        <div className="mt-0.5 w-6 h-6 rounded-full border border-white/20 flex items-center justify-center">
-
-                                            <span className="text-xs">
-                                                ✓
-                                            </span>
-
-                                        </div>
-
-                                        <div>
-
-                                            <p className="font-sans text-sm text-white/80">
-                                                Secure Razorpay checkout
-                                            </p>
-
-                                            <p className="font-sans text-xs text-white/40 mt-1">
-                                                Your payment information is
-                                                handled securely.
-                                            </p>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
                             </div>
 
-                        </div>
+                            <div className="grid grid-cols-2 gap-6 p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                                <div>
+                                    <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider">
+                                        Start Date
+                                    </span>
+                                    <p className="text-sm font-bold text-slate-800 mt-1">
+                                        {new Date(rental.rentalStartDate).toLocaleDateString("en-IN", {
+                                            day: "numeric",
+                                            month: "short",
+                                            year: "numeric"
+                                        })}
+                                    </p>
+                                </div>
+                                <div>
+                                    <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider">
+                                        End Date
+                                    </span>
+                                    <p className="text-sm font-bold text-slate-800 mt-1">
+                                        {new Date(rental.rentalEndDate).toLocaleDateString("en-IN", {
+                                            day: "numeric",
+                                            month: "short",
+                                            year: "numeric"
+                                        })}
+                                    </p>
+                                </div>
+                            </div>
 
+                            {rental.address && (
+                                <div>
+                                    <span className="text-xs font-bold uppercase text-slate-400 block tracking-wider mb-2">
+                                        Delivery Destination
+                                    </span>
+                                    <div className="text-xs sm:text-sm text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-2.5 leading-relaxed">
+                                        <IconMapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                                        <span>{rental.address}</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
+                                <div>
+                                    <span className="text-xs font-bold uppercase text-slate-400 block tracking-wider">
+                                        Total Amount Due
+                                    </span>
+                                    <p className="text-xs text-slate-500 mt-1">
+                                        Includes full duration rental fee & platform coverage
+                                    </p>
+                                </div>
+                                <span className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900">
+                                    ₹{rental.totalPrice}
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
-                </div>
-
-            </section>
-
-
-            {/* =====================================================
-                TRUST SECTION
-            ===================================================== */}
-
-            <section className="bg-gray-50 px-6 py-20">
-
-                <div className="max-w-7xl mx-auto">
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-
+                    {/* Right: Payment Box */}
+                    <div className="lg:col-span-5 flex flex-col justify-between bg-slate-900 text-white rounded-2xl p-8 sm:p-10 lg:p-12 shadow-lg border border-slate-800">
                         <div>
+                            <div className="flex items-center justify-between mb-8">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                    Payment Method
+                                </span>
+                                <span className="px-3 py-1 rounded-full text-[10px] font-semibold uppercase bg-slate-800 text-slate-300 border border-slate-700">
+                                    Razorpay Gateway
+                                </span>
+                            </div>
 
-                            <p className="font-sans text-xs tracking-[0.2em] uppercase text-gray-400 mb-3">
-                                01
-                            </p>
-
-                            <h3 className="font-display text-2xl text-[#0b1b34]">
-                                Secure payments
+                            <h3 className="font-display font-bold text-2xl text-white">
+                                Instant Verification
                             </h3>
-
-                            <p className="font-sans text-sm text-gray-500 mt-3 leading-relaxed">
-                                Payments are processed securely through
-                                Razorpay's checkout system.
+                            <p className="text-xs sm:text-sm text-slate-300 mt-3 leading-relaxed">
+                                UPI, Cards, NetBanking, and Wallets are fully supported. Funds are held safely under escrow protection until equipment delivery.
                             </p>
 
+                            {paymentError && (
+                                <div className="mt-6 p-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs sm:text-sm font-medium">
+                                    {paymentError}
+                                </div>
+                            )}
+
+                            <div className="my-10 pt-8 border-t border-slate-800 flex items-baseline justify-between">
+                                <span className="text-xs sm:text-sm text-slate-400">Amount to Pay</span>
+                                <span className="font-display font-extrabold text-3xl sm:text-4xl text-white">
+                                    ₹{rental.totalPrice}
+                                </span>
+                            </div>
                         </div>
 
-
                         <div>
+                            <form onSubmit={handlePayment}>
+                                <button
+                                    type="submit"
+                                    disabled={paymentLoading}
+                                    className="w-full py-4 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm sm:text-base shadow-md disabled:opacity-50 transition-all cursor-pointer"
+                                >
+                                    {paymentLoading ? "Initiating Gateway..." : `Pay ₹${rental.totalPrice} Securely`}
+                                </button>
+                            </form>
 
-                            <p className="font-sans text-xs tracking-[0.2em] uppercase text-gray-400 mb-3">
-                                02
+                            <p className="text-xs text-center text-slate-400 mt-6 flex items-center justify-center gap-2">
+                                <IconLock className="w-4 h-4 text-slate-500" />
+                                <span>Razorpay Encrypted Transaction</span>
                             </p>
-
-                            <h3 className="font-display text-2xl text-[#0b1b34]">
-                                Simple checkout
-                            </h3>
-
-                            <p className="font-sans text-sm text-gray-500 mt-3 leading-relaxed">
-                                Review your rental, confirm the amount and
-                                complete your payment in a few steps.
-                            </p>
-
                         </div>
-
-
-                        <div>
-
-                            <p className="font-sans text-xs tracking-[0.2em] uppercase text-gray-400 mb-3">
-                                03
-                            </p>
-
-                            <h3 className="font-display text-2xl text-[#0b1b34]">
-                                Rental confirmed
-                            </h3>
-
-                            <p className="font-sans text-sm text-gray-500 mt-3 leading-relaxed">
-                                Once your payment is verified, your rental
-                                payment is recorded in RentVerse.
-                            </p>
-
-                        </div>
-
                     </div>
-
                 </div>
-
-            </section>
-
+            </main>
 
             <Footer />
-
         </div>
     );
 };
-
 
 export default Payment;

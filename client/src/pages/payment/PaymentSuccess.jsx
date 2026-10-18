@@ -1,225 +1,56 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import Navbar from "../../components/navbar";
 import Footer from "../../components/Footer.jsx";
-
+import { IconCheck } from "../../components/Icons.jsx";
 
 const PaymentSuccess = () => {
-
     const navigate = useNavigate();
 
-
     return (
-        <div className="min-h-screen bg-white">
-
+        <div className="min-h-screen bg-slate-50 flex flex-col justify-between font-sans">
             <Navbar />
 
-
-            {/* =====================================================
-                PAYMENT SUCCESS
-            ===================================================== */}
-
-            <main>
-
-                <section className="min-h-[75vh] flex items-center px-6 py-28">
-
-                    <div className="max-w-4xl mx-auto w-full">
-
-                        <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-20 items-center">
-
-
-                            {/* =================================================
-                                SUCCESS ICON
-                            ================================================= */}
-
-                            <div className="flex justify-center lg:justify-start">
-
-                                <div className="w-44 h-44 md:w-52 md:h-52 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center">
-
-                                    <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-green-50 border border-green-100 flex items-center justify-center">
-
-                                        <span className="text-4xl md:text-5xl text-green-600 font-light">
-                                            ✓
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* =================================================
-                                MESSAGE
-                            ================================================= */}
-
-                            <div className="text-center lg:text-left">
-
-                                <p className="font-sans text-xs tracking-[0.25em] text-green-600 uppercase mb-5">
-                                    PAYMENT CONFIRMED
-                                </p>
-
-
-                                <h1 className="font-display text-5xl md:text-6xl lg:text-7xl leading-[0.95] text-[#0b1b34]">
-                                    You're all
-                                    <br />
-                                    set to go.
-                                </h1>
-
-
-                                <p className="font-sans text-gray-500 text-base md:text-lg mt-7 max-w-xl leading-relaxed mx-auto lg:mx-0">
-                                    Your payment has been successfully
-                                    verified. Your rental is now confirmed
-                                    and you can view its details from your
-                                    rental dashboard.
-                                </p>
-
-
-                                {/* Actions */}
-
-                                <div className="flex flex-col sm:flex-row gap-3 mt-9 justify-center lg:justify-start">
-
-                                    <button
-                                        onClick={() => navigate("/my-rentals")}
-                                        className="
-                                            px-7
-                                            py-3.5
-                                            rounded-full
-                                            bg-[#0b1b34]
-                                            text-white
-                                            font-sans
-                                            text-sm
-                                            font-medium
-                                            hover:bg-[#142944]
-                                            transition
-                                        "
-                                    >
-                                        View My Rentals
-                                    </button>
-
-
-                                    <button
-                                        onClick={() => navigate("/")}
-                                        className="
-                                            px-7
-                                            py-3.5
-                                            rounded-full
-                                            border
-                                            border-gray-200
-                                            text-[#0b1b34]
-                                            font-sans
-                                            text-sm
-                                            font-medium
-                                            hover:border-gray-400
-                                            transition
-                                        "
-                                    >
-                                        Go Home
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
+            <main className="flex-1 flex items-center justify-center px-4 sm:px-6 py-20 sm:py-28">
+                <div className="max-w-xl w-full bg-white rounded-2xl p-8 sm:p-14 border border-slate-200 shadow-sm text-center">
+                    {/* Success Icon */}
+                    <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-6 text-blue-600">
+                        <IconCheck className="w-8 h-8" />
                     </div>
 
-                </section>
+                    <span className="inline-block text-xs font-semibold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full mb-3">
+                        Payment Verified
+                    </span>
 
+                    <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900">
+                        You're All Set!
+                    </h1>
 
-                {/* =====================================================
-                    NEXT STEPS
-                ===================================================== */}
+                    <p className="mt-3 text-sm text-slate-600 leading-relaxed max-w-sm mx-auto">
+                        Your rental payment has been successfully processed through Razorpay. The equipment owner and delivery team have been notified.
+                    </p>
 
-                <section className="bg-[#0b1b34] px-6 py-20">
-
-                    <div className="max-w-7xl mx-auto">
-
-                        <div className="mb-12">
-
-                            <p className="font-sans text-xs tracking-[0.2em] text-white/40 uppercase mb-4">
-                                WHAT'S NEXT
-                            </p>
-
-                            <h2 className="font-display text-4xl md:text-5xl text-white">
-                                Your rental journey continues.
-                            </h2>
-
-                        </div>
-
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-
-
-                            <div>
-
-                                <p className="font-sans text-xs tracking-[0.2em] text-white/40 uppercase mb-4">
-                                    01
-                                </p>
-
-                                <h3 className="font-display text-2xl text-white">
-                                    Check your rental
-                                </h3>
-
-                                <p className="font-sans text-sm text-white/55 mt-3 leading-relaxed">
-                                    View your rental dates, equipment,
-                                    payment details and current status.
-                                </p>
-
-                            </div>
-
-
-                            <div>
-
-                                <p className="font-sans text-xs tracking-[0.2em] text-white/40 uppercase mb-4">
-                                    02
-                                </p>
-
-                                <h3 className="font-display text-2xl text-white">
-                                    Prepare for delivery
-                                </h3>
-
-                                <p className="font-sans text-sm text-white/55 mt-3 leading-relaxed">
-                                    Keep an eye on your rental while the
-                                    delivery process gets underway.
-                                </p>
-
-                            </div>
-
-
-                            <div>
-
-                                <p className="font-sans text-xs tracking-[0.2em] text-white/40 uppercase mb-4">
-                                    03
-                                </p>
-
-                                <h3 className="font-display text-2xl text-white">
-                                    Enjoy your equipment
-                                </h3>
-
-                                <p className="font-sans text-sm text-white/55 mt-3 leading-relaxed">
-                                    Your equipment is ready for your
-                                    upcoming rental period.
-                                </p>
-
-                            </div>
-
-                        </div>
-
+                    <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <button
+                            onClick={() => navigate("/my-rentals")}
+                            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 shadow-sm transition-all cursor-pointer"
+                        >
+                            View My Rentals
+                        </button>
+                        <Link
+                            to="/My-payments"
+                            className="w-full sm:w-auto px-5 py-3 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
+                        >
+                            Payment Receipt
+                        </Link>
                     </div>
-
-                </section>
-
+                </div>
             </main>
 
-
             <Footer />
-
         </div>
     );
 };
-
 
 export default PaymentSuccess;
