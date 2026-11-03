@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 
 
 import Login from "./pages/auth/login.jsx";
@@ -40,6 +41,7 @@ import Register from "./pages/auth/Register.jsx";
 function App() {
     return (
         <BrowserRouter>
+            <ScrollToTop />
             <Routes>
 
 

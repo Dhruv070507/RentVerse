@@ -8,6 +8,8 @@ import Navbar from "../../components/navbar.jsx";
 import Footer from "../../components/Footer.jsx";
 import { IconPackage, IconSearch, IconClose, IconAlert } from "../../components/Icons.jsx";
 
+const ITEMS_PER_PAGE = 15;
+
 const Equipment = () => {
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
@@ -23,6 +25,8 @@ const Equipment = () => {
     const [categorySearch, setCategorySearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(categoryParam || "all");
     const [showCategories, setShowCategories] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+
     const categoryRef = useRef(null);
 
     useEffect(() => {
@@ -38,6 +42,7 @@ const Equipment = () => {
         if (showCategories) {
             document.addEventListener("mousedown", handleClickOutside);
         }
+
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
@@ -55,7 +60,9 @@ const Equipment = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
+
         const equipmentSection = document.getElementById("equipment-section");
+
         if (equipmentSection) {
             equipmentSection.scrollIntoView({
                 behavior: "smooth",
@@ -64,36 +71,38 @@ const Equipment = () => {
         }
     };
 
-    // Getting unique categories from populated equipment data
+    // Get unique categories from populated equipment data
     const categories = useMemo(() => {
         const categoryMap = new Map();
+
         equipments.forEach((equipment) => {
             if (equipment.category?._id) {
                 categoryMap.set(equipment.category._id, equipment.category);
             }
         });
+
         return Array.from(categoryMap.values());
     }, [equipments]);
 
-    // Filtering categories in dropdown
+    // Filter categories inside the dropdown
     const filteredCategories = useMemo(() => {
         return categories.filter((category) =>
-            category.name
-                .toLowerCase()
-                .includes(categorySearch.toLowerCase())
+            category.name.toLowerCase().includes(categorySearch.toLowerCase())
         );
     }, [categories, categorySearch]);
 
-    // Filtering equipments
+    // Filter equipment by name, category and owner
     const filteredEquipments = useMemo(() => {
         return equipments.filter((equipment) => {
             const isOwnEquipment = Boolean(
                 user?._id &&
                 (equipment.owner?._id === user._id || equipment.owner === user._id)
             );
+
             const matchesSearch = equipment.name
                 ?.toLowerCase()
                 .includes(search.toLowerCase());
+
             const matchesCategory =
                 selectedCategory === "all" ||
                 equipment.category?._id === selectedCategory;
@@ -102,17 +111,48 @@ const Equipment = () => {
         });
     }, [equipments, search, selectedCategory, user]);
 
+    // Reset pagination whenever filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, selectedCategory]);
+
+    // Pagination calculations
+    const totalPages = Math.ceil(filteredEquipments.length / ITEMS_PER_PAGE);
+
+    const paginatedEquipments = useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+
+        return filteredEquipments.slice(
+            startIndex,
+            startIndex + ITEMS_PER_PAGE
+        );
+    }, [filteredEquipments, currentPage]);
+
+    const resetFilters = () => {
+        setSearch("");
+        setSelectedCategory("all");
+        setCategorySearch("");
+    };
+
+    const selectedCategoryName =
+        selectedCategory === "all"
+            ? "All Categories"
+            : categories.find((category) => category._id === selectedCategory)?.name ||
+              "All Categories";
+
     // Loading State
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+            <div className="min-h-screen bg-[#F5F4F2] flex flex-col">
                 <Navbar />
-                <div className="flex-1 flex flex-col items-center justify-center p-6">
-                    <div className="w-12 h-12 border-3 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4" />
-                    <p className="font-display font-semibold text-slate-700 text-sm">
-                        Loading marketplace equipment...
+
+                <main className="flex flex-1 flex-col items-center justify-center px-5 py-24">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-black/15 border-t-black" />
+                    <p className="mt-5 text-xs uppercase tracking-[0.18em] text-black/50">
+                        Loading marketplace equipment
                     </p>
-                </div>
+                </main>
+
                 <Footer />
             </div>
         );
@@ -121,94 +161,91 @@ const Equipment = () => {
     // Error State
     if (error) {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+            <div className="min-h-screen bg-[#F5F4F2] flex flex-col">
                 <Navbar />
-                <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-md mx-auto">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center mb-4">
-                        <IconAlert className="w-6 h-6" />
-                    </div>
-                    <h2 className="font-display text-2xl font-bold text-slate-900">
+
+                <main className="flex flex-1 flex-col items-center justify-center px-5 py-24 text-center">
+                    <IconAlert className="h-7 w-7 text-black/50" />
+
+                    <h2 className="mt-5 font-serif text-3xl tracking-tight">
                         Unable to load equipment
                     </h2>
-                    <p className="text-sm text-slate-500 mt-2 mb-6">
+
+                    <p className="mt-3 max-w-md text-sm leading-6 text-black/55">
                         {error}
                     </p>
+
                     <button
                         onClick={() => dispatch(fetchEquipments())}
-                        className="px-6 py-2.5 rounded-full bg-[#0b1b34] text-white text-sm font-semibold hover:bg-[#152a4e] transition-colors"
+                        className="mt-7 border border-black bg-black px-6 py-3 text-xs font-medium text-white transition-colors hover:bg-transparent hover:text-black"
                     >
                         Try Again
                     </button>
-                </div>
+                </main>
+
                 <Footer />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-500 selection:text-white">
+        <div className="min-h-screen bg-[#F5F4F2] font-sans text-black selection:bg-black selection:text-white">
             <Navbar />
 
-            {/* =====================================================
-                HEADER / SEARCH BANNER
-            ===================================================== */}
-            <section className="bg-slate-900 text-white pt-16 pb-20 relative border-b border-slate-800">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="max-w-3xl">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 mb-4 uppercase tracking-widest">
-                            Verified Marketplace
-                        </span>
-                        <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
-                            Find the right gear for your project.
+            {/* MARKETPLACE INTRODUCTION */}
+            <section className="px-5 pb-12 pt-16 sm:px-8 sm:pb-16 sm:pt-20 lg:px-16 lg:pt-24">
+                <div className="mx-auto max-w-[1600px]">
+                    <div className="mx-auto max-w-5xl px-5 pt-10 text-center sm:px-8 lg:pt-14">
+                        <h1 className="font-serif text-5xl leading-[0.98] tracking-[-0.055em] sm:text-6xl lg:text-[5.8rem]">
+                            Find the right equipment.
+                            <span className="mt-1.5 block font-normal italic text-black/45">
+                                Get more done.
+                            </span>
                         </h1>
-                        <p className="mt-4 text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl">
-                            Rent professional-grade tools, machinery, and equipment from verified owners in your community.
-                        </p>
                     </div>
 
-                    {/* Integrated Search Console */}
-                    <div className="mt-10 bg-white/95 backdrop-blur-md rounded-3xl p-3 sm:p-4 shadow-2xl border border-white/20 w-full">
-                        <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
-                            {/* Text Input */}
-                            <div className="flex-1 relative">
-                                <span className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none text-slate-400">
-                                    <IconSearch className="w-5 h-5" />
-                                </span>
+                    {/* SEARCH AND FILTER */}
+                    <div className="mx-auto mt-10 max-w-4xl sm:mt-12">
+                        {/* Search Controls */}
+                        <form
+                            onSubmit={handleSearch}
+                            className="flex flex-col gap-2 rounded-sm bg-[#ECEBE8] p-2 sm:flex-row sm:items-center"
+                        >
+                            {/* Search Input */}
+                            <div className="relative flex-1">
+                                <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40" />
+
                                 <input
                                     type="text"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="What tool or machinery do you need? (e.g. Electric Drill, Camera, Mower)"
-                                    className="w-full h-[52px] pl-12 pr-10 rounded-2xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+                                    placeholder="What are you looking for?"
+                                    className="h-11 w-full bg-transparent pl-10 pr-9 text-sm outline-none placeholder:text-black/40"
                                 />
+
                                 {search && (
                                     <button
                                         type="button"
                                         onClick={() => setSearch("")}
-                                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 hover:text-black"
                                         title="Clear search"
                                     >
-                                        <IconClose className="w-4 h-4" />
+                                        <IconClose className="h-4 w-4" />
                                     </button>
                                 )}
                             </div>
 
                             {/* Category Selector */}
-                            <div ref={categoryRef} className="relative w-full md:w-72 shrink-0">
+                            <div ref={categoryRef} className="relative sm:w-52 sm:shrink-0">
                                 <button
                                     type="button"
                                     onClick={() => setShowCategories(!showCategories)}
-                                    className="w-full h-[52px] px-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between text-sm text-slate-800 hover:border-slate-300 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer font-medium"
+                                    className="flex h-11 w-full items-center justify-between bg-white/60 px-3 text-sm text-black/70 transition-colors hover:bg-white"
                                 >
-                                    <span className="truncate">
-                                        {selectedCategory === "all"
-                                            ? "All Categories"
-                                            : categories.find(
-                                                  (c) => c._id === selectedCategory
-                                              )?.name || "All Categories"}
-                                    </span>
+                                    <span className="truncate">{selectedCategoryName}</span>
+
                                     <svg
-                                        className={`w-4 h-4 text-slate-500 transition-transform shrink-0 ml-2 ${
+                                        className={`ml-2 h-4 w-4 shrink-0 text-black/45 transition-transform ${
                                             showCategories ? "rotate-180" : ""
                                         }`}
                                         fill="none"
@@ -218,26 +255,25 @@ const Equipment = () => {
                                         <path
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
-                                            strokeWidth={2}
+                                            strokeWidth={1.5}
                                             d="M19 9l-7 7-7-7"
                                         />
                                     </svg>
                                 </button>
 
-                                {/* Dropdown menu */}
                                 {showCategories && (
-                                    <div className="absolute z-40 top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                                        <div className="p-2 border-b border-slate-100">
+                                    <div className="absolute left-0 right-0 top-full z-40 mt-2 overflow-hidden border border-black/10 bg-[#F5F4F2] shadow-lg">
+                                        <div className="p-2">
                                             <input
                                                 type="text"
                                                 value={categorySearch}
                                                 onChange={(e) => setCategorySearch(e.target.value)}
-                                                placeholder="Filter categories..."
-                                                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 font-medium"
+                                                placeholder="Search categories..."
+                                                className="w-full bg-black/[0.04] px-3 py-2.5 text-xs outline-none placeholder:text-black/40 focus:bg-black/[0.07]"
                                             />
                                         </div>
 
-                                        <div className="max-h-60 overflow-y-auto p-1.5 space-y-0.5">
+                                        <div className="max-h-56 overflow-y-auto px-2 pb-2">
                                             <button
                                                 type="button"
                                                 onClick={() => {
@@ -245,10 +281,10 @@ const Equipment = () => {
                                                     setShowCategories(false);
                                                     setCategorySearch("");
                                                 }}
-                                                className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                                                className={`w-full px-3 py-2.5 text-left text-xs ${
                                                     selectedCategory === "all"
-                                                        ? "bg-[#0b1b34] text-white"
-                                                        : "text-slate-700 hover:bg-slate-100"
+                                                        ? "bg-black text-white"
+                                                        : "text-black/70 hover:bg-black/5"
                                                 }`}
                                             >
                                                 All Categories
@@ -263,15 +299,21 @@ const Equipment = () => {
                                                         setShowCategories(false);
                                                         setCategorySearch("");
                                                     }}
-                                                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+                                                    className={`w-full px-3 py-2.5 text-left text-xs ${
                                                         selectedCategory === cat._id
-                                                            ? "bg-[#0b1b34] text-white font-semibold"
-                                                            : "text-slate-700 hover:bg-slate-100"
+                                                            ? "bg-black text-white"
+                                                            : "text-black/70 hover:bg-black/5"
                                                     }`}
                                                 >
                                                     {cat.name}
                                                 </button>
                                             ))}
+
+                                            {filteredCategories.length === 0 && (
+                                                <p className="px-3 py-3 text-xs text-black/45">
+                                                    No categories found.
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -280,41 +322,42 @@ const Equipment = () => {
                             {/* Search Button */}
                             <button
                                 type="submit"
-                                className="w-full md:w-auto h-[52px] px-7 rounded-2xl bg-[#0b1b34] hover:bg-[#152a4e] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 shrink-0 shadow-sm hover:shadow cursor-pointer"
+                                className="flex h-11 items-center justify-center gap-3 bg-black px-6 text-xs font-medium text-white transition-colors hover:bg-black/75 sm:shrink-0"
                             >
-                                <IconSearch className="w-4 h-4 text-white" />
-                                <span>Search</span>
+                                Search
                             </button>
                         </form>
 
-                        {/* Quick filter pills */}
-                        <div className="flex flex-wrap items-center gap-2 mt-3.5 pt-3.5 border-t border-slate-100">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 shrink-0 mr-1">
-                                Quick filter:
+                        {/* Quick Category Filters */}
+                        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+                            <span className="mr-1 text-[10px] font-medium uppercase tracking-[0.15em] text-black/40">
+                                Categories
                             </span>
+
                             <button
                                 type="button"
                                 onClick={() => setSelectedCategory("all")}
-                                className={`px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-colors cursor-pointer ${
+                                className={`text-xs transition-colors ${
                                     selectedCategory === "all"
-                                        ? "bg-[#0b1b34] text-white shadow-xs"
-                                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                        ? "font-semibold text-black"
+                                        : "text-black/45 hover:text-black"
                                 }`}
                             >
                                 All
                             </button>
-                            {categories.slice(0, 8).map((c) => (
+
+                            {categories.slice(0, 8).map((category) => (
                                 <button
-                                    key={c._id}
+                                    key={category._id}
                                     type="button"
-                                    onClick={() => setSelectedCategory(c._id)}
-                                    className={`px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-colors cursor-pointer ${
-                                        selectedCategory === c._id
-                                            ? "bg-[#0b1b34] text-white font-semibold shadow-xs"
-                                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                    onClick={() => setSelectedCategory(category._id)}
+                                    className={`text-xs transition-colors ${
+                                        selectedCategory === category._id
+                                            ? "font-semibold text-black"
+                                            : "text-black/45 hover:text-black"
                                     }`}
                                 >
-                                    {c.name}
+                                    {category.name}
                                 </button>
                             ))}
                         </div>
@@ -322,83 +365,125 @@ const Equipment = () => {
                 </div>
             </section>
 
-            {/* =====================================================
-                AVAILABLE EQUIPMENT SECTION
-            ===================================================== */}
-            <main id="equipment-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                {/* Result header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 mb-8 border-b border-slate-200">
-                    <div>
-                        <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#0b1b34]">
-                            Available Equipment
-                        </h2>
-                        <p className="text-xs text-slate-500 mt-1">
-                            Showing{" "}
-                            <span className="font-semibold text-slate-900">
-                                {filteredEquipments.length}
-                            </span>{" "}
-                            item{filteredEquipments.length === 1 ? "" : "s"} ready for rental
-                        </p>
+            {/* AVAILABLE EQUIPMENT */}
+            <main
+                id="equipment-section"
+                className="scroll-mt-10 px-5 pb-20 pt-5 sm:px-8 sm:pb-24 lg:px-16"
+            >
+                <div className="mx-auto max-w-[1600px]">
+                    {/* Result Header */}
+                    <div className="flex flex-col justify-between gap-5 border-b border-black/20 pb-6 sm:flex-row sm:items-end">
+                        <div>
+                            <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.2em] text-black/45">
+                                The collection
+                            </p>
+
+                            <h2 className="font-serif text-3xl tracking-[-0.04em] sm:text-4xl">
+                                Available Equipment
+                            </h2>
+
+                        </div>
+
+                        {(search || selectedCategory !== "all") && (
+                            <button
+                                type="button"
+                                onClick={resetFilters}
+                                className="inline-flex w-fit items-center gap-2 border-b border-black/30 pb-1 text-xs text-black/60 transition-colors hover:border-black hover:text-black"
+                            >
+                                <IconClose className="h-3 w-3" />
+                                Clear all filters
+                            </button>
+                        )}
                     </div>
 
-                    {(search || selectedCategory !== "all") && (
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setSearch("");
-                                setSelectedCategory("all");
-                                setCategorySearch("");
-                            }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors w-fit cursor-pointer border border-slate-200"
-                        >
-                            <IconClose className="w-3 h-3 text-slate-500" />
-                            <span>Clear all filters</span>
-                        </button>
+                    {/* Empty States */}
+                    {equipments.length === 0 ? (
+                        <div className="mx-auto max-w-lg py-24 text-center">
+                            <IconPackage className="mx-auto h-8 w-8 text-black/35" />
+
+                            <h3 className="mt-5 font-serif text-2xl tracking-tight">
+                                No equipment listed yet
+                            </h3>
+
+                            <p className="mt-3 text-sm leading-6 text-black/55">
+                                Check back soon or be the first to list equipment for rent.
+                            </p>
+                        </div>
+                    ) : filteredEquipments.length === 0 ? (
+                        <div className="mx-auto max-w-lg py-24 text-center">
+                            <IconSearch className="mx-auto h-8 w-8 text-black/35" />
+
+                            <h3 className="mt-5 font-serif text-2xl tracking-tight">
+                                No equipment matches your search
+                            </h3>
+
+                            <p className="mt-3 text-sm leading-6 text-black/55">
+                                Try another search term or category, or clear your active filters.
+                            </p>
+
+                            <button
+                                onClick={resetFilters}
+                                className="mt-6 border border-black bg-black px-6 py-3 text-xs font-medium text-white transition-colors hover:bg-transparent hover:text-black"
+                            >
+                                Reset Search
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Equipment Grid */}
+                            <div className="grid grid-cols-1 gap-x-6 gap-y-10 pt-8 sm:grid-cols-2 sm:gap-x-7 sm:gap-y-12 lg:grid-cols-3 lg:gap-x-8">
+                                {paginatedEquipments.map((equipment) => (
+                                    <EquipmentCard
+                                        key={equipment._id}
+                                        equipment={equipment}
+                                    />
+                                ))}
+                            </div>
+
+                            {/* Pagination */}
+                            {totalPages > 1 && (
+                                <div className="mt-16 flex flex-wrap items-center justify-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setCurrentPage((prev) => prev - 1)}
+                                        disabled={currentPage === 1}
+                                        className="border border-black/15 px-4 py-2.5 text-xs text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black"
+                                    >
+                                        Previous
+                                    </button>
+
+                                    {Array.from(
+                                        { length: totalPages },
+                                        (_, index) => index + 1
+                                    ).map((page) => (
+                                        <button
+                                            key={page}
+                                            type="button"
+                                            onClick={() => setCurrentPage(page)}
+                                            aria-current={currentPage === page ? "page" : undefined}
+                                            className={`h-10 w-10 text-xs transition-colors ${
+                                                currentPage === page
+                                                    ? "bg-black text-white"
+                                                    : "text-black/60 hover:bg-[#ECECEC]"
+                                            }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setCurrentPage((prev) => prev + 1)}
+                                        disabled={currentPage === totalPages}
+                                        className="border border-black/15 px-4 py-2.5 text-xs text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
-
-                {/* Empty states */}
-                {equipments.length === 0 ? (
-                    <div className="py-20 text-center rounded-2xl bg-white border border-slate-200 max-w-lg mx-auto p-8 shadow-xs">
-                        <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center mx-auto mb-4 border border-slate-200">
-                            <IconPackage className="w-6 h-6 text-slate-600" />
-                        </div>
-                        <h3 className="font-display text-xl font-bold text-slate-900">
-                            No equipment listed yet
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-2">
-                            Check back soon or be the first to list equipment for rent!
-                        </p>
-                    </div>
-                ) : filteredEquipments.length === 0 ? (
-                    <div className="py-20 text-center rounded-2xl bg-white border border-slate-200 max-w-lg mx-auto p-8 shadow-xs">
-                        <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center mx-auto mb-4 border border-slate-200">
-                            <IconSearch className="w-6 h-6 text-slate-600" />
-                        </div>
-                        <h3 className="font-display text-xl font-bold text-slate-900">
-                            No equipment matches your search
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-2 mb-5">
-                            Try checking for spelling, choosing another category, or clearing your active filters.
-                        </p>
-                        <button
-                            onClick={() => {
-                                setSearch("");
-                                setSelectedCategory("all");
-                                setCategorySearch("");
-                            }}
-                            className="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors cursor-pointer"
-                        >
-                            Reset Search
-                        </button>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                        {filteredEquipments.map((equipment) => (
-                            <EquipmentCard key={equipment._id} equipment={equipment} />
-                        ))}
-                    </div>
-                )}
             </main>
 
             <Footer />

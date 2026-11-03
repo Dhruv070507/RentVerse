@@ -11,6 +11,7 @@ import adminReducer from "../features/adminSlice"
 import reviewReducer from "../features/reviewSlice"
 import notificationReducer from "../features/notificationSlice"
 import categoryReducer from "../features/categorySlice"
+import categoryRequestReducer from "../features/categoryRequestSlice"
 
 
 export const store = configureStore({
@@ -24,5 +25,6 @@ export const store = configureStore({
         review: reviewReducer,
         notification: notificationReducer,
         category: categoryReducer,
+        categoryRequest: categoryRequestReducer
     }
 });

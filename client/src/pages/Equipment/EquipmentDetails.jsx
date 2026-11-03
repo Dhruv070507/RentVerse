@@ -1,3 +1,4 @@
+
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -61,24 +62,25 @@ const EquipmentDetails = () => {
         }
     }, [dispatch, isAuthenticated]);
 
-    // Find completed rental to allow review
     const reviewRental = useMemo(() => {
         if (!isAuthenticated) return null;
+
         return rentals?.find((rental) => {
             const equipmentId = rental.equipment?._id || rental.equipment;
             return equipmentId === id && rental.status === "completed";
         });
     }, [rentals, id, isAuthenticated]);
 
-    // Rating calculations
     const totalReviews = reviews.length;
+
     const averageRating = totalReviews
         ? reviews.reduce((sum, review) => sum + Number(review.rating), 0) / totalReviews
         : 0;
 
     const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => {
-        const count = reviews.filter((r) => Number(r.rating) === rating).length;
+        const count = reviews.filter((review) => Number(review.rating) === rating).length;
         const percentage = totalReviews ? (count / totalReviews) * 100 : 0;
+
         return { rating, count, percentage };
     });
 
@@ -108,16 +110,26 @@ const EquipmentDetails = () => {
         navigate(`/equipment/${equipment._id}/rent`);
     };
 
+    const refreshReviews = () => {
+        setShowReviewModal(false);
+
+        api.get(`/reviews/equipment/${id}`)
+            .then((response) => setReviews(response.data.data || []))
+            .catch((err) => console.error(err));
+    };
+
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+            <div className="min-h-screen bg-[#F5F4F2] flex flex-col justify-between">
                 <Navbar />
+
                 <div className="flex-1 flex flex-col items-center justify-center p-6">
-                    <div className="w-12 h-12 border-3 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4" />
-                    <p className="font-display font-semibold text-slate-700 text-sm">
+                    <div className="w-9 h-9 border-2 border-black/10 border-t-black rounded-full animate-spin mb-4" />
+                    <p className="text-sm text-black/50">
                         Loading equipment details...
                     </p>
                 </div>
+
                 <Footer />
             </div>
         );
@@ -125,84 +137,77 @@ const EquipmentDetails = () => {
 
     if (error || !equipment) {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+            <div className="min-h-screen bg-[#F5F4F2] flex flex-col justify-between">
                 <Navbar />
+
                 <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-md mx-auto">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 bg-[#ECECEC] text-black flex items-center justify-center mb-5">
                         <IconAlert className="w-6 h-6" />
                     </div>
-                    <h2 className="font-display text-2xl font-bold text-slate-900">
+
+                    <h2 className="font-serif text-3xl text-black">
                         Equipment Not Found
                     </h2>
-                    <p className="text-sm text-slate-500 mt-2 mb-6">
+
+                    <p className="text-sm text-black/50 mt-3 mb-7">
                         {error || "The requested item is either unavailable or does not exist."}
                     </p>
+
                     <Link
                         to="/equipments"
-                        className="px-6 py-2.5 rounded-full bg-[#0b1b34] text-white text-sm font-semibold hover:bg-[#152a4e] transition-colors"
+                        className="px-6 py-3 bg-black text-white text-xs font-medium hover:bg-black/75 transition-colors"
                     >
                         Back to Equipment Catalog
                     </Link>
                 </div>
+
                 <Footer />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-50/50 text-slate-900 font-sans selection:bg-blue-500 selection:text-white">
+        <div className="min-h-screen bg-[#F5F4F2] font-sans text-black selection:bg-black selection:text-white">
             <Navbar />
 
-            {/* Breadcrumb Bar */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-                <nav className="flex items-center gap-2 text-xs font-medium text-slate-500">
-                    <Link to="/" className="hover:text-slate-900 transition-colors">
+            <main className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-8 pb-24">
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-xs text-black/45 mb-8">
+                    <Link to="/" className="hover:text-black transition-colors">
                         Home
                     </Link>
                     <span>/</span>
-                    <Link to="/equipments" className="hover:text-slate-900 transition-colors">
+                    <Link to="/equipments" className="hover:text-black transition-colors">
                         Equipment
                     </Link>
                     <span>/</span>
-                    <span className="text-slate-900 font-semibold truncate max-w-xs">
+                    <span className="text-black truncate max-w-xs">
                         {equipment.name}
                     </span>
                 </nav>
-            </div>
 
-            {/* Main Product Showcase */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm">
-                    {/* Media / Images Column */}
-                    <div className="lg:col-span-6 space-y-4">
-                        <div className="w-full h-80 sm:h-[480px] bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative group">
+                {/* Equipment Details */}
+                <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+                    {/* Images */}
+                    <div className="space-y-4">
+                        <div className="relative w-full aspect-[4/3] bg-[#ECECEC] overflow-hidden">
                             {equipment.images?.length > 0 ? (
                                 <img
                                     src={equipment.images[0]}
                                     alt={equipment.name}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2">
-                                    <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span className="text-xs">No image provided</span>
+                                <div className="w-full h-full flex items-center justify-center text-black/30 text-sm">
+                                    No image available
                                 </div>
                             )}
 
-                            {/* Badge */}
-                            <div className="absolute top-4 left-4">
-                                <span
-                                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md shadow-xs ${
-                                        equipment.availability
-                                            ? "bg-white/95 text-blue-700 border border-blue-200"
-                                            : "bg-white/95 text-slate-700 border border-slate-200"
-                                    }`}
-                                >
+                            <div className="absolute bottom-4 left-4">
+                                <span className="inline-flex items-center gap-2 bg-[#F5F4F2] px-3 py-2 text-[11px] font-medium text-black">
                                     <span
                                         className={`w-1.5 h-1.5 rounded-full ${
-                                            equipment.availability ? "bg-blue-600" : "bg-slate-400"
+                                            equipment.availability ? "bg-green-700" : "bg-black/30"
                                         }`}
                                     />
                                     {equipment.availability
@@ -212,146 +217,175 @@ const EquipmentDetails = () => {
                             </div>
                         </div>
 
-                        {/* Additional images if any */}
                         {equipment.images?.length > 1 && (
-                            <div className="flex items-center gap-3 overflow-x-auto pb-2">
-                                {equipment.images.map((img, idx) => (
+                            <div className="flex gap-3 overflow-x-auto pb-2">
+                                {equipment.images.slice(1).map((img, idx) => (
                                     <img
                                         key={idx}
                                         src={img}
-                                        alt={`View ${idx + 1}`}
-                                        className="w-20 h-20 rounded-xl object-cover border border-slate-200 shrink-0 cursor-pointer hover:border-blue-600 transition-colors"
+                                        alt={`View ${idx + 2}`}
+                                        className="w-20 h-20 object-cover bg-[#ECECEC] shrink-0"
                                     />
                                 ))}
                             </div>
                         )}
                     </div>
 
-                    {/* Details & Action Column */}
-                    <div className="lg:col-span-6 flex flex-col justify-between">
-                        <div>
-                            {/* Category & Rating */}
-                            <div className="flex items-center justify-between gap-3 mb-3">
-                                <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-200">
+                    {/* Information */}
+                    <div className="flex flex-col">
+                        <div className="pb-8 border-b border-black/10">
+                            <div className="flex items-center justify-between gap-4 mb-5">
+                                <span className="text-[10px] uppercase tracking-[0.18em] text-black/45">
                                     {equipment.category?.name || "Equipment"}
                                 </span>
 
-                                <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
-                                    <IconStar className="w-3.5 h-3.5 text-amber-500" filled={true} />
-                                    <span className="text-xs font-bold text-slate-800">
+                                <div className="flex items-center gap-1.5 text-xs">
+                                    <IconStar
+                                        className="w-3.5 h-3.5 text-black"
+                                        filled={true}
+                                    />
+                                    <span className="font-medium">
                                         {averageRating.toFixed(1)}
                                     </span>
-                                    <span className="text-[11px] text-slate-500">
-                                        ({totalReviews} review{totalReviews === 1 ? "" : "s"})
+                                    <span className="text-black/40">
+                                        ({totalReviews} reviews)
                                     </span>
                                 </div>
                             </div>
 
-                            {/* Equipment Name */}
-                            <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 leading-tight mb-4">
+                            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-[-0.045em]">
                                 {equipment.name}
                             </h1>
 
-                            {/* Location */}
-                            <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mb-6">
-                                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <div className="flex items-start gap-2 mt-6 text-sm text-black/50">
+                                <svg
+                                    className="w-4 h-4 mt-0.5 shrink-0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={1.5}
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                    />
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={1.5}
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                    />
                                 </svg>
-                                <span>{equipment.location || "Pickup point specified on request"}</span>
-                            </p>
 
-                            {/* Description */}
-                            <div className="prose prose-sm text-slate-600 mb-8 leading-relaxed">
-                                <p>{equipment.description}</p>
-                            </div>
-
-                            {/* Specifications Grid */}
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 mb-8">
-                                <div>
-                                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-600 block">
-                                        Owner
-                                    </span>
-                                    <span className="text-xs font-bold text-slate-900 mt-0.5 block truncate">
-                                        @{equipment.owner?.username || "Verified Owner"}
-                                    </span>
-                                </div>
-                                <div>
-                                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-600 block">
-                                        Total Units
-                                    </span>
-                                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">
-                                        {equipment.quantity} in inventory
-                                    </span>
-                                </div>
-                                <div>
-                                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-600 block">
-                                        Delivery Mode
-                                    </span>
-                                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">
-                                        Agent Delivery Available
-                                    </span>
-                                </div>
+                                <span>
+                                    {equipment.location || "Pickup point specified on request"}
+                                </span>
                             </div>
                         </div>
 
-                        {/* Price & Action Banner */}
-                        <div className="pt-6 border-t border-slate-200">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        {/* Description */}
+                        <div className="py-8 border-b border-black/10">
+                            <p className="text-xs uppercase tracking-[0.16em] text-black/40 mb-3">
+                                About this equipment
+                            </p>
+
+                            <p className="text-sm leading-7 text-black/65 whitespace-pre-line">
+                                {equipment.description}
+                            </p>
+                        </div>
+
+                        {/* Specifications */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-8 border-b border-black/10">
+                            <div>
+                                <p className="text-[10px] uppercase tracking-[0.15em] text-black/40 mb-2">
+                                    Owner
+                                </p>
+                                <p className="text-sm font-medium truncate">
+                                    @{equipment.owner?.username || "Verified Owner"}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-[10px] uppercase tracking-[0.15em] text-black/40 mb-2">
+                                    Total Units
+                                </p>
+                                <p className="text-sm font-medium">
+                                    {equipment.quantity} units
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-[10px] uppercase tracking-[0.15em] text-black/40 mb-2">
+                                    Delivery
+                                </p>
+                                <p className="text-sm font-medium">
+                                    Agent available
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Price and Actions */}
+                        <div className="pt-8 mt-auto">
+                            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                                 <div>
-                                    <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider block">
-                                        Standard Daily Rate
-                                    </span>
-                                    <div className="flex items-baseline gap-1 mt-0.5">
-                                        <span className="font-display font-extrabold text-3xl text-slate-900">
+                                    <p className="text-[10px] uppercase tracking-[0.16em] text-black/40 mb-2">
+                                        Rental price
+                                    </p>
+
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="font-sans text-4xl font-semibold tracking-[-0.04em]">
                                             ₹{equipment.rentalPrice}
                                         </span>
-                                        <span className="text-xs text-slate-500 font-medium">/ 24 hours</span>
+                                        <span className="text-xs text-black/45">
+                                            / day
+                                        </span>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col sm:items-end gap-2">
-                                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                                <div className="flex flex-col gap-3 sm:items-end">
+                                    <div className="flex flex-wrap gap-3">
                                         {reviewRental && (
                                             <button
                                                 onClick={() => setShowReviewModal(true)}
-                                                className="px-5 py-3 rounded-xl border border-slate-300 text-slate-800 text-xs font-semibold hover:bg-slate-50 transition-colors cursor-pointer flex items-center gap-1.5"
+                                                className="px-5 py-3 border border-black/20 text-xs font-medium hover:bg-[#ECECEC] transition-colors"
                                             >
-                                                <IconStar className="w-3.5 h-3.5 text-amber-500" filled={true} />
-                                                <span>Rate Rental</span>
+                                                Rate Rental
                                             </button>
                                         )}
 
                                         <button
                                             onClick={handleRentAction}
-                                            className="flex-1 sm:flex-none px-8 py-3.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 shadow-sm transition-all cursor-pointer"
+                                            className="px-7 py-3.5 bg-black text-white text-xs font-medium hover:bg-black/75 transition-colors"
                                         >
                                             {!isAuthenticated
-                                                ? "Sign in to Rent →"
+                                                ? "Sign in to Rent"
                                                 : isOwner
-                                                ? "Manage Listing →"
-                                                : "Rent Equipment Now →"}
+                                                ? "Manage Listing"
+                                                : "Rent Equipment"}
                                         </button>
                                     </div>
+
                                     {!isAuthenticated && (
-                                        <p className="text-[11px] text-slate-500 text-right">
-                                            Sign in is required to book rentals
+                                        <p className="text-[11px] text-black/40">
+                                            Sign in is required to book rentals.
                                         </p>
                                     )}
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                {/* Reviews Section */}
-                <section className="mt-16 bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 mb-8 border-b border-slate-200">
+                {/* Reviews */}
+                <section className="mt-28">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 pb-7 border-b border-black/15">
                         <div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 block mb-1">
-                                Verified Feedback
-                            </span>
-                            <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#0b1b34]">
+                            <p className="text-[10px] uppercase tracking-[0.18em] text-black/40 mb-3">
+                                Feedback
+                            </p>
+
+                            <h2 className="font-serif text-4xl sm:text-5xl tracking-tight">
                                 Customer Reviews
                             </h2>
                         </div>
@@ -359,67 +393,85 @@ const EquipmentDetails = () => {
                         {reviewRental && (
                             <button
                                 onClick={() => setShowReviewModal(true)}
-                                className="px-5 py-2.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold hover:bg-slate-200 transition-colors w-fit"
+                                className="px-5 py-3 bg-black text-white text-xs font-medium hover:bg-black/75 transition-colors w-fit"
                             >
-                                Write a Review
+                                Write a Review <span className="ml-2">↗</span>
                             </button>
                         )}
                     </div>
 
                     {reviewsLoading ? (
-                        <div className="py-12 text-center text-slate-500 text-xs">
-                            Loading verified reviews...
+                        <div className="py-16 text-center text-sm text-black/40">
+                            Loading reviews...
                         </div>
                     ) : totalReviews === 0 ? (
-                        <div className="py-16 text-center rounded-2xl bg-slate-50 border border-slate-200/60 max-w-md mx-auto p-6">
-                            <p className="text-sm font-semibold text-slate-700">No reviews yet for this equipment.</p>
-                            <p className="text-xs text-slate-500 mt-1">
-                                Rent this equipment and be the first to leave your feedback!
+                        <div className="py-20 text-center">
+                            <h3 className="font-serif text-2xl">
+                                No reviews yet.
+                            </h3>
+                            <p className="text-sm text-black/45 mt-2">
+                                Be the first to share your experience with this equipment.
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                            {/* Left Scorecard */}
-                            <div className="lg:col-span-4 p-6 rounded-2xl bg-slate-50 border border-slate-200/80 h-fit">
-                                <span className="text-xs font-bold text-slate-600 block">Overall Score</span>
-                                <div className="flex items-baseline gap-2 mt-2">
-                                    <span className="font-display font-extrabold text-5xl text-[#0b1b34]">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8">
+                            {/* Rating Summary */}
+                            <div className="lg:col-span-4">
+                                <p className="text-[10px] uppercase tracking-[0.16em] text-black/40 mb-4">
+                                    Overall Rating
+                                </p>
+
+                                <div className="flex items-baseline gap-2">
+                                    <span className="font-serif text-7xl tracking-tight">
                                         {averageRating.toFixed(1)}
                                     </span>
-                                    <span className="text-xs text-slate-500 font-semibold">out of 5.0</span>
+                                    <span className="text-sm text-black/40">
+                                        / 5
+                                    </span>
                                 </div>
 
-                                <div className="flex items-center gap-1 mt-2">
-                                    {[1, 2, 3, 4, 5].map((s) => (
+                                <div className="flex items-center gap-1 mt-3">
+                                    {[1, 2, 3, 4, 5].map((star) => (
                                         <IconStar
-                                            key={s}
+                                            key={star}
                                             className={`w-4 h-4 ${
-                                                s <= Math.round(averageRating)
-                                                    ? "text-amber-500"
-                                                    : "text-slate-300"
+                                                star <= Math.round(averageRating)
+                                                    ? "text-black"
+                                                    : "text-black/15"
                                             }`}
-                                            filled={s <= Math.round(averageRating)}
+                                            filled={star <= Math.round(averageRating)}
                                         />
                                     ))}
                                 </div>
-                                <span className="text-xs text-slate-500 block mt-1">
-                                    Based on {totalReviews} review{totalReviews === 1 ? "" : "s"}
-                                </span>
 
-                                {/* Distribution Bars */}
-                                <div className="mt-6 space-y-2.5 pt-6 border-t border-slate-200">
+                                <p className="text-xs text-black/45 mt-2">
+                                    Based on {totalReviews} review{totalReviews === 1 ? "" : "s"}
+                                </p>
+
+                                {/* Rating Distribution */}
+                                <div className="mt-8 space-y-4">
                                     {ratingDistribution.map((item) => (
-                                        <div key={item.rating} className="flex items-center gap-2.5 text-xs">
-                                            <span className="w-8 font-semibold text-slate-600 flex items-center gap-1">
-                                                {item.rating} <IconStar className="w-3 h-3 text-amber-500" filled={true} />
+                                        <div
+                                            key={item.rating}
+                                            className="flex items-center gap-3 text-xs"
+                                        >
+                                            <span className="w-3 text-black/60">
+                                                {item.rating}
                                             </span>
-                                            <div className="flex-1 h-2 rounded-full bg-slate-200 overflow-hidden">
+
+                                            <IconStar
+                                                className="w-3 h-3 text-black"
+                                                filled={true}
+                                            />
+
+                                            <div className="flex-1 h-1.5 bg-[#ECECEC] overflow-hidden">
                                                 <div
-                                                    className="h-full bg-amber-400 rounded-full transition-all duration-500"
+                                                    className="h-full bg-black transition-all duration-500"
                                                     style={{ width: `${item.percentage}%` }}
                                                 />
                                             </div>
-                                            <span className="w-5 text-right text-slate-600 font-mono text-[11px]">
+
+                                            <span className="w-5 text-right text-black/40 tabular-nums">
                                                 {item.count}
                                             </span>
                                         </div>
@@ -427,59 +479,63 @@ const EquipmentDetails = () => {
                                 </div>
                             </div>
 
-                            {/* Right Reviews List */}
-                            <div className="lg:col-span-8 space-y-4">
-                                {reviews.map((rev) => (
-                                    <div
-                                        key={rev._id}
-                                        className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition-colors"
+                            {/* Review List */}
+                            <div className="lg:col-span-8">
+                                {reviews.map((review, index) => (
+                                    <article
+                                        key={review._id}
+                                        className={`py-7 ${
+                                            index !== 0 ? "border-t border-black/10" : ""
+                                        }`}
                                     >
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex items-center gap-3">
-                                                {rev.reviewer?.profileImage ? (
+                                                {review.reviewer?.profileImage ? (
                                                     <img
-                                                        src={rev.reviewer.profileImage}
-                                                        alt={rev.reviewer.username}
-                                                        className="w-9 h-9 rounded-full object-cover border border-slate-200"
+                                                        src={review.reviewer.profileImage}
+                                                        alt={review.reviewer.username}
+                                                        className="w-10 h-10 object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
-                                                        {rev.reviewer?.username?.charAt(0)?.toUpperCase() || "U"}
+                                                    <div className="w-10 h-10 bg-[#ECECEC] flex items-center justify-center text-sm font-medium">
+                                                        {review.reviewer?.username?.charAt(0)?.toUpperCase() || "U"}
                                                     </div>
                                                 )}
+
                                                 <div>
-                                                    <p className="font-semibold text-xs text-slate-900">
-                                                        {rev.reviewer?.username || "Verified Renter"}
+                                                    <p className="text-sm font-medium">
+                                                        {review.reviewer?.username || "Verified Renter"}
                                                     </p>
-                                                    <p className="text-[10px] text-slate-500">
-                                                        {new Date(rev.createdAt).toLocaleDateString("en-IN", {
+
+                                                    <p className="text-[11px] text-black/40 mt-1">
+                                                        {new Date(review.createdAt).toLocaleDateString("en-IN", {
                                                             year: "numeric",
                                                             month: "short",
-                                                            day: "numeric",
-                                                         })}
+                                                            day: "numeric"
+                                                        })}
                                                     </p>
                                                 </div>
                                             </div>
 
-                                            <div className="flex gap-0.5">
-                                                {[1, 2, 3, 4, 5].map((s) => (
+                                            <div className="flex gap-0.5 shrink-0">
+                                                {[1, 2, 3, 4, 5].map((star) => (
                                                     <IconStar
-                                                        key={s}
+                                                        key={star}
                                                         className={`w-3.5 h-3.5 ${
-                                                            s <= Number(rev.rating)
-                                                                ? "text-amber-500"
-                                                                : "text-slate-300"
+                                                            star <= Number(review.rating)
+                                                                ? "text-black"
+                                                                : "text-black/15"
                                                         }`}
-                                                        filled={s <= Number(rev.rating)}
+                                                        filled={star <= Number(review.rating)}
                                                     />
                                                 ))}
                                             </div>
                                         </div>
 
-                                        <p className="mt-3 text-xs leading-relaxed text-slate-600">
-                                            {rev.comment}
+                                        <p className="mt-4 text-sm leading-7 text-black/65">
+                                            {review.comment}
                                         </p>
-                                    </div>
+                                    </article>
                                 ))}
                             </div>
                         </div>
@@ -487,17 +543,11 @@ const EquipmentDetails = () => {
                 </section>
             </main>
 
-            {/* Review Modal Trigger */}
             {showReviewModal && reviewRental && (
                 <ReviewModal
                     rental={reviewRental}
                     onClose={() => setShowReviewModal(false)}
-                    onSuccess={() => {
-                        setShowReviewModal(false);
-                        api.get(`/reviews/equipment/${id}`)
-                            .then((res) => setReviews(res.data.data || []))
-                            .catch((err) => console.error(err));
-                    }}
+                    onSuccess={refreshReviews}
                 />
             )}
 

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,10 +8,16 @@ const Navbar = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
+
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
 
     const { notifications = [] } = useSelector(
         (state) => state.notification || {}
+    );
+
+    const { categories = [] } = useSelector(
+        (state) => state.category || {}
     );
 
     const { isAuthenticated, user } = useSelector(
@@ -23,110 +30,95 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         await dispatch(logoutUser());
+        setMobileOpen(false);
         navigate("/login");
     };
 
     const isActive = (path) => {
-        if (path === "/" && location.pathname === "/") return true;
-        if (path !== "/" && location.pathname.toLowerCase().startsWith(path.toLowerCase())) return true;
-        return false;
+        if (path === "/") return location.pathname === "/";
+        return location.pathname.toLowerCase().startsWith(path.toLowerCase());
+    };
+
+    const navLinkClass = (path) =>
+        `relative py-2 text-[13px] font-semibold transition-colors duration-200 ${
+            isActive(path)
+                ? "text-black"
+                : "text-black/60 hover:text-black"
+        }`;
+
+    const closeMobileMenu = () => {
+        setMobileOpen(false);
+        setSearchOpen(false);
+    };
+
+    const handleCategorySelect = (categoryId) => {
+        navigate(
+            categoryId
+                ? `/equipments?category=${encodeURIComponent(categoryId)}`
+                : "/equipments"
+        );
+
+        setSearchOpen(false);
+        setMobileOpen(false);
     };
 
     return (
-        <header className="sticky top-0 z-50 w-full glass-header border-b border-slate-200/80 transition-all duration-300">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                {/* Brand Logo */}
+        <header className="sticky top-0 z-50 w-full border-b border-black/10 bg-[#F5F4F2]/95 backdrop-blur-md">
+            <div className="mx-auto flex h-[76px] max-w-[1600px] items-center justify-between px-5 sm:px-8 lg:h-[84px] lg:px-16">
+
+                {/* BRAND */}
                 <Link
                     to="/"
-                    className="flex items-center gap-3 group focus:outline-none"
+                    onClick={closeMobileMenu}
+                    className="flex items-center"
                 >
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-xs group-hover:bg-slate-800 transition-all duration-200">
-                        <span className="font-display font-bold text-xl tracking-wider">
-                            R
-                        </span>
-                    </div>
-
-                    <div className="flex flex-col">
-                        <span className="font-display font-bold text-2xl text-slate-900 tracking-tight transition-colors">
-                            RentVerse
-                        </span>
-                        <span className="text-[10px] uppercase font-semibold tracking-widest text-slate-500 hidden sm:block -mt-1">
-                            Equipment Sharing
-                        </span>
-                    </div>
+                    <span className="rentverse-hero-title font-serif text-[clamp(1.6rem,2.2vw,2.2rem)] leading-[0.91] tracking-[-0.055em]">
+    RentVerse
+</span>
+                    <span className="ml-1.5 mt-[-15px] text-[10px] text-black/60">
+                        ®
+                    </span>
                 </Link>
 
-                {/* Navigation Links (Desktop) */}
-                <nav className="hidden md:flex items-center gap-1.5 bg-slate-100/70 p-1.5 rounded-full border border-slate-200/60 backdrop-blur-xs">
+                {/* MAIN NAVIGATION - SAME FOR EVERYONE */}
+                <nav className="hidden items-center gap-9 lg:flex">
+
                     <Link
                         to="/"
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                            isActive("/")
-                                ? "bg-white text-[#0b1b34] shadow-xs font-semibold"
-                                : "text-slate-600 hover:text-[#0b1b34] hover:bg-white/50"
-                        }`}
+                        className={navLinkClass("/")}
                     >
                         Home
+                        {isActive("/") && (
+                            <span className="absolute -bottom-[7px] left-0 h-px w-full bg-black" />
+                        )}
+                    </Link>
+                    <Link
+                        to="/equipments"
+                        className={navLinkClass("/equipments")}
+                    >
+                        Explore
+                        {isActive("/equipments") && (
+                            <span className="absolute -bottom-[7px] left-0 h-px w-full bg-black" />
+                        )}
                     </Link>
 
                     <Link
-                        to="/equipments"
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                            isActive("/equipments")
-                                ? "bg-white text-[#0b1b34] shadow-xs font-semibold"
-                                : "text-slate-600 hover:text-[#0b1b34] hover:bg-white/50"
-                        }`}
+                        to="/about"
+                        className={navLinkClass("/about")}
                     >
-                        Explore
+                        About Us
+                        {isActive("/about") && (
+                            <span className="absolute -bottom-[7px] left-0 h-px w-full bg-black" />
+                        )}
                     </Link>
 
-                    {isAuthenticated && (
-                        <>
-                            <Link
-                                to="/my-equipments"
-                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                                    isActive("/my-equipments")
-                                        ? "bg-white text-[#0b1b34] shadow-xs font-semibold"
-                                        : "text-slate-600 hover:text-[#0b1b34] hover:bg-white/50"
-                                }`}
-                            >
-                                My Equipment
-                            </Link>
-
-                            <Link
-                                to="/my-rentals"
-                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                                    isActive("/my-rentals")
-                                        ? "bg-white text-[#0b1b34] shadow-xs font-semibold"
-                                        : "text-slate-600 hover:text-[#0b1b34] hover:bg-white/50"
-                                }`}
-                            >
-                                My Rentals
-                            </Link>
-
-                            <Link
-                                to="/My-payments"
-                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                                    isActive("/My-payments")
-                                        ? "bg-white text-[#0b1b34] shadow-xs font-semibold"
-                                        : "text-slate-600 hover:text-[#0b1b34] hover:bg-white/50"
-                                }`}
-                            >
-                                Payments
-                            </Link>
-                        </>
-                    )}
-                </nav>
-
-                {/* Right Actions */}
-                <div className="flex items-center gap-3">
-                    {/* Notification Link */}
-                    {isAuthenticated && (
-                        <Link
-                            to="/notifications"
-                            className="relative p-2.5 rounded-full text-slate-600 hover:text-[#0b1b34] hover:bg-slate-100/80 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                            aria-label="Notifications"
-                            title="Notifications"
+                    {/* CATEGORY SEARCH */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setSearchOpen(!searchOpen)}
+                            aria-label="Search by category"
+                            aria-expanded={searchOpen}
+                            className="flex h-9 w-9 items-center justify-center text-black/70 transition-colors hover:text-black"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -134,170 +126,239 @@ const Navbar = () => {
                                 viewBox="0 0 24 24"
                                 strokeWidth={1.8}
                                 stroke="currentColor"
-                                className="w-5 h-5"
+                                className="h-[21px] w-[21px]"
                             >
+                                <circle cx="11" cy="11" r="7" />
                                 <path
                                     strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M14.857 17.082a23.848 23.848 0 0 1-5.714 0A2.97 2.97 0 0 1 6.25 14.1V10a5.75 5.75 0 0 1 11.5 0v4.1a2.97 2.97 0 0 1-1.893 2.982ZM9.75 20h4.5"
+                                    d="m16 16 4 4"
                                 />
                             </svg>
+                        </button>
 
-                            {unreadCount > 0 && (
-                                <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white animate-pulse">
-                                    {unreadCount > 9 ? "9+" : unreadCount}
-                                </span>
-                            )}
-                        </Link>
-                    )}
+                        {searchOpen && (
+                            <div className="absolute right-0 top-12 z-50 w-64 border border-black/10 bg-[#F5F4F2] py-2 shadow-lg">
+                                <p className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[1.5px] text-black/45">
+                                    Browse by category
+                                </p>
 
-                    {/* Auth Actions */}
-                    {!isAuthenticated ? (
-                        <div className="flex items-center gap-2">
-                            <Link
-                                to="/login"
-                                className="px-5 py-2.5 rounded-full bg-[#0b1b34] text-white text-sm font-semibold hover:bg-[#152a4e] shadow-sm hover:shadow transition-all duration-200"
-                            >
-                                Login
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="hidden sm:inline-flex px-4 py-2.5 rounded-full border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-all duration-200"
-                            >
-                                Register
-                            </Link>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => handleCategorySelect("")}
+                                    className="w-full px-4 py-2.5 text-left text-sm font-semibold text-black/75 transition-colors hover:bg-black/5 hover:text-black"
+                                >
+                                    All Equipment
+                                </button>
+
+                                {categories.map((category) => (
+                                    <button
+                                        key={category._id}
+                                        onClick={() =>
+                                            handleCategorySelect(category._id)
+                                        }
+                                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-black/75 transition-colors hover:bg-black/5 hover:text-black"
+                                    >
+                                        {category.name}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </nav>
+
+                {/* ACCOUNT ACTIONS */}
+                <div className="hidden items-center gap-5 lg:flex">
+
+                    {isAuthenticated ? (
+                        <>
                             {user?.username && (
-                                <span className="hidden lg:inline-flex text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200/60">
+                                <span className="max-w-[130px] truncate text-xs font-semibold text-black/75">
                                     @{user.username}
                                 </span>
                             )}
-                            <button
-                                onClick={handleLogout}
-                                className="px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50/50 text-sm font-medium transition-all duration-200 cursor-pointer"
-                            >
-                                Logout
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Mobile Menu Toggle Button */}
-                    <button
-                        onClick={() => setMobileOpen(!mobileOpen)}
-                        className="md:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                        aria-label="Toggle menu"
-                    >
-                        <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            {mobileOpen ? (
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
-                            ) : (
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 6h16M4 12h16M4 18h16"
-                                />
-                            )}
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            {/* Mobile Drawer */}
-            {mobileOpen && (
-                <div className="md:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-md px-5 py-5 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200 shadow-xl">
-                    <Link
-                        to="/"
-                        onClick={() => setMobileOpen(false)}
-                        className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                            isActive("/") ? "bg-[#0b1b34] text-white" : "text-slate-700 hover:bg-slate-100"
-                        }`}
-                    >
-                        Home
-                    </Link>
-
-                    <Link
-                        to="/equipments"
-                        onClick={() => setMobileOpen(false)}
-                        className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                            isActive("/equipments") ? "bg-[#0b1b34] text-white" : "text-slate-700 hover:bg-slate-100"
-                        }`}
-                    >
-                        Explore Equipment
-                    </Link>
-
-                    {isAuthenticated && (
-                        <>
-                            <Link
-                                to="/my-equipments"
-                                onClick={() => setMobileOpen(false)}
-                                className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                                    isActive("/my-equipments") ? "bg-[#0b1b34] text-white" : "text-slate-700 hover:bg-slate-100"
-                                }`}
-                            >
-                                My Equipment
-                            </Link>
-
-                            <Link
-                                to="/my-rentals"
-                                onClick={() => setMobileOpen(false)}
-                                className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                                    isActive("/my-rentals") ? "bg-[#0b1b34] text-white" : "text-slate-700 hover:bg-slate-100"
-                                }`}
-                            >
-                                My Rentals
-                            </Link>
-
-                            <Link
-                                to="/My-payments"
-                                onClick={() => setMobileOpen(false)}
-                                className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                                    isActive("/My-payments") ? "bg-[#0b1b34] text-white" : "text-slate-700 hover:bg-slate-100"
-                                }`}
-                            >
-                                Payments
-                            </Link>
 
                             <Link
                                 to="/notifications"
-                                onClick={() => setMobileOpen(false)}
-                                className="block px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100"
+                                aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ""}`}
+                                className="relative flex h-9 w-9 items-center justify-center text-black/70 transition-colors hover:text-black"
                             >
-                                Notifications {unreadCount > 0 && `(${unreadCount})`}
-                            </Link>
-                        </>
-                    )}
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.7}
+                                    stroke="currentColor"
+                                    className="h-[21px] w-[21px]"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M14.857 17.082a23.848 23.848 0 0 1-5.714 0A2.97 2.97 0 0 1 6.25 14.1V10a5.75 5.75 0 0 1 11.5 0v4.1a2.97 2.97 0 0 1-1.893 2.982ZM9.75 20h4.5"
+                                    />
+                                </svg>
 
-                    {!isAuthenticated && (
-                        <div className="pt-2 flex flex-col gap-2">
+                                {unreadCount > 0 && (
+                                    <span className="absolute right-0 top-0 flex h-[15px] min-w-[15px] items-center justify-center rounded-full bg-black px-1 text-[9px] font-semibold text-white">
+                                        {unreadCount > 9 ? "9+" : unreadCount}
+                                    </span>
+                                )}
+                            </Link>
+
+                            <button
+                                onClick={handleLogout}
+                                className="border border-black/25 px-5 py-2.5 text-[12px] font-semibold text-black transition-colors duration-200 hover:border-black hover:bg-black hover:text-white"
+                            >
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <>
                             <Link
                                 to="/login"
-                                onClick={() => setMobileOpen(false)}
-                                className="w-full text-center py-2.5 rounded-xl bg-[#0b1b34] text-white text-sm font-semibold"
+                                className="text-[13px] font-semibold text-black/65 transition-colors hover:text-black"
                             >
                                 Login
                             </Link>
+
                             <Link
                                 to="/register"
-                                onClick={() => setMobileOpen(false)}
-                                className="w-full text-center py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-medium"
+                                className="bg-black px-6 py-3 text-[12px] font-semibold text-white transition-colors duration-200 hover:bg-black/75"
                             >
-                                Register
+                                Get started
                             </Link>
-                        </div>
+                        </>
                     )}
+                </div>
+
+                {/* MOBILE MENU BUTTON */}
+                <button
+                    onClick={() => setMobileOpen(!mobileOpen)}
+                    className="flex h-10 w-10 items-center justify-center text-black lg:hidden"
+                    aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                    aria-expanded={mobileOpen}
+                >
+                    {mobileOpen ? (
+                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    ) : (
+                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M3 8h18M3 16h18" />
+                        </svg>
+                    )}
+                </button>
+            </div>
+
+            {/* MOBILE MENU */}
+            {mobileOpen && (
+                <div className="border-t border-black/10 bg-[#F5F4F2] px-5 pb-7 pt-5 lg:hidden">
+                    <nav className="flex flex-col" aria-label="Mobile navigation">
+
+                        <Link
+                            to="/equipments"
+                            onClick={closeMobileMenu}
+                            className="border-b border-black/10 py-4 font-serif text-2xl font-bold text-black"
+                        >
+                            Explore
+                        </Link>
+
+                        <Link
+                            to="/about"
+                            onClick={closeMobileMenu}
+                            className="border-b border-black/10 py-4 font-serif text-2xl font-bold text-black"
+                        >
+                            About Us
+                        </Link>
+
+                        {/* MOBILE CATEGORY SEARCH */}
+                        <div className="border-b border-black/10 py-4">
+                            <button
+                                onClick={() => setSearchOpen(!searchOpen)}
+                                className="flex w-full items-center justify-between font-serif text-2xl font-bold text-black"
+                            >
+                                Search
+                                <svg
+                                    className={`h-5 w-5 transition-transform ${searchOpen ? "rotate-180" : ""}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="m6 9 6 6 6-6" />
+                                </svg>
+                            </button>
+
+                            {searchOpen && (
+                                <div className="mt-4 flex flex-col">
+                                    <button
+                                        onClick={() => handleCategorySelect("")}
+                                        className="py-2 text-left text-sm font-semibold text-black/70"
+                                    >
+                                        All Equipment
+                                    </button>
+
+                                    {categories.map((category) => (
+                                        <button
+                                            key={category._id}
+                                            onClick={() =>
+                                                handleCategorySelect(category._id)
+                                            }
+                                            className="py-2 text-left text-sm font-semibold text-black/70"
+                                        >
+                                            {category.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* AUTHENTICATED MOBILE ACTIONS */}
+                        {isAuthenticated ? (
+                            <>
+                                {user?.username && (
+                                    <p className="py-4 text-sm font-semibold text-black/65">
+                                        @{user.username}
+                                    </p>
+                                )}
+
+                                <Link
+                                    to="/notifications"
+                                    onClick={closeMobileMenu}
+                                    className="flex items-center justify-between border-b border-black/10 py-4 text-sm font-semibold text-black"
+                                >
+                                    Notifications
+                                    {unreadCount > 0 && (
+                                        <span className="text-xs text-black/55">
+                                            {unreadCount} unread
+                                        </span>
+                                    )}
+                                </Link>
+
+                                <button
+                                    onClick={handleLogout}
+                                    className="mt-5 min-h-12 w-full border border-black/25 text-sm font-semibold text-black transition-colors hover:bg-black hover:text-white"
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            <div className="mt-6 grid grid-cols-2 gap-3">
+                                <Link
+                                    to="/login"
+                                    onClick={closeMobileMenu}
+                                    className="flex min-h-12 items-center justify-center border border-black/30 text-sm font-semibold text-black"
+                                >
+                                    Login
+                                </Link>
+
+                                <Link
+                                    to="/register"
+                                    onClick={closeMobileMenu}
+                                    className="flex min-h-12 items-center justify-center bg-black text-sm font-semibold text-white"
+                                >
+                                    Get started
+                                </Link>
+                            </div>
+                        )}
+                    </nav>
                 </div>
             )}
         </header>

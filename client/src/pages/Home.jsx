@@ -1,445 +1,483 @@
+
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import Navbar from "../components/navbar.jsx";
 import Footer from "../components/Footer.jsx";
-import { IconClock, IconShield, IconUser } from "../components/Icons.jsx";
-
 import { fetchCategories } from "../features/categorySlice";
-import { getMyRentals, getRentalRequests } from "../features/rentalSlice";
+
+const heroImage =
+    "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=2200&q=85";
 
 const Home = () => {
     const dispatch = useDispatch();
 
     const { isAuthenticated } = useSelector((state) => state.auth);
-
-    const { rentals = [], rentalRequests = [] } = useSelector(
-        (state) => state.rental
-    );
-
     const { categories = [], loading: categoryLoading } = useSelector(
         (state) => state.category
     );
 
+    // Fetch categories
     useEffect(() => {
         dispatch(fetchCategories());
+    }, [dispatch]);
 
-        if (isAuthenticated) {
-            dispatch(getMyRentals());
-            dispatch(getRentalRequests());
+    // Scroll animations
+    useEffect(() => {
+        const revealElements = document.querySelectorAll(".rv-reveal");
+        const headingElements = document.querySelectorAll(".rv-heading-reveal");
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            revealElements.forEach((element) =>
+                element.classList.add("is-visible")
+            );
+            headingElements.forEach((element) =>
+                element.classList.add("is-visible")
+            );
+            return;
         }
-    }, [dispatch, isAuthenticated]);
+
+        // Normal content: reveal only once
+        const contentObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-visible");
+                        contentObserver.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.12 }
+        );
+
+        // Main headings: repeat on entering and leaving viewport
+        const headingObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-visible");
+                    } else {
+                        entry.target.classList.remove("is-visible");
+                    }
+                });
+            },
+            { threshold: 0.3 }
+        );
+
+        revealElements.forEach((element) => contentObserver.observe(element));
+        headingElements.forEach((element) => headingObserver.observe(element));
+
+        return () => {
+            contentObserver.disconnect();
+            headingObserver.disconnect();
+        };
+    }, [categoryLoading, categories.length]);
 
     return (
-        <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-slate-800 selection:text-white">
+        <div className="min-h-screen bg-[#F5F4F2] font-sans text-black">
             <Navbar />
 
-            {/* =====================================================
-                HERO SECTION
-            ===================================================== */}
-            <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28 bg-slate-50/50 border-b border-slate-200/60">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-4xl mx-auto text-center">
-                        {/* Eyebrow Badge */}
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-xs mb-8">
-                            <span className="flex h-2 w-2 rounded-full bg-blue-600" />
-                            <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">
-                                Equipment Rental Platform
-                            </span>
-                        </div>
+            <main>
+                {/* HERO SECTION */}
+                <section className="px-5 pb-16 pt-16 sm:px-8 sm:pb-20 sm:pt-20 lg:px-16 lg:pb-24 lg:pt-24">
+                    <div className="mx-auto max-w-[1600px]">
+                        <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
 
-                        {/* Hero Headline */}
-                        <h1 className="font-display font-extrabold text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.02] tracking-tight text-slate-900">
-                            Rent what you need.
-                            <br />
-                            <span className="text-blue-600">
-                                Share what you own.
-                            </span>
-                        </h1>
+                            {/* HERO CONTENT */}
+                            <div className="relative z-10 py-4 lg:py-10">
+                                <p className="rv-reveal mb-6 text-[11px] font-medium uppercase tracking-[0.24em] text-black/65">
+                                    Equipment rental, made considered
+                                </p>
 
-                        {/* Subtitle */}
-                        <p className="mt-8 text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
-                            RentVerse connects project creators, businesses, and equipment owners. Discover tools, request verified rentals, and manage payments safely in one place.
-                        </p>
+                                <h1 className="rentverse-hero-title max-w-3xl font-serif text-[clamp(3.25rem,7.4vw,7.3rem)] leading-[0.91] tracking-[-0.055em]">
+                                    <span className="rentverse-word" style={{ animationDelay: "0.15s" }}>The</span>{" "}
+                                    <span className="rentverse-word" style={{ animationDelay: "0.3s" }}>right</span>{" "}
+                                    <span className="rentverse-word" style={{ animationDelay: "0.45s" }}>tools</span>
+                                    <br />
+                                    <span className="font-normal italic">
+                                        <span className="rentverse-word" style={{ animationDelay: "0.6s" }}>for</span>{" "}
+                                        <span className="rentverse-word" style={{ animationDelay: "0.75s" }}>what’s</span>{" "}
+                                        <span className="rentverse-word" style={{ animationDelay: "0.9s" }}>next.</span>
+                                    </span>
+                                </h1>
 
-                        {/* CTA Buttons */}
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-                            <Link
-                                to="/equipments"
-                                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 shadow-sm transition-all duration-200"
-                            >
-                                Explore Marketplace
-                            </Link>
+                                <p className="rv-reveal mt-7 max-w-lg text-base leading-7 text-black/70 sm:text-lg sm:leading-8">
+                                    Find the equipment your next project needs. Rent from
+                                    owners, book with confidence, and put good equipment
+                                    to work.
+                                </p>
 
-                            {!isAuthenticated ? (
-                                <Link
-                                    to="/login"
-                                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-800 text-sm font-semibold hover:bg-slate-50 shadow-xs transition-all duration-200"
-                                >
-                                    Get Started
-                                </Link>
-                            ) : (
-                                <Link
-                                    to="/add-equipment"
-                                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-800 text-sm font-semibold hover:bg-slate-50 shadow-xs transition-all duration-200"
-                                >
-                                    + Add Equipment
-                                </Link>
-                            )}
-                        </div>
-                    </div>
+                                <div className="rv-reveal mt-9 flex flex-wrap items-center gap-3">
+                                    <Link
+                                        to="/equipments"
+                                        className="inline-flex min-h-12 items-center justify-center gap-5 bg-black px-6 py-3 text-sm font-medium text-white transition-colors duration-300 hover:bg-[#333333] focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                                    >
+                                        Explore equipment
+                                    </Link>
 
-                    {/* Value Metrics Grid */}
-                    <div className="mt-16 pt-10 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
-                        <div className="p-6 rounded-2xl bg-white border border-slate-200/70 shadow-xs">
-                            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center mb-4">
-                                <IconClock className="w-5 h-5 text-slate-700" />
-                            </div>
-                            <h3 className="font-display text-lg font-bold text-slate-900">
-                                Instant Request Flow
-                            </h3>
-                            <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-                                Rent equipment in clicks with transparent daily rates and automated scheduling.
-                            </p>
-                        </div>
-
-                        <div className="p-6 rounded-2xl bg-white border border-slate-200/70 shadow-xs">
-                            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center mb-4">
-                                <IconShield className="w-5 h-5 text-slate-700" />
-                            </div>
-                            <h3 className="font-display text-lg font-bold text-slate-900">
-                                Verified & Secured
-                            </h3>
-                            <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-                                Complete peace of mind with Razorpay escrow processing and OTP-protected drop-offs.
-                            </p>
-                        </div>
-
-                        <div className="p-6 rounded-2xl bg-slate-50/80 border border-slate-200/70 shadow-xs">
-                            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center mb-4">
-                                <IconUser className="w-5 h-5 text-slate-700" />
-                            </div>
-                            <h3 className="font-display text-lg font-bold text-slate-900">
-                                Community Driven
-                            </h3>
-                            <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-                                Put idle machinery and gear to work, earning income while helping nearby creators.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* =====================================================
-                CATEGORY EXPLORER SECTION
-            ===================================================== */}
-            <section className="bg-slate-900 text-white py-20 md:py-28 relative overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-                        <div>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold uppercase tracking-wider mb-4">
-                                Catalog Discovery
-                            </div>
-                            <h2 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight">
-                                Explore by Category
-                            </h2>
-                            <p className="mt-4 text-slate-400 text-base max-w-xl leading-relaxed">
-                                Browse certified equipment across high-demand categories for residential, industrial, and creative use.
-                            </p>
-                        </div>
-
-                        <Link
-                            to="/equipments"
-                            className="inline-flex items-center gap-2 text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors group"
-                        >
-                            <span>Browse full catalog</span>
-                            <span className="group-hover:translate-x-1 transition-transform">→</span>
-                        </Link>
-                    </div>
-
-                    {categoryLoading ? (
-                        <div className="py-16 text-center text-slate-400">
-                            <div className="w-8 h-8 border-2 border-slate-600 border-t-blue-400 rounded-full animate-spin mx-auto mb-3" />
-                            Loading categories...
-                        </div>
-                    ) : categories.length === 0 ? (
-                        <div className="p-8 rounded-2xl bg-slate-800/60 border border-slate-800 text-center text-slate-400">
-                            No categories available at the moment.
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {categories.map((category, index) => (
-                                <Link
-                                    key={category._id}
-                                    to={`/equipments?category=${category._id}`}
-                                    className="group relative flex flex-col justify-between p-6 rounded-2xl bg-slate-800/70 border border-slate-700/60 hover:border-slate-500 hover:bg-slate-800 hover:-translate-y-1 transition-all duration-200"
-                                >
-                                    <div className="flex items-center justify-between mb-8">
-                                        <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-white transition-colors">
-                                            {String(index + 1).padStart(2, "0")}
-                                        </span>
-                                        <span className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-slate-300 group-hover:bg-blue-600 group-hover:text-white transition-all duration-200 group-hover:translate-x-0.5 text-sm font-bold">
-                                            →
-                                        </span>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="font-display text-xl font-bold text-white group-hover:text-blue-300 transition-colors">
-                                            {category.name}
-                                        </h3>
-                                        {category.description && (
-                                            <p className="mt-2 text-xs text-slate-400 leading-relaxed line-clamp-2">
-                                                {category.description}
-                                            </p>
-                                        )}
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </section>
-
-            {/* =====================================================
-                AUTHENTICATED ACTIVITY SECTION
-            ===================================================== */}
-            {isAuthenticated && (
-                <section className="bg-slate-50/60 py-20 border-y border-slate-200/70">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="mb-12">
-                            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
-                                Your Overview
-                            </span>
-                            <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-slate-900">
-                                Active Rentals & Requests
-                            </h2>
-                        </div>
-
-                        {/* Rentals List */}
-                        <div className="mb-14">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="font-display text-xl font-bold text-slate-800">
-                                    Equipment you are renting
-                                </h3>
-                                <Link
-                                    to="/my-rentals"
-                                    className="text-xs font-semibold text-blue-600 hover:text-blue-800"
-                                >
-                                    View all rentals →
-                                </Link>
-                            </div>
-
-                            {(() => {
-                                const actualRentals = rentals.filter(
-                                    (rental) =>
-                                        rental.status === "pending" ||
-                                        rental.status === "approved" ||
-                                        rental.status === "completed"
-                                );
-
-                                if (actualRentals.length === 0) {
-                                    return (
-                                        <div className="p-8 rounded-2xl bg-white border border-slate-200/80 text-center text-slate-500 text-sm">
-                                            You don't have any active rentals yet.{" "}
-                                            <Link to="/equipments" className="text-blue-600 font-semibold underline">
-                                                Discover equipment
-                                            </Link>
-                                        </div>
-                                    );
-                                }
-
-                                return (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {actualRentals.slice(0, 3).map((rental) => (
-                                            <div
-                                                key={rental._id}
-                                                className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs hover:shadow-md transition-shadow"
-                                            >
-                                                <div className="flex items-center justify-between mb-3">
-                                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                                                        Rental
-                                                    </span>
-                                                    <span className="text-xs px-2.5 py-1 rounded-full font-semibold capitalize bg-slate-100 text-slate-700 border border-slate-200">
-                                                        {rental.status}
-                                                    </span>
-                                                </div>
-
-                                                <h4 className="font-display font-bold text-lg text-slate-900 line-clamp-1">
-                                                    {rental.equipment?.name || "Equipment"}
-                                                </h4>
-
-                                                <p className="mt-2 text-xs text-slate-500">
-                                                    {rental.rentalStartDate
-                                                        ? new Date(rental.rentalStartDate).toLocaleDateString()
-                                                        : "—"}{" "}
-                                                    to{" "}
-                                                    {rental.rentalEndDate
-                                                        ? new Date(rental.rentalEndDate).toLocaleDateString()
-                                                        : "—"}
-                                                </p>
-
-                                                <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
-                                                    <span className="text-xs text-slate-500">Total Price</span>
-                                                    <span className="font-display font-bold text-lg text-slate-900">
-                                                        ₹{rental.totalPrice}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                );
-                            })()}
-                        </div>
-
-                        {/* Requests for your equipment */}
-                        <div>
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="font-display text-xl font-bold text-slate-800">
-                                    Requests for your listed equipment
-                                </h3>
-                                <Link
-                                    to="/rental-requests"
-                                    className="text-xs font-semibold text-blue-600 hover:text-blue-800"
-                                >
-                                    View all requests →
-                                </Link>
-                            </div>
-
-                            {rentalRequests.length === 0 ? (
-                                <div className="p-8 rounded-2xl bg-white border border-slate-200/80 text-center text-slate-500 text-sm">
-                                    No incoming rental requests right now.
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {rentalRequests.slice(0, 3).map((request) => (
-                                        <div
-                                            key={request._id}
-                                            className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs hover:shadow-md transition-shadow"
+                                    {!isAuthenticated ? (
+                                        <Link
+                                            to="/login"
+                                            className="inline-flex min-h-12 items-center justify-center border border-black/30 px-6 py-3 text-sm font-medium text-black transition-colors duration-300 hover:border-black hover:bg-black hover:text-white"
                                         >
-                                            <div className="flex items-center justify-between mb-3">
-                                                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                                                    Request
-                                                </span>
-                                                <span className="text-xs px-2.5 py-1 rounded-full font-semibold capitalize bg-slate-100 text-slate-700 border border-slate-200">
-                                                    {request.status}
-                                                </span>
-                                            </div>
+                                            Get started
+                                        </Link>
+                                    ) : (
+                                        <Link
+                                            to="/add-equipment"
+                                            className="inline-flex min-h-12 items-center justify-center border border-black/30 px-6 py-3 text-sm font-medium text-black transition-colors duration-300 hover:border-black hover:bg-black hover:text-white"
+                                        >
+                                            Add equipment
+                                        </Link>
+                                    )}
+                                </div>
 
-                                            <h4 className="font-display font-bold text-lg text-slate-900 line-clamp-1">
-                                                {request.equipment?.name || "Equipment"}
-                                            </h4>
+                                <div className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-black/15 pt-5 text-xs tracking-wide text-black/65 sm:mt-16">
+                                    <span className="rv-reveal">Browse by category</span>
+                                    <span className="rv-reveal">Transparent rental rates</span>
+                                    <span className="rv-reveal">Delivery and return tracking</span>
+                                </div>
+                            </div>
 
-                                            <p className="mt-1 text-xs text-slate-500">
-                                                By{" "}
-                                                <span className="font-semibold text-slate-700">
-                                                    @{request.renter?.username || "user"}
-                                                </span>
+                            {/* HERO IMAGE */}
+                            <div className="rv-reveal relative min-w-0">
+                                <div className="relative aspect-[4/4.1] overflow-hidden bg-[#ECECEC] sm:aspect-[5/4] lg:aspect-[0.94/1]">
+                                    <img
+                                        src={heroImage}
+                                        alt="A general equipment and engineering workspace"
+                                        className="h-full w-full object-cover object-center"
+                                        fetchPriority="high"
+                                    />
+
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+                                    <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4 sm:bottom-7 sm:left-7 sm:right-7">
+                                        <div className="max-w-xs">
+                                            <p className="rv-reveal text-[10px] uppercase tracking-[0.2em] text-white">
+                                                Make room for progress
                                             </p>
 
-                                            <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
-                                                <span className="text-xs text-slate-500">Amount</span>
-                                                <span className="font-display font-bold text-lg text-slate-900">
-                                                    ₹{request.totalPrice}
-                                                </span>
-                                            </div>
+                                            <p className="rv-reveal mt-2 font-serif text-2xl leading-tight text-white sm:text-3xl">
+                                                Good work starts with the right equipment.
+                                            </p>
                                         </div>
-                                    ))}
+
+                                        <span
+                                            className="rv-reveal hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/70 text-xl text-white sm:flex"
+                                            aria-hidden="true"
+                                        >
+                                            ↗
+                                        </span>
+                                    </div>
                                 </div>
-                            )}
+
+                                <p className="rv-reveal mt-3 text-right text-[10px] uppercase tracking-[0.18em] text-black/60">
+                                    Find it. Rent it. Get to work.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </section>
-            )}
 
-            {/* =====================================================
-                HOW IT WORKS
-            ===================================================== */}
-            <section className="py-20 md:py-28 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-2xl mx-auto text-center mb-16">
-                        <span className="text-xs font-bold uppercase tracking-widest text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 inline-block mb-3">
-                            Simple Process
-                        </span>
-                        <h2 className="font-display font-extrabold text-4xl sm:text-5xl text-slate-900">
-                            How RentVerse Works
+                {/* EQUIPMENT CATEGORIES */}
+                <section className="bg-[#F5F4F2] px-5 py-28 sm:px-8 sm:py-36 lg:px-16 lg:py-44">
+                    <div className="mx-auto max-w-[1600px]">
+
+                        {/* SECTION HEADER */}
+                        <div className="mb-16 flex flex-col gap-7 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
+                            <div className="max-w-3xl">
+                                <p className="rv-reveal mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-black/70">
+                                    Explore our collection
+                                </p>
+
+                                <h2 className="rv-heading-reveal font-serif text-4xl leading-[1.05] tracking-[-0.04em] sm:text-5xl lg:text-6xl">
+                                    Find the right equipment
+                                    <br className="hidden sm:block" />
+                                    for every project.
+                                </h2>
+
+                                <p className="rv-reveal mt-5 max-w-xl text-base leading-7 text-black/70">
+                                    Explore a wide range of equipment available for rent.
+                                    Find what you need and get your next project moving.
+                                </p>
+                            </div>
+
+                            <Link
+                                to="/equipments"
+                                className="rv-reveal inline-flex min-h-12 w-fit items-center justify-center gap-5 bg-black px-7 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-[#333333]"
+                            >
+                                View all equipment
+                            </Link>
+                        </div>
+
+                        {/* CATEGORY GRID */}
+                        {categoryLoading ? (
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                {[1, 2, 3, 4].map((item) => (
+                                    <div
+                                        key={item}
+                                        className="h-[230px] animate-pulse bg-[#E8E7E4]"
+                                    />
+                                ))}
+                            </div>
+                        ) : categories.length === 0 ? (
+                            <div className="border-y border-black/20 py-14 text-center">
+                                <h3 className="rv-reveal font-serif text-2xl">
+                                    No categories available yet.
+                                </h3>
+
+                                <Link
+                                    to="/equipments"
+                                    className="rv-reveal mt-5 inline-flex border-b border-black pb-1 text-sm font-medium"
+                                >
+                                    Browse equipment →
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                {categories.slice(0, 8).map((category, index) => (
+                                    <Link
+                                        key={category._id}
+                                        to={`/equipments?category=${category._id}`}
+                                        className="group flex min-h-[230px] flex-col justify-between border border-black/15 bg-[#ECECEC] p-6 transition-all duration-300 hover:border-black/50 hover:bg-[#E5E4E1] sm:p-7"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <span className="rv-reveal text-xs font-semibold tracking-[0.15em] text-black/70">
+                                                {String(index + 1).padStart(2, "0")}
+                                            </span>
+
+                                            <span className="rv-reveal flex h-9 w-9 items-center justify-center rounded-full border border-black/30 text-black transition-all duration-300 group-hover:bg-black group-hover:text-white">
+                                                ↗
+                                            </span>
+                                        </div>
+
+                                        <div className="mt-10">
+                                            <h3 className="rv-reveal font-serif text-2xl leading-tight tracking-[-0.02em] text-black sm:text-3xl">
+                                                {category.name}
+                                            </h3>
+
+                                            <p className="rv-reveal mt-3 line-clamp-2 min-h-[40px] text-sm leading-5 text-black/75">
+                                                {category.description ||
+                                                    `Explore ${category.name.toLowerCase()} available for rent.`}
+                                            </p>
+
+                                            <div className="mt-6 flex items-center justify-between border-t border-black/20 pt-4">
+                                                <span className="rv-reveal text-xs font-semibold text-black">
+                                                    Explore category
+                                                </span>
+
+                                                <span className="rv-reveal text-sm transition-transform duration-300 group-hover:translate-x-1">
+                                                    →
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </section>
+
+                {/* HOW RENTVERSE WORKS */}
+                <section className="bg-[#ECECEC] px-5 py-28 sm:px-8 sm:py-36 lg:px-16 lg:py-44">
+                    <div className="mx-auto grid max-w-[1600px] gap-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-28">
+
+                        {/* SECTION INTRO */}
+                        <div>
+                            <p className="rv-reveal mb-4 text-[11px] font-medium uppercase tracking-[0.22em] text-black/65">
+                                A better way to rent
+                            </p>
+
+                            <h2 className="rv-heading-reveal max-w-xl font-serif text-4xl leading-[1.02] tracking-[-0.04em] sm:text-5xl lg:text-6xl">
+                                Less buying. More doing.
+                            </h2>
+
+                            <p className="rv-reveal mt-6 max-w-md text-base leading-7 text-black/70">
+                                Access useful equipment when you need it, and give the
+                                equipment you own more opportunities to work.
+                            </p>
+
+                            <Link
+                                to="/about"
+                                className="rv-reveal group mt-8 inline-flex items-center gap-3 border-b border-black/40 pb-2 text-sm hover:border-black"
+                            >
+                                Get to know RentVerse
+                                <span
+                                    className="transition-transform duration-300 group-hover:translate-x-1"
+                                    aria-hidden="true"
+                                >
+                                    →
+                                </span>
+                            </Link>
+                        </div>
+
+                        {/* PROCESS */}
+                        <div className="grid gap-0 sm:grid-cols-2">
+                            <article className="border-t border-black/20 py-8 sm:pr-8">
+                                <span className="rv-reveal font-serif text-2xl">01</span>
+
+                                <h3 className="rv-reveal mt-6 font-serif text-2xl">
+                                    Find the right fit
+                                </h3>
+
+                                <p className="rv-reveal mt-3 max-w-sm text-sm leading-6 text-black/70">
+                                    Explore equipment by category and compare the details
+                                    before making a request.
+                                </p>
+                            </article>
+
+                            <article className="border-t border-black/20 py-8 sm:pl-8">
+                                <span className="rv-reveal font-serif text-2xl">02</span>
+
+                                <h3 className="rv-reveal mt-6 font-serif text-2xl">
+                                    Book with clarity
+                                </h3>
+
+                                <p className="rv-reveal mt-3 max-w-sm text-sm leading-6 text-black/70">
+                                    Choose your rental dates, review the price, and follow
+                                    your request through its status.
+                                </p>
+                            </article>
+
+                            <article className="border-t border-black/20 py-8 sm:pr-8">
+                                <span className="rv-reveal font-serif text-2xl">03</span>
+
+                                <h3 className="rv-reveal mt-6 font-serif text-2xl">
+                                    Payment made simple
+                                </h3>
+
+                                <p className="rv-reveal mt-3 max-w-sm text-sm leading-6 text-black/70">
+                                    Complete eligible rentals through the platform's
+                                    Razorpay payment flow.
+                                </p>
+                            </article>
+
+                            <article className="border-t border-black/20 py-8 sm:pl-8">
+                                <span className="rv-reveal font-serif text-2xl">04</span>
+
+                                <h3 className="rv-reveal mt-6 font-serif text-2xl">
+                                    Track every handoff
+                                </h3>
+
+                                <p className="rv-reveal mt-3 max-w-sm text-sm leading-6 text-black/70">
+                                    Follow delivery and return progress, including
+                                    OTP-based handoff verification.
+                                </p>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                
+{/* RENTALS AND REQUESTS SECTION */}
+<section className="px-5 py-28 sm:px-8 sm:py-36 lg:px-16 lg:py-44">
+    <div className="mx-auto max-w-[1600px] border-y border-black/20 py-14 sm:py-20 lg:py-24">
+        <div className="mx-auto max-w-3xl text-center">
+            <p className="rv-reveal mb-5 text-[11px] font-medium uppercase tracking-[0.22em] text-black/65">
+                Your RentVerse activity
+            </p>
+
+            <h2 className="rv-heading-reveal font-serif text-4xl leading-[1.02] tracking-[-0.045em] sm:text-5xl lg:text-6xl">
+                Everything about your rentals, in one place.
+            </h2>
+
+            <p className="rv-reveal mx-auto mt-6 max-w-xl text-base leading-7 text-black/70">
+                Keep track of the equipment you've rented and manage requests
+                from people interested in renting your equipment.
+            </p>
+
+            <div className="rv-reveal mt-9 flex flex-wrap justify-center gap-3">
+                <Link
+                    to="/my-rentals"
+                    className="inline-flex min-h-12 items-center justify-center gap-4 bg-black px-7 py-3 text-sm font-medium text-white transition-colors duration-300 hover:bg-[#333333]"
+                >
+                    My Rentals
+                </Link>
+
+                <Link
+                    to="/rental-requests"
+                    className="inline-flex min-h-12 items-center justify-center gap-4 border border-black/30 px-7 py-3 text-sm font-medium text-black transition-colors duration-300 hover:border-black hover:bg-black hover:text-white"
+                >
+                    Rental Requests
+                </Link>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{/* LIST YOUR EQUIPMENT SECTION */}
+<section className="px-5 pb-24 pt-12 sm:px-8 sm:pb-32 lg:px-16 lg:pb-36">
+    <div className="mx-auto max-w-[1600px]">
+        <div className="relative overflow-hidden bg-black px-7 py-14 text-white sm:px-12 sm:py-20 lg:px-20 lg:py-24">
+
+            {/* Decorative element */}
+            <span className="pointer-events-none absolute -right-10 -top-24 font-serif text-[280px] leading-none text-white/[0.035] sm:-right-4 sm:-top-36 sm:text-[400px]">
+                +
+            </span>
+
+            <div className="relative z-10">
+
+                <div className="flex items-center justify-between gap-4">
+                    <p className="rv-reveal text-[11px] font-medium uppercase tracking-[0.24em] text-white/55">
+                        For equipment owners
+                    </p>
+
+                    <span className="rv-reveal hidden text-[10px] uppercase tracking-[0.2em] text-white/40 sm:block">
+                        RentVerse / 01
+                    </span>
+                </div>
+
+                <div className="mt-14 grid gap-12 lg:mt-20 lg:grid-cols-[1fr_auto] lg:items-end">
+
+                    {/* Heading and description */}
+                    <div>
+                        <h2 className="rv-heading-reveal max-w-4xl font-serif text-4xl leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-[5.5rem]">
+                            Your equipment.
+                            <br />
+                            <span className="font-normal italic text-white/55">
+                                Your opportunity.
+                            </span>
                         </h2>
-                        <p className="mt-4 text-base text-slate-600 leading-relaxed">
-                            Rent or lend equipment in four transparent, friction-free steps.
+
+                        <p className="rv-reveal mt-8 max-w-lg text-sm leading-7 text-white/60 sm:text-base sm:leading-8">
+                            Turn unused equipment into an opportunity.
+                            List what you own, reach people who need it,
+                            and earn from the equipment you already have.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="p-8 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all">
-                            <span className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 font-display font-bold text-sm flex items-center justify-center border border-slate-200 mb-6">
-                                01
-                            </span>
-                            <h3 className="font-display text-xl font-bold text-slate-900">
-                                Discover Equipment
-                            </h3>
-                            <p className="mt-3 text-sm text-slate-500 leading-relaxed">
-                                Filter by category, location, and daily rate. View real renter reviews and verified specifications.
-                            </p>
-                        </div>
-
-                        <div className="p-8 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all">
-                            <span className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 font-display font-bold text-sm flex items-center justify-center border border-slate-200 mb-6">
-                                02
-                            </span>
-                            <h3 className="font-display text-xl font-bold text-slate-900">
-                                Reserve & Confirm
-                            </h3>
-                            <p className="mt-3 text-sm text-slate-500 leading-relaxed">
-                                Select start and end dates. The equipment owner reviews and approves with full scheduling visibility.
-                            </p>
-                        </div>
-
-                        <div className="p-8 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all">
-                            <span className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 font-display font-bold text-sm flex items-center justify-center border border-slate-200 mb-6">
-                                03
-                            </span>
-                            <h3 className="font-display text-xl font-bold text-slate-900">
-                                Secure Pay & Deliver
-                            </h3>
-                            <p className="mt-3 text-sm text-slate-500 leading-relaxed">
-                                Complete checkout via Razorpay. Certified delivery agents safely transport the item with OTP validation.
-                            </p>
-                        </div>
+                    {/* CTA */}
+                    <div className="rv-reveal">
+                        <Link
+                            to={isAuthenticated ? "/add-equipment" : "/login"}
+                            className="group inline-flex min-h-14 w-full items-center justify-between gap-10 border border-white/40 px-6 py-4 text-sm font-medium text-white transition-all duration-300 hover:border-white hover:bg-white hover:text-black sm:w-auto"
+                        >
+                            List your equipment
+                        </Link>
                     </div>
-                </div>
-            </section>
 
-            {/* =====================================================
-                FINAL CALL TO ACTION
-            ===================================================== */}
-            <section className="pb-24">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="rounded-2xl bg-slate-900 p-10 md:p-14 text-center text-white relative overflow-hidden border border-slate-800 shadow-xl">
-                        <div className="max-w-3xl mx-auto relative z-10">
-                            <h2 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight">
-                                Ready to experience modern equipment sharing?
-                            </h2>
-                            <p className="mt-6 text-base sm:text-lg text-slate-300 leading-relaxed">
-                                Join renters and owners who make better use of idle resources every day.
-                            </p>
-                            <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
-                                <Link
-                                    to="/equipments"
-                                    className="px-8 py-3.5 rounded-xl bg-white text-slate-900 font-semibold text-sm hover:bg-slate-100 shadow-sm transition-all"
-                                >
-                                    Browse Marketplace
-                                </Link>
-                                <Link
-                                    to="/about"
-                                    className="px-8 py-3.5 rounded-xl border border-slate-700 text-slate-200 font-semibold text-sm hover:bg-slate-800 transition-all"
-                                >
-                                    Learn More
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-            </section>
+
+                {/* Bottom details */}
+                <div className="mt-16 flex flex-wrap items-center justify-between gap-5 border-t border-white/20 pt-6 sm:mt-24">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-white/45">
+                        Make more of what you own
+                    </p>
+
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-white/45">
+                        List · Connect · Earn
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+            </main>
 
             <Footer />
         </div>

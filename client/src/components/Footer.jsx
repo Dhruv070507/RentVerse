@@ -1,125 +1,173 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
     return (
-        <footer className="mt-20 w-full bg-slate-900 text-slate-300 font-sans border-t border-slate-800">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
-                {/* Main Footer Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
-                    {/* Brand Column */}
-                    <div className="lg:col-span-2 space-y-5">
-                        <Link to="/" className="flex items-center gap-3 group w-fit">
-                            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
-                                R
-                            </div>
-                            <span className="font-display font-bold text-2xl text-white tracking-tight">
+        <footer className="mt-50 w-full border-t border-black/15 bg-[#F5F4F2] font-sans text-black">
+            {/* Main Footer */}
+            <div className="mx-auto max-w-[1600px] px-5 pb-8 pt-10 sm:px-8 sm:pb-10 sm:pt-12 lg:px-16">
+
+                {/* Brand and Introduction */}
+                <div className="grid gap-7 border-b border-black/20 pb-8 sm:gap-10 sm:pb-10 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
+
+                    <div>
+                        <Link to="/" className="inline-block">
+                            <span className="font-serif text-3xl leading-none tracking-[-0.06em] sm:text-4xl">
                                 RentVerse
                             </span>
                         </Link>
 
-                        <p className="text-sm leading-relaxed text-slate-400 max-w-sm">
-                            Next-generation equipment sharing ecosystem. Rent heavy machinery, power tools, electronics, or outdoor gear safely and efficiently.
+                        <p className="mt-4 max-w-md text-sm leading-6 text-black/65">
+                            A better way to access the equipment you need.
+                            Discover, rent and share useful equipment while
+                            making more of what you already own.
                         </p>
-
-                        <div className="flex items-center gap-2 pt-2">
-                            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                                All Systems Operational
-                            </span>
-                        </div>
                     </div>
 
-                    {/* Company Column */}
-                    <div className="space-y-4">
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                    <div className="flex flex-col justify-end lg:items-end">
+                        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-black/50">
+                            Find it. Rent it. Get to work.
+                        </p>
+
+                        <Link
+                            to="/equipments"
+                            className="group mt-3 inline-flex items-center gap-4 border-b border-black pb-2 text-sm font-medium transition-opacity hover:opacity-60"
+                        >
+                            Explore equipment
+                            <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">
+                                →
+                            </span>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Navigation Links */}
+                <div className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 sm:grid-cols-3 sm:gap-x-8 lg:grid-cols-4 lg:gap-10 lg:py-10">
+
+                    {/* Company */}
+                    <div>
+                        <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/50">
                             Company
                         </h3>
+
                         <ul className="space-y-2.5 text-sm">
                             <li>
-                                <Link
-                                    to="/about"
-                                    className="text-slate-400 hover:text-white transition-colors duration-200"
-                                >
+                                <Link to="/about" className="transition-opacity hover:opacity-50">
                                     About Us
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    to="/how-it-works"
-                                    className="text-slate-400 hover:text-white transition-colors duration-200"
-                                >
+                                <Link to="/how-it-works" className="transition-opacity hover:opacity-50">
                                     How It Works
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    to="/contact"
-                                    className="text-slate-400 hover:text-white transition-colors duration-200"
-                                >
+                                <Link to="/contact" className="transition-opacity hover:opacity-50">
                                     Contact Support
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Resources Column */}
-                    <div className="space-y-4">
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
-                            Resources
+                    {/* Explore */}
+                    <div>
+                        <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/50">
+                            Explore
                         </h3>
+
                         <ul className="space-y-2.5 text-sm">
                             <li>
-                                <Link
-                                    to="/safety-trust"
-                                    className="text-slate-400 hover:text-white transition-colors duration-200"
-                                >
+                                <Link to="/equipments" className="transition-opacity hover:opacity-50">
+                                    All Equipment
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/add-equipment" className="transition-opacity hover:opacity-50">
+                                    Add Equipment
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Resources */}
+                    <div>
+                        <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/50">
+                            Resources
+                        </h3>
+
+                        <ul className="space-y-2.5 text-sm">
+                            <li>
+                                <Link to="/safety-trust" className="transition-opacity hover:opacity-50">
                                     Safety & Trust
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    to="/terms-of-service"
-                                    className="text-slate-400 hover:text-white transition-colors duration-200"
-                                >
+                                <Link to="/terms-of-service" className="transition-opacity hover:opacity-50">
                                     Terms of Service
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    to="/privacy-policy"
-                                    className="text-slate-400 hover:text-white transition-colors duration-200"
-                                >
+                                <Link to="/privacy-policy" className="transition-opacity hover:opacity-50">
                                     Privacy Policy
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Trust Highlights */}
-                    <div className="space-y-4">
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
-                            Verified Standard
+                    {/* Platform */}
+                    <div>
+                        <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/50">
+                            Platform
                         </h3>
-                        <div className="space-y-3">
-                            <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                                <p className="text-xs font-semibold text-white">100% Secure Payments</p>
-                                <p className="text-[11px] text-slate-400 mt-0.5">Automated Razorpay verification</p>
+
+                        <div className="space-y-4">
+                            <div>
+                                <p className="text-sm font-medium">
+                                    Secure Payments
+                                </p>
+                                <p className="mt-1 text-xs leading-5 text-black/55">
+                                    Payments powered by Razorpay.
+                                </p>
                             </div>
-                            <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80">
-                                <p className="text-xs font-semibold text-white">OTP Authenticated</p>
-                                <p className="text-[11px] text-slate-400 mt-0.5">Secure drop-off & return validation</p>
+
+                            <div>
+                                <p className="text-sm font-medium">
+                                    Verified Handoffs
+                                </p>
+                                <p className="mt-1 text-xs leading-5 text-black/55">
+                                    OTP-based delivery and return tracking.
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
-                <div className="mt-14 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-                    <p>© {new Date().getFullYear()} RentVerse Inc. All rights reserved.</p>
-                    <p className="flex items-center gap-1.5">
-                        <span>Crafted for high performance & reliability</span>
+                {/* Closing Statement */}
+                <div className="flex flex-col justify-between gap-3 border-t border-black/20 pt-5 sm:flex-row sm:items-center">
+                    <p className="font-serif text-lg italic text-black/75 sm:text-xl">
+                        Make more of what you own.
                     </p>
+
+                    <p className="text-[10px] uppercase tracking-[0.15em] text-black/50">
+                        Built for better access to equipment.
+                    </p>
+                </div>
+            </div>
+
+            {/* Bottom Bar */}
+            <div className="bg-black px-5 py-4 text-white sm:px-8 lg:px-16">
+                <div className="mx-auto flex max-w-[1600px] flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+                    <p className="text-[11px] tracking-wide text-white/65">
+                        © {new Date().getFullYear()} RentVerse. All rights reserved.
+                    </p>
+
+                    <Link
+                        to="/"
+                        className="text-[11px] uppercase tracking-[0.18em] text-white/65 transition-colors hover:text-white"
+                    >
+                        Back to top ↑
+                    </Link>
                 </div>
             </div>
         </footer>

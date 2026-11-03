@@ -1,9 +1,15 @@
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { addEquipment } from "../../features/equipmentSlice";
 import { fetchCategories } from "../../features/categorySlice";
+import {
+    createCategoryRequest,
+    clearCategoryRequestStatus
+} from "../../features/categoryRequestSlice";
+
 import Navbar from "../../components/navbar.jsx";
 import Footer from "../../components/Footer.jsx";
 import { IconAlert, IconCamera } from "../../components/Icons.jsx";
@@ -12,16 +18,16 @@ const AddEquipment = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const {
-        loading: equipmentLoading,
-        error: equipmentError
-    } = useSelector((state) => state.equipment);
+    const { loading: equipmentLoading, error: equipmentError } =
+        useSelector((state) => state.equipment);
+
+    const { categories = [], loading: categoryLoading, error: categoryError } =
+        useSelector((state) => state.category);
 
     const {
-        categories = [],
-        loading: categoryLoading,
-        error: categoryError
-    } = useSelector((state) => state.category);
+        submitting: requestSubmitting,
+        error: requestError
+    } = useSelector((state) => state.categoryRequest);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -34,313 +40,350 @@ const AddEquipment = () => {
 
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
+    const [showRequestModal, setShowRequestModal] = useState(false);
+    const [requestData, setRequestData] = useState({
+        name: "",
+        description: ""
+    });
+    const [requestMessage, setRequestMessage] = useState("");
 
     useEffect(() => {
         dispatch(fetchCategories());
+
+        return () => {
+            dispatch(clearCategoryRequestStatus());
+        };
     }, [dispatch]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         setImages(files);
+        setPreviewImages(files.map((file) => URL.createObjectURL(file)));
+    };
 
-        const previews = files.map((file) =>
-            URL.createObjectURL(file)
-        );
-        setPreviewImages(previews);
+    const handleCategoryRequest = async (e) => {
+        e.preventDefault();
+        setRequestMessage("");
+
+        const result = await dispatch(createCategoryRequest({
+            name: requestData.name.trim(),
+            description: requestData.description.trim()
+        }));
+
+        if (createCategoryRequest.fulfilled.match(result)) {
+            setRequestMessage("Request submitted successfully.");
+            setRequestData({ name: "", description: "" });
+            setTimeout(() => setShowRequestModal(false), 1000);
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (images.length === 0) {
-            return;
-        }
+        if (!images.length) return;
 
         const data = new FormData();
-        data.append("name", formData.name);
-        data.append("description", formData.description);
-        data.append("category", formData.category);
-        data.append("rentalPrice", formData.rentalPrice);
-        data.append("quantity", formData.quantity);
-        data.append("location", formData.location);
 
-        images.forEach((image) => {
-            data.append("images", image);
+        Object.entries(formData).forEach(([key, value]) => {
+            data.append(key, value);
         });
+
+        images.forEach((image) => data.append("images", image));
 
         const result = await dispatch(addEquipment(data));
 
         if (addEquipment.fulfilled.match(result)) {
-            setFormData({
-                name: "",
-                description: "",
-                category: "",
-                rentalPrice: "",
-                quantity: "",
-                location: ""
-            });
-            setImages([]);
-            setPreviewImages([]);
             navigate("/my-equipments");
         }
     };
 
-    const loading = equipmentLoading || categoryLoading;
     const error = equipmentError || categoryError;
 
+    const inputClass =
+        "w-full bg-[#ECEBE8] px-4 py-3 text-sm outline-none transition-colors placeholder:text-black/35 focus:bg-[#E5E4E0]";
+
+    const labelClass =
+        "mb-2 block text-xs font-medium text-black/65";
+
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-500 selection:text-white">
+        <div className="min-h-screen bg-[#F5F4F2] font-sans text-black">
             <Navbar />
 
-            {/* Header Banner */}
-            <section className="bg-slate-900 text-white py-12 sm:py-14 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
-                <div className="max-w-4xl mx-auto text-center">
-                    <span className="inline-block text-xs font-bold uppercase tracking-widest text-slate-300 bg-slate-800 border border-slate-700 px-3 py-1 rounded-full mb-3">
-                        Lending Marketplace
-                    </span>
-                    <h1 className="font-display font-extrabold text-3xl sm:text-5xl tracking-tight text-white">
-                        List Your Equipment
-                    </h1>
-                    <p className="mt-3 text-slate-300 text-sm sm:text-base max-w-xl mx-auto">
-                        Share your tools and machinery with verified community members and start earning passive income today.
-                    </p>
-                </div>
-            </section>
+            <main className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
+                <h1 className="mt-4 max-w-3xl font-serif text-5xl leading-[0.98] tracking-[-0.055em] sm:text-6xl lg:text-7xl">
+                List your equipment.
+                <span className="block font-normal italic text-black/40">
+                    Put it to good use.
+                </span>
+            </h1>
 
-            {/* Main Form Container */}
-            <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10 pb-24">
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-10">
-                    {/* Error Notice */}
-                    {error && (
-                        <div className="mb-6 p-4 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-2.5">
-                            <IconAlert className="w-4 h-4 text-slate-500 shrink-0" />
-                            <span>{error}</span>
-                        </div>
-                    )}
+                {error && (
+                    <div className="mb-6 flex items-center gap-2 bg-[#ECEBE8] p-3 text-sm text-red-700">
+                        <IconAlert className="h-4 w-4 shrink-0" />
+                        {error}
+                    </div>
+                )}
 
-                    <form onSubmit={handleSubmit} className="space-y-8">
-                        {/* Section 1: Basic Information */}
+                <form onSubmit={handleSubmit} className="space-y-7">
+
+                    <div className="mt-10">
+                        <label htmlFor="name" className={labelClass}>
+                            Equipment name *
+                        </label>
+                        <input
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            placeholder="Enter equipment name"
+                            required
+                            className={inputClass}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="description" className={labelClass}>
+                            Description *
+                        </label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            placeholder="Describe your equipment and its condition"
+                            rows={4}
+                            required
+                            className={`${inputClass} resize-none`}
+                        />
+                    </div>
+
+                    <div className="grid gap-6 sm:grid-cols-2">
                         <div>
-                            <div className="flex items-center gap-2 pb-3 mb-5 border-b border-slate-100">
-                                <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">
-                                    1
-                                </span>
-                                <h2 className="font-display font-bold text-lg text-slate-900">
-                                    General Information
-                                </h2>
-                            </div>
+    <label htmlFor="category" className={labelClass}>
+        Category *
+    </label>
 
-                            <div className="space-y-5">
-                                <div>
-                                    <label htmlFor="name" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                        Equipment Name *
-                                    </label>
-                                    <input
-                                        id="name"
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        placeholder="e.g. Bosch Professional 18V Cordless Drill Set"
-                                        required
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all"
-                                    />
-                                </div>
+    <select
+        id="category"
+        name="category"
+        value={formData.category}
+        onChange={handleChange}
+        required
+        disabled={categoryLoading}
+        className={`${inputClass} focus:border-black focus:ring-black accent-black`}
+    >
+        <option value="">
+            {categoryLoading ? "Loading..." : "Select category"}
+        </option>
 
-                                <div>
-                                    <label htmlFor="description" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                        Description & Condition *
-                                    </label>
-                                    <textarea
-                                        id="description"
-                                        name="description"
-                                        value={formData.description}
-                                        onChange={handleChange}
-                                        placeholder="Describe accessories included, power requirements, condition, operating instructions..."
-                                        rows={4}
-                                        required
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all resize-none"
-                                    />
-                                </div>
+        {categories.map((category) => (
+            <option key={category._id} value={category._id}>
+                {category.name}
+            </option>
+        ))}
+    </select>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                    <div>
-                                        <label htmlFor="category" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                            Category *
-                                        </label>
-                                        <select
-                                            id="category"
-                                            name="category"
-                                            value={formData.category}
-                                            onChange={handleChange}
-                                            required
-                                            disabled={categoryLoading}
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all"
-                                        >
-                                            <option value="">
-                                                {categoryLoading ? "Loading categories..." : "Select category"}
-                                            </option>
-                                            {categories.map((c) => (
-                                                <option key={c._id} value={c._id}>
-                                                    {c.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+    <button
+        type="button"
+        onClick={() => {
+            dispatch(clearCategoryRequestStatus());
+            setRequestMessage("");
+            setShowRequestModal(true);
+        }}
+        className="mt-2 text-xs text-black/60 underline underline-offset-4 hover:text-black"
+    >
+        + Request new category
+    </button>
+</div>
 
-                                    <div>
-                                        <label htmlFor="location" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                            Pickup Location / City *
-                                        </label>
-                                        <input
-                                            id="location"
-                                            type="text"
-                                            name="location"
-                                            value={formData.location}
-                                            onChange={handleChange}
-                                            placeholder="e.g. Indiranagar, Bengaluru"
-                                            required
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Section 2: Pricing & Inventory */}
                         <div>
-                            <div className="flex items-center gap-2 pb-3 mb-5 border-b border-slate-100">
-                                <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">
-                                    2
-                                </span>
-                                <h2 className="font-display font-bold text-lg text-slate-900">
-                                    Pricing & Inventory
-                                </h2>
-                            </div>
+                            <label htmlFor="location" className={labelClass}>
+                                Pickup location *
+                            </label>
+                            <input
+                                id="location"
+                                name="location"
+                                value={formData.location}
+                                onChange={handleChange}
+                                placeholder="Enter city or location"
+                                required
+                                className={inputClass}
+                            />
+                        </div>
+                    </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label htmlFor="rentalPrice" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                        Daily Rate (₹) *
-                                    </label>
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
-                                            ₹
-                                        </span>
-                                        <input
-                                            id="rentalPrice"
-                                            type="number"
-                                            name="rentalPrice"
-                                            min="0"
-                                            value={formData.rentalPrice}
-                                            onChange={handleChange}
-                                            placeholder="499"
-                                            required
-                                            className="w-full pl-9 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all font-semibold"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label htmlFor="quantity" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                        Quantity Available *
-                                    </label>
-                                    <input
-                                        id="quantity"
-                                        type="number"
-                                        name="quantity"
-                                        min="1"
-                                        value={formData.quantity}
-                                        onChange={handleChange}
-                                        placeholder="1"
-                                        required
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all font-semibold"
-                                    />
-                                </div>
-                            </div>
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <div>
+                            <label htmlFor="rentalPrice" className={labelClass}>
+                                Daily rental price (₹) *
+                            </label>
+                            <input
+                                id="rentalPrice"
+                                type="number"
+                                name="rentalPrice"
+                                min="0"
+                                value={formData.rentalPrice}
+                                onChange={handleChange}
+                                placeholder="499"
+                                required
+                                className={inputClass}
+                            />
                         </div>
 
-                        {/* Section 3: Upload Photos */}
                         <div>
-                            <div className="flex items-center gap-2 pb-3 mb-5 border-b border-slate-100">
-                                <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">
-                                    3
-                                </span>
-                                <h2 className="font-display font-bold text-lg text-slate-900">
-                                    Photos & Verification
-                                </h2>
+                            <label htmlFor="quantity" className={labelClass}>
+                                Quantity *
+                            </label>
+                            <input
+                                id="quantity"
+                                type="number"
+                                name="quantity"
+                                min="1"
+                                value={formData.quantity}
+                                onChange={handleChange}
+                                placeholder="1"
+                                required
+                                className={inputClass}
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className={labelClass}>
+                            Equipment photos *
+                        </label>
+
+                        <div className="relative border border-dashed border-black/20 bg-[#ECEBE8] px-5 py-9 text-center transition-colors hover:border-black/50">
+                            <input
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                required={images.length === 0}
+                                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                            />
+
+                            <IconCamera className="mx-auto mb-3 h-6 w-6 text-black/50" />
+                            <p className="text-sm text-black/65">
+                                Click or drop photos here
+                            </p>
+                        </div>
+
+                        {previewImages.length > 0 && (
+                            <div className="mt-4 flex flex-wrap gap-3">
+                                {previewImages.map((src, index) => (
+                                    <img
+                                        key={index}
+                                        src={src}
+                                        alt={`Equipment ${index + 1}`}
+                                        className="h-20 w-20 object-cover"
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col-reverse justify-end gap-3 border-t border-black/10 pt-6 sm:flex-row">
+                        <button
+                            type="button"
+                            onClick={() => navigate(-1)}
+                            className="px-6 py-3 text-sm text-black/60 hover:text-black"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            disabled={equipmentLoading || images.length === 0}
+                            className="bg-black px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-black/75 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                            {equipmentLoading ? "Publishing..." : "Publish listing →"}
+                        </button>
+                    </div>
+                </form>
+            </main>
+
+            {/* CATEGORY REQUEST MODAL */}
+            {showRequestModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4">
+                    <div className="w-full max-w-md bg-[#F5F4F2] p-6 sm:p-8">
+                        <div className="mb-6 flex items-center justify-between">
+                            <h2 className="font-serif text-2xl">
+                                Request category
+                            </h2>
+                            <button
+                                type="button"
+                                onClick={() => setShowRequestModal(false)}
+                                className="text-xl text-black/50 hover:text-black"
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        {requestError && (
+                            <p className="mb-4 text-xs text-red-700">
+                                {requestError}
+                            </p>
+                        )}
+
+                        {requestMessage && (
+                            <p className="mb-4 text-xs text-green-700">
+                                {requestMessage}
+                            </p>
+                        )}
+
+                        <form onSubmit={handleCategoryRequest} className="space-y-5">
+                            <div>
+                                <label htmlFor="requestName" className={labelClass}>
+                                    Category name *
+                                </label>
+                                <input
+                                    id="requestName"
+                                    name="name"
+                                    value={requestData.name}
+                                    onChange={(e) => setRequestData((prev) => ({
+                                        ...prev,
+                                        name: e.target.value
+                                    }))}
+                                    placeholder="Enter category name"
+                                    required
+                                    className={inputClass}
+                                />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                                    Equipment Photos (At least 1 required) *
+                                <label htmlFor="requestDescription" className={labelClass}>
+                                    Description
                                 </label>
-                                <div className="p-6 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-slate-50 hover:border-blue-500 transition-colors text-center relative">
-                                    <input
-                                        type="file"
-                                        multiple
-                                        accept="image/*"
-                                        onChange={handleImageChange}
-                                        required={images.length === 0}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    />
-                                    <div className="flex flex-col items-center justify-center pointer-events-none">
-                                        <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 shadow-xs">
-                                            <IconCamera className="w-5 h-5 text-blue-600" />
-                                        </div>
-                                        <p className="text-sm font-semibold text-slate-700">
-                                            Drop your equipment photos here, or <span className="text-blue-600">browse</span>
-                                        </p>
-                                        <p className="text-xs text-slate-400 mt-1">
-                                            Supports PNG, JPG, WebP up to 10MB each
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Previews */}
-                                {previewImages.length > 0 && (
-                                    <div className="mt-4 flex flex-wrap gap-3">
-                                        {previewImages.map((src, i) => (
-                                            <div key={i} className="relative w-24 h-24 rounded-2xl overflow-hidden border border-slate-200 shadow-xs">
-                                                <img src={src} alt="Preview" className="w-full h-full object-cover" />
-                                                <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-black/70 text-white text-[10px] font-bold">
-                                                    #{i + 1}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                                <textarea
+                                    id="requestDescription"
+                                    name="description"
+                                    value={requestData.description}
+                                    onChange={(e) => setRequestData((prev) => ({
+                                        ...prev,
+                                        description: e.target.value
+                                    }))}
+                                    placeholder="Category description (optional)"
+                                    rows={3}
+                                    className={`${inputClass} resize-none`}
+                                />
                             </div>
-                        </div>
 
-                        {/* Submit Action */}
-                        <div className="pt-6 border-t border-slate-100 flex items-center justify-end gap-4">
-                            <button
-                                type="button"
-                                onClick={() => navigate(-1)}
-                                className="px-6 py-3 rounded-xl border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors"
-                            >
-                                Cancel
-                            </button>
                             <button
                                 type="submit"
-                                disabled={loading || images.length === 0}
-                                className="px-8 py-3.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+                                disabled={requestSubmitting || !requestData.name.trim()}
+                                className="w-full bg-black px-6 py-3 text-sm font-medium text-white hover:bg-black/75 disabled:opacity-40"
                             >
-                                {loading ? "Publishing Listing..." : "Publish Equipment Listing →"}
+                                {requestSubmitting ? "Submitting..." : "Submit request →"}
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </main>
+            )}
 
             <Footer />
         </div>
